@@ -10,6 +10,8 @@ import java.io.IOException;
 /**
  * For writing new files witch are predefined
  * <p>e.g. config file
+ * @author Alexander Asbeck
+ * @version 1.1.0
  */
 public class WriteFiles {
 

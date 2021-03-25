@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.0.0
+ * @version 1.1.0
  */
 public class Main {
 
@@ -58,7 +58,7 @@ public class Main {
     /**
      * Class that reads from input from the Console
      * @author Alexander Asbeck
-     * @version 1.0.0
+     * @version 1.1.0
      */
     class ReadConsole implements Runnable{
 
