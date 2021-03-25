@@ -1,6 +1,8 @@
 package de.throsenheim.vvss21;
 
 import de.throsenheim.vvss21.helperclasses.WriteFiles;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +16,7 @@ import java.io.InputStreamReader;
 public class Main {
 
     private File configFile = new File("./alexanderasbeck.config");
+    private final Logger LOGGER = LogManager.getLogger(this.getClass());
 
     public static void main(String[] args) {
         new Main(args);
@@ -25,18 +28,28 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
-        if(args.length>0){
-            if(args[0].equalsIgnoreCase("--config")){
-                if(args.length==2){
-                    if (args[1].endsWith(".config")){
+        LOGGER.debug("Program has Started");
+        if(args.length>0) {
+            if (args[0].equalsIgnoreCase("--config")) {
+                if (args.length == 2) {
+                    if (args[1].endsWith(".config")) {
                         configFile = new File(args[1]);
-                        if(!configFile.exists()){
+                        LOGGER.info("Changed config File during start to " + configFile.getAbsolutePath());
+                        if (!configFile.exists()) {
                             new WriteFiles().createConfig(configFile);
                         }
+                    } else {
+                        LOGGER.debug("Tried to change config file during start, but no .config has been entered");
+                        System.out.println("Please enter a .config file");
                     }
+                } else {
+                    LOGGER.debug("Tried to change config file during start, but no filepath has been entered");
+                    System.out.println("Please use command with --config [filepath]");
                 }
+
             }
         }
+        LOGGER.debug("Config path is: " + configFile.getAbsolutePath());
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
 
@@ -71,6 +84,7 @@ public class Main {
                     boolean notFound = true;
                     if (notFound && line.equalsIgnoreCase("exit")) {
                         notFound = false;
+                        LOGGER.debug("Program has been stopped");
                         System.out.println("Program stopped");
                         reader.close();
                         break;
@@ -81,13 +95,16 @@ public class Main {
                         if(splittedMessage.length==2) {
                             if(splittedMessage[1].endsWith(".config")) {
                                 configFile = new File(splittedMessage[1]);
+                                LOGGER.info("Changed config File to " + configFile.getAbsolutePath());
                                 if (!configFile.exists()) {
                                     new WriteFiles().createConfig(configFile);
                                 }
                             }else {
+                                LOGGER.debug("Tried to change config file but no .config has been entered");
                                 System.out.println("Please enter a .config file");
                             }
                         }else {
+                            LOGGER.debug("Tried to change config file but no filepath has been entered");
                             System.out.println("Please use command with config [filepath]");
                         }
                     }

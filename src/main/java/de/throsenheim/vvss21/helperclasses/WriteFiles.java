@@ -1,5 +1,8 @@
 package de.throsenheim.vvss21.helperclasses;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,6 +12,8 @@ import java.io.IOException;
  * <p>e.g. config file
  */
 public class WriteFiles {
+
+    private final Logger LOGGER = LogManager.getLogger(this.getClass());
 
     public WriteFiles() {
     }
@@ -20,8 +25,10 @@ public class WriteFiles {
             writer.write("This is the config file for alexanderasbeck\n"+
                     "Logaddress= \n");
             writer.close();
+            LOGGER.debug("New log file has been created");
         } catch (IOException e) {
             e.printStackTrace();
+            LOGGER.error(e);
         }
     }
 }
