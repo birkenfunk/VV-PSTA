@@ -289,5 +289,5 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,intellij+all,java,vscode,gradle,eclipse,netbeans
 
-*.config
+*.conf
 logs/

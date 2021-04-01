@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 /**
  * Main Class from where the program should be started
@@ -16,7 +15,7 @@ import java.util.Arrays;
  */
 public class Main {
 
-    private File configFile = new File("./alexanderasbeck.config");
+    private File configFile = new File("./alexanderasbeck.conf");
     private final Logger LOGGER = LogManager.getLogger(this.getClass());
 
     public static void main(String[] args) {
@@ -31,6 +30,9 @@ public class Main {
     public Main(String[] args) {
         if(args.length>0){
             inputComparison(args);
+        }
+        if(!configFile.exists()){
+            WriteFiles.getWriteFiles().createConfig(configFile);
         }
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
@@ -49,9 +51,9 @@ public class Main {
                         WriteFiles.getWriteFiles().createConfig(configFile);
                     }
                 }else {
-                    System.out.println("Parameter --config has to be entered with a filepath\n" +
-                            "Note that file has to end with .conf\n" +
-                            "Now using default config file "+configFile.getAbsolutePath());
+                    LOGGER.info("Use --conf [filepath]\n" +
+                            "Note that you have to enter a .conf file");
+                    LOGGER.debug("Now using default config "+ configFile.getPath());
                 }
 
             }
@@ -99,7 +101,7 @@ public class Main {
         private void commandComparison(String command){
             if(command.equalsIgnoreCase("exit")){
                 read = false;
-                System.out.println("Stopped Program");
+                LOGGER.info("Stopped Program");
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){
@@ -109,11 +111,11 @@ public class Main {
                         WriteFiles.getWriteFiles().createConfig(configFile);
                     }
                 }else {
-                    System.out.println("Use Command like config [filepath]\n Note that you have to enter a .conf file");
+                    LOGGER.info("Use Command like config [filepath]\n Note that you have to enter a .conf file");
                 }
                 return;
             }
-            System.out.println("Use help to get all commands");
+            LOGGER.info("Use help to get all commands");
         }
 
     }
