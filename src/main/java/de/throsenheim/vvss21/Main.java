@@ -28,6 +28,7 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
+        logStartup();
         if(args.length>0){
             inputComparison(args);
         }
@@ -36,6 +37,16 @@ public class Main {
         }
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
+    }
+
+    private void logStartup(){
+        LOGGER.debug("Program start");
+        LOGGER.debug("Java Version: "+ System.getProperty("java.version"));
+        LOGGER.debug("OS: "+ System.getProperty("os.name"));
+        LOGGER.debug("OS Version: "+System.getProperty("os.version"));
+        LOGGER.debug("Architecture: "+System.getProperty("os.arch"));
+        LOGGER.debug("User: "+System.getProperty("user.name"));
+
     }
 
     /**
@@ -102,6 +113,7 @@ public class Main {
             if(command.equalsIgnoreCase("exit")){
                 read = false;
                 LOGGER.info("Stopped Program");
+                return;
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){
