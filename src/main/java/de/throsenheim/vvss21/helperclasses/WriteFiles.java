@@ -15,9 +15,9 @@ import java.io.IOException;
  */
 public class WriteFiles {
 
+    private static final WriteFiles writeFiles = new WriteFiles();
     private final Logger LOGGER = LogManager.getLogger(this.getClass());
-
-    public WriteFiles() {
+    private WriteFiles() {
     }
 
     public synchronized void createConfig(File file){
@@ -32,5 +32,9 @@ public class WriteFiles {
             e.printStackTrace();
             LOGGER.error(e);
         }
+    }
+
+    public static WriteFiles getWriteFiles() {
+        return writeFiles;
     }
 }

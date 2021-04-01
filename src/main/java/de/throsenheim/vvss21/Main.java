@@ -7,11 +7,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.1.0
+ * @version 1.2.0
  */
 public class Main {
 
@@ -28,32 +29,35 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
-        LOGGER.debug("Program has Started");
-        if(args.length>0) {
-            if (args[0].equalsIgnoreCase("--config")) {
-                if (args.length == 2) {
-                    if (args[1].endsWith(".config")) {
-                        configFile = new File(args[1]);
-                        LOGGER.info("Changed config File during start to " + configFile.getAbsolutePath());
-                        if (!configFile.exists()) {
-                            new WriteFiles().createConfig(configFile);
-                        }
-                    } else {
-                        LOGGER.debug("Tried to change config file during start, but no .config has been entered");
-                        System.out.println("Please enter a .config file");
+        if(args.length>0){
+            inputComparison(args);
+        }
+        Thread consoleRead = new Thread(new ReadConsole());
+        consoleRead.start();
+    }
+
+    /**
+     * Used to see if the input parameters are correct
+     * @param input the inputs that should be compared
+     */
+    private void inputComparison(String[] input){
+        for (int i = 0; i < input.length; i++) {
+            if(input[i].equalsIgnoreCase("--config")){
+                if(input.length >= i+2 && input[i+1].endsWith(".conf")){
+                    configFile = new File(input[i+1]);
+                    if(!configFile.exists()){
+                        WriteFiles.getWriteFiles().createConfig(configFile);
                     }
-                } else {
-                    LOGGER.debug("Tried to change config file during start, but no filepath has been entered");
-                    System.out.println("Please use command with --config [filepath]");
+                }else {
+                    System.out.println("Parameter --config has to be entered with a filepath\n" +
+                            "Note that file has to end with .conf\n" +
+                            "Now using default config file "+configFile.getAbsolutePath());
                 }
 
             }
         }
-        LOGGER.debug("Config path is: " + configFile.getAbsolutePath());
-        Thread consoleRead = new Thread(new ReadConsole());
-        consoleRead.start();
-
     }
+
 
     /**
      * Class that reads from input from the Console
@@ -61,7 +65,7 @@ public class Main {
      * @version 1.1.0
      */
     class ReadConsole implements Runnable{
-
+        private boolean read = true;
         /**
          * When an object implementing interface <code>Runnable</code> is used
          * to create a thread, starting the thread causes the object's
@@ -79,43 +83,38 @@ public class Main {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                while (true){
+                while (read){
                     line = reader.readLine();
-                    boolean notFound = true;
-                    if (notFound && line.equalsIgnoreCase("exit")) {
-                        notFound = false;
-                        LOGGER.debug("Program has been stopped");
-                        System.out.println("Program stopped");
-                        reader.close();
-                        break;
-                    }
-                    if(notFound && line.startsWith("config")){
-                        notFound = false;
-                        String[] splittedMessage = line.split(" ");
-                        if(splittedMessage.length==2) {
-                            if(splittedMessage[1].endsWith(".config")) {
-                                configFile = new File(splittedMessage[1]);
-                                LOGGER.info("Changed config File to " + configFile.getAbsolutePath());
-                                if (!configFile.exists()) {
-                                    new WriteFiles().createConfig(configFile);
-                                }
-                            }else {
-                                LOGGER.debug("Tried to change config file but no .config has been entered");
-                                System.out.println("Please enter a .config file");
-                            }
-                        }else {
-                            LOGGER.debug("Tried to change config file but no filepath has been entered");
-                            System.out.println("Please use command with config [filepath]");
-                        }
-                    }
-
-
+                    commandComparison(line);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        /**
+         * Compares if a correct command has been entered
+         * @param command A string of the command witch has been entered
+         */
+        private void commandComparison(String command){
+            if(command.equalsIgnoreCase("exit")){
+                read = false;
+                System.out.println("Stopped Program");
+            }
+            String[] splittedCommand = command.split(" ");
+            if(splittedCommand[0].equalsIgnoreCase("config")){
+                if(splittedCommand.length == 2 && splittedCommand[1].endsWith(".conf")){
+                    configFile = new File(splittedCommand[1]);
+                    if(!configFile.exists()){
+                        WriteFiles.getWriteFiles().createConfig(configFile);
+                    }
+                }else {
+                    System.out.println("Use Command like config [filepath]\n Note that you have to enter a .conf file");
+                }
+                return;
+            }
+            System.out.println("Use help to get all commands");
+        }
 
     }
 }
