@@ -1,11 +1,12 @@
 package de.throsenheim.vvss21;
 
 import de.throsenheim.vvss21.helperclasses.WriteFiles;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 /**
  * Main Class from where the program should be started
@@ -14,7 +15,8 @@ import java.util.Arrays;
  */
 public class Main {
 
-    private File configFile = new File("./alexanderasbeck.config");
+    private File configFile = new File("./alexanderasbeck.conf");
+    private final Logger LOGGER = LogManager.getLogger(this.getClass());
 
     public static void main(String[] args) {
         new Main(args);
@@ -26,11 +28,25 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
+        logStartup();
         if(args.length>0){
             inputComparison(args);
         }
+        if(!configFile.exists()){
+            WriteFiles.getWriteFiles().createConfig(configFile);
+        }
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
+    }
+
+    private void logStartup(){
+        LOGGER.debug("Program start");
+        LOGGER.debug("Java Version: "+ System.getProperty("java.version"));
+        LOGGER.debug("OS: "+ System.getProperty("os.name"));
+        LOGGER.debug("OS Version: "+System.getProperty("os.version"));
+        LOGGER.debug("Architecture: "+System.getProperty("os.arch"));
+        LOGGER.debug("User: "+System.getProperty("user.name"));
+
     }
 
     /**
@@ -46,10 +62,11 @@ public class Main {
                         WriteFiles.getWriteFiles().createConfig(configFile);
                     }
                 }else {
-                    System.out.println("Parameter --config has to be entered with a filepath\n" +
-                            "Note that file has to end with .conf\n" +
-                            "Now using default config file "+configFile.getAbsolutePath());
+                    LOGGER.info("Use --conf [filepath]\n" +
+                            "Note that you have to enter a .conf file");
+                    LOGGER.debug("Now using default config "+ configFile.getPath());
                 }
+
             }
         }
     }
@@ -58,7 +75,7 @@ public class Main {
     /**
      * Class that reads from input from the Console
      * @author Alexander Asbeck
-     * @version 1.0.0
+     * @version 1.1.0
      */
     class ReadConsole implements Runnable{
         private boolean read = true;
@@ -95,7 +112,8 @@ public class Main {
         private void commandComparison(String command){
             if(command.equalsIgnoreCase("exit")){
                 read = false;
-                System.out.println("Stopped Program");
+                LOGGER.info("Stopped Program");
+                return;
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){
@@ -105,11 +123,11 @@ public class Main {
                         WriteFiles.getWriteFiles().createConfig(configFile);
                     }
                 }else {
-                    System.out.println("Use Command like config [filepath]\n Note that you have to enter a .conf file");
+                    LOGGER.info("Use Command like config [filepath]\n Note that you have to enter a .conf file");
                 }
                 return;
             }
-            System.out.println("Use help to get all commands");
+            LOGGER.info("Use help to get all commands");
         }
 
     }
