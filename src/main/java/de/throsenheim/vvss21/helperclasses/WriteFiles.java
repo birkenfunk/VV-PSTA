@@ -10,7 +10,9 @@ import java.io.IOException;
  */
 public class WriteFiles {
 
-    public WriteFiles() {
+    private static final WriteFiles writeFiles = new WriteFiles();
+
+    private WriteFiles() {
     }
 
     public synchronized void createConfig(File file){
@@ -23,5 +25,9 @@ public class WriteFiles {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static WriteFiles getWriteFiles() {
+        return writeFiles;
     }
 }

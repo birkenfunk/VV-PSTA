@@ -31,7 +31,7 @@ public class Main {
                     if (args[1].endsWith(".config")){
                         configFile = new File(args[1]);
                         if(!configFile.exists()){
-                            new WriteFiles().createConfig(configFile);
+                            WriteFiles.getWriteFiles().createConfig(configFile);
                         }
                     }
                 }
@@ -42,13 +42,15 @@ public class Main {
 
     }
 
+
+
     /**
      * Class that reads from input from the Console
      * @author Alexander Asbeck
      * @version 1.0.0
      */
     class ReadConsole implements Runnable{
-
+        private boolean read = true;
         /**
          * When an object implementing interface <code>Runnable</code> is used
          * to create a thread, starting the thread causes the object's
@@ -66,39 +68,38 @@ public class Main {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                while (true){
+                while (read){
                     line = reader.readLine();
-                    boolean notFound = true;
-                    if (notFound && line.equalsIgnoreCase("exit")) {
-                        notFound = false;
-                        System.out.println("Program stopped");
-                        reader.close();
-                        break;
-                    }
-                    if(notFound && line.startsWith("config")){
-                        notFound = false;
-                        String[] splittedMessage = line.split(" ");
-                        if(splittedMessage.length==2) {
-                            if(splittedMessage[1].endsWith(".config")) {
-                                configFile = new File(splittedMessage[1]);
-                                if (!configFile.exists()) {
-                                    new WriteFiles().createConfig(configFile);
-                                }
-                            }else {
-                                System.out.println("Please enter a .config file");
-                            }
-                        }else {
-                            System.out.println("Please use command with config [filepath]");
-                        }
-                    }
-
-
+                    commandComparison(line);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        /**
+         * Compares if a correct command has been entered
+         * @param command A string of the command witch has been entered
+         */
+        private void commandComparison(String command){
+            if(command.equalsIgnoreCase("exit")){
+                read = false;
+                System.out.println("Stopped Program");
+            }
+            String[] splittedCommand = command.split(" ");
+            if(splittedCommand[0].equalsIgnoreCase("config")){
+                if(splittedCommand.length == 2 && splittedCommand[1].endsWith(".conf")){
+                    configFile = new File(splittedCommand[1]);
+                    if(!configFile.exists()){
+                        WriteFiles.getWriteFiles().createConfig(configFile);
+                    }
+                }else {
+                    System.out.println("Use Command like config [filepath]\n Note that you have to enter a .conf file");
+                }
+                return;
+            }
+            System.out.println("Use help to get all commands");
+        }
 
     }
 }
