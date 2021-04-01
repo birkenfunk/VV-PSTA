@@ -5,11 +5,12 @@ import de.throsenheim.vvss21.helperclasses.WriteFiles;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.1.0
+ * @version 1.2.0
  */
 public class Main {
 
@@ -26,22 +27,32 @@ public class Main {
      */
     public Main(String[] args) {
         if(args.length>0){
-            if(args[0].equalsIgnoreCase("--config")){
-                if(args.length==2){
-                    if (args[1].endsWith(".config")){
-                        configFile = new File(args[1]);
-                        if(!configFile.exists()){
-                            WriteFiles.getWriteFiles().createConfig(configFile);
-                        }
-                    }
-                }
-            }
+            inputComparison(args);
         }
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
-
     }
 
+    /**
+     * Used to see if the input parameters are correct
+     * @param input the inputs that should be compared
+     */
+    private void inputComparison(String[] input){
+        for (int i = 0; i < input.length; i++) {
+            if(input[i].equalsIgnoreCase("--config")){
+                if(input.length >= i+2 && input[i+1].endsWith(".conf")){
+                    configFile = new File(input[i+1]);
+                    if(!configFile.exists()){
+                        WriteFiles.getWriteFiles().createConfig(configFile);
+                    }
+                }else {
+                    System.out.println("Parameter --config has to be entered with a filepath\n" +
+                            "Note that file has to end with .conf\n" +
+                            "Now using default config file "+configFile.getAbsolutePath());
+                }
+            }
+        }
+    }
 
 
     /**
