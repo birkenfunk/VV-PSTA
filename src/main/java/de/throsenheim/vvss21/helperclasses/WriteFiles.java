@@ -21,11 +21,11 @@ public class WriteFiles {
     }
 
     public synchronized void createConfig(File file){
+        LOGGER.info("Creating new File at " + file.getAbsolutePath());
         try {
-            System.out.println("Creating new File at " + file.getAbsolutePath());
             FileWriter writer = new FileWriter(file);
             writer.write("This is the config file for alexanderasbeck\n"+
-                    "Logaddress= \n");
+                    "Nothing yet ");
             writer.close();
             LOGGER.debug("New log file has been created");
         } catch (IOException e) {
