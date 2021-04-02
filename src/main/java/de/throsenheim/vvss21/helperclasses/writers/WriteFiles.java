@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -44,8 +43,8 @@ public class WriteFiles {
             return false;
         }
         try (FileWriter writer = new FileWriter(file)){
-            for (int i = 0; i < content.size(); i++) {
-                writer.write(content.get(i) + "\n");
+            for (String s : content) {
+                writer.write(s + "\n");
             }
             debugMsg = "File " + file.getAbsolutePath() + " has been created";
             LOGGER.debug(debugMsg);
