@@ -30,10 +30,12 @@ public class ReadFile {
      * @return Gives a List with the content of the File each Line ist a entry in the List
      */
     public static List<String> readFile(File file){
+        String debugMsg = "Try to read the file: " + file.getAbsolutePath();
         List<String> out = new LinkedList<>();
-        LOGGER.debug("Try to read the file: " + file.getAbsolutePath());
+        LOGGER.debug(debugMsg);
         if (!file.exists()){
-            LOGGER.debug("Could not found the file: " + file.getAbsolutePath());
+            debugMsg = "Could not found the file: " + file.getAbsolutePath();
+            LOGGER.debug(debugMsg);
             return out;
         }
         try (Scanner fileScanner = new Scanner(file)){
@@ -42,7 +44,8 @@ public class ReadFile {
                 line=fileScanner.nextLine();
                 out.add(line);
             }
-            LOGGER.debug("File reading was successful");
+            debugMsg = "File reading was successful";
+            LOGGER.debug(debugMsg);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             LOGGER.error(e);
