@@ -102,6 +102,7 @@ public class Main {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                LOGGER.error(e);
             }
         }
 
