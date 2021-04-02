@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21;
 
+import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Main Class from where the program should be started
@@ -35,10 +37,14 @@ public class Main {
         if(!configFile.exists()){
             WriteFiles.getWriteFiles().createConfig(configFile);
         }
+        readConf(ReadFile.readFile(configFile));
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
     }
 
+    /**
+     * Method writes the start variables to the log
+     */
     private void logStartup(){
         String debugMsg = "Program start";
         LOGGER.debug(debugMsg);
@@ -53,6 +59,29 @@ public class Main {
         debugMsg = "User: "+System.getProperty("user.name");
         LOGGER.debug(debugMsg);
 
+    }
+
+    /**
+     * Reads out the Config out of a List
+     * @param list List with the config
+     */
+    private void readConf(List<String> list){
+        if(list.isEmpty()){
+            LOGGER.debug("No config received");
+            return;
+        }
+        String confStart = "This is the config file for alexanderasbeck";
+        if(list.remove(0).equals(confStart)){
+            for (String s: list) {
+                //String[] splittedConf = s.split(" "); Used Later
+                if(s.startsWith("JSON_Location")){
+                    s = "JSON is in: " + s;
+                    LOGGER.info(s);
+                }
+                //here can other config parameter be sorted out
+            }
+        }
+        list.add(0,confStart);
     }
 
     /**
