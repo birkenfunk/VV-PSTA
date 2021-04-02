@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * For writing new files witch are predefined
@@ -21,17 +22,38 @@ public class WriteFiles {
     }
 
     public synchronized void createConfig(File file){
-        LOGGER.info("Creating new File at " + file.getAbsolutePath());
-        try {
-            FileWriter writer = new FileWriter(file);
+        String debugMsg = "Creating new File at " + file.getAbsolutePath();
+        LOGGER.info(debugMsg);
+        try (FileWriter writer = new FileWriter(file)){
             writer.write("This is the config file for alexanderasbeck\n"+
                     "Nothing yet ");
-            writer.close();
-            LOGGER.debug("New log file has been created");
+            debugMsg = "New log file has been created";
+            LOGGER.debug(debugMsg);
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error(e);
         }
+    }
+
+    public boolean writeFile(File file, List<String> content, boolean overwrite){
+        String debugMsg;
+        if(file.exists() && !overwrite){
+            debugMsg = "File already exists and overwrite is off";
+            LOGGER.debug(debugMsg);
+            return false;
+        }
+        try (FileWriter writer = new FileWriter(file)){
+            while (!content.isEmpty()) {
+                writer.write(content.remove(0));
+            }
+            debugMsg = "File " + file.getAbsolutePath() + " has been created";
+            LOGGER.debug(debugMsg);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOGGER.error(e);
+            return false;
+        }
+        return true;
     }
 
     public static WriteFiles getWriteFiles() {
