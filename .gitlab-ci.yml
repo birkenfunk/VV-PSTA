@@ -2,6 +2,7 @@ image: gradle:6.8.3-jdk11
 
 stages:
   - build
+  - sonarqube
   - test
 
 cache:
@@ -19,6 +20,10 @@ build:
     paths:
       - ./build/libs/*.jar
     expire_in: 1 week
+
+sonarqube:
+  stage: sonarqube
+  script: /sonarqube.sh
 
 test:
   stage: test
