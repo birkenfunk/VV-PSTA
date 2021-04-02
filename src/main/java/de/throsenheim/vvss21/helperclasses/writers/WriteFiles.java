@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.helperclasses;
+package de.throsenheim.vvss21.helperclasses.writers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

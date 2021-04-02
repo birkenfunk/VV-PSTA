@@ -1,6 +1,6 @@
 package de.throsenheim.vvss21;
 
-import de.throsenheim.vvss21.helperclasses.WriteFiles;
+import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
