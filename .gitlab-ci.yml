@@ -13,7 +13,8 @@ cache:
 build:
   stage: build
   image: gradle:6.8.3-jdk11
-  script: gradle build
+  script: 
+    - gradle assemble && gradle jar
   artifacts:
     paths:
       - ./build/libs/*.jar
@@ -21,4 +22,6 @@ build:
 
 test:
   stage: test
-  script: gradle check
+  script:
+    - ls -la build/ 
+    - gradle check
