@@ -40,12 +40,18 @@ public class Main {
     }
 
     private void logStartup(){
-        LOGGER.debug("Program start");
-        LOGGER.debug("Java Version: "+ System.getProperty("java.version"));
-        LOGGER.debug("OS: "+ System.getProperty("os.name"));
-        LOGGER.debug("OS Version: "+System.getProperty("os.version"));
-        LOGGER.debug("Architecture: "+System.getProperty("os.arch"));
-        LOGGER.debug("User: "+System.getProperty("user.name"));
+        String debugMsg = "Program start";
+        LOGGER.debug(debugMsg);
+        debugMsg = "Java Version: "+ System.getProperty("java.version");
+        LOGGER.debug(debugMsg);
+        debugMsg = "OS: "+ System.getProperty("os.name");
+        LOGGER.debug(debugMsg);
+        debugMsg = "OS Version: "+System.getProperty("os.version");
+        LOGGER.debug(debugMsg);
+        debugMsg = "Architecture: "+System.getProperty("os.arch");
+        LOGGER.debug(debugMsg);
+        debugMsg = "User: "+System.getProperty("user.name");
+        LOGGER.debug(debugMsg);
 
     }
 
@@ -62,9 +68,11 @@ public class Main {
                         WriteFiles.getWriteFiles().createConfig(configFile);
                     }
                 }else {
-                    LOGGER.info("Use --conf [filepath]\n" +
-                            "Note that you have to enter a .conf file");
-                    LOGGER.debug("Now using default config "+ configFile.getPath());
+                    String debugMsg = "Use --conf [filepath]\n" +
+                            "Note that you have to enter a .conf file";
+                    LOGGER.info(debugMsg);
+                    debugMsg = "Now using default config "+ configFile.getPath();
+                    LOGGER.debug(debugMsg);
                 }
 
             }
