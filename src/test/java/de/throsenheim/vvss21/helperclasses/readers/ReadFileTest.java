@@ -23,4 +23,12 @@ class ReadFileTest {
         writeFiles.writeFile(file, list, true);
         assertEquals(list, ReadFile.readFile(file));
     }
+
+    @Test
+    void readNonExistingFile() {
+        if(file.exists()){
+            file.delete();
+        }
+        assertEquals(new LinkedList<String>(), ReadFile.readFile(file));
+    }
 }
