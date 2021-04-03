@@ -30,7 +30,6 @@ public class WriteFiles {
             debugMsg = "New log file has been created";
             LOGGER.debug(debugMsg);
         } catch (IOException e) {
-            e.printStackTrace();
             LOGGER.error(e);
         }
     }
@@ -49,7 +48,6 @@ public class WriteFiles {
             debugMsg = "File " + file.getAbsolutePath() + " has been created";
             LOGGER.debug(debugMsg);
         } catch (IOException e) {
-            e.printStackTrace();
             LOGGER.error(e);
             return false;
         }

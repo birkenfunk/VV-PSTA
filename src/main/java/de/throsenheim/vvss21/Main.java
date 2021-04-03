@@ -38,6 +38,7 @@ public class Main {
             WriteFiles.getWriteFiles().createConfig(configFile);
         }
         readConf(ReadFile.readFile(configFile));
+
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
     }
@@ -138,7 +139,6 @@ public class Main {
                     commandComparison(line);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 LOGGER.error(e);
             }
         }
