@@ -1,12 +1,14 @@
 package de.throsenheim.vvss21;
 
-import de.throsenheim.vvss21.helperclasses.WriteFiles;
+import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
+import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Main Class from where the program should be started
@@ -35,18 +37,51 @@ public class Main {
         if(!configFile.exists()){
             WriteFiles.getWriteFiles().createConfig(configFile);
         }
+        readConf(ReadFile.readFile(configFile));
         Thread consoleRead = new Thread(new ReadConsole());
         consoleRead.start();
     }
 
+    /**
+     * Method writes the start variables to the log
+     */
     private void logStartup(){
-        LOGGER.debug("Program start");
-        LOGGER.debug("Java Version: "+ System.getProperty("java.version"));
-        LOGGER.debug("OS: "+ System.getProperty("os.name"));
-        LOGGER.debug("OS Version: "+System.getProperty("os.version"));
-        LOGGER.debug("Architecture: "+System.getProperty("os.arch"));
-        LOGGER.debug("User: "+System.getProperty("user.name"));
+        String debugMsg = "Program start";
+        LOGGER.debug(debugMsg);
+        debugMsg = "Java Version: "+ System.getProperty("java.version");
+        LOGGER.debug(debugMsg);
+        debugMsg = "OS: "+ System.getProperty("os.name");
+        LOGGER.debug(debugMsg);
+        debugMsg = "OS Version: "+System.getProperty("os.version");
+        LOGGER.debug(debugMsg);
+        debugMsg = "Architecture: "+System.getProperty("os.arch");
+        LOGGER.debug(debugMsg);
+        debugMsg = "User: "+System.getProperty("user.name");
+        LOGGER.debug(debugMsg);
 
+    }
+
+    /**
+     * Reads out the Config out of a List
+     * @param list List with the config
+     */
+    private void readConf(List<String> list){
+        if(list.isEmpty()){
+            LOGGER.debug("No config received");
+            return;
+        }
+        String confStart = "This is the config file for alexanderasbeck";
+        if(list.remove(0).equals(confStart)){
+            for (String s: list) {
+                //String[] splittedConf = s.split(" "); Used Later
+                if(s.startsWith("JSON_Location")){
+                    s = "JSON is in: " + s;
+                    LOGGER.info(s);
+                }
+                //here can other config parameter be sorted out
+            }
+        }
+        list.add(0,confStart);
     }
 
     /**
@@ -62,9 +97,11 @@ public class Main {
                         WriteFiles.getWriteFiles().createConfig(configFile);
                     }
                 }else {
-                    LOGGER.info("Use --conf [filepath]\n" +
-                            "Note that you have to enter a .conf file");
-                    LOGGER.debug("Now using default config "+ configFile.getPath());
+                    String debugMsg = "Use --conf [filepath]\n" +
+                            "Note that you have to enter a .conf file";
+                    LOGGER.info(debugMsg);
+                    debugMsg = "Now using default config "+ configFile.getPath();
+                    LOGGER.debug(debugMsg);
                 }
 
             }
@@ -102,6 +139,7 @@ public class Main {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                LOGGER.error(e);
             }
         }
 
