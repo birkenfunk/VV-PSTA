@@ -17,10 +17,10 @@ import java.util.List;
 public class Measurement implements Jsonable {
 
     private static final Logger LOGGER = LogManager.getLogger(Measurement.class);
-    private int value;
-    private Unit unit;
-    private Type type;
-    private Timestamp timestamp;
+    private final int value;
+    private final Unit unit;
+    private final Type type;
+    private final Timestamp timestamp;
 
 
     public Measurement(int value, Unit unit, Type type, Timestamp timestamp) {
@@ -39,9 +39,21 @@ public class Measurement implements Jsonable {
     public String toJson() {
         JsonObject json = new JsonObject();
         json.put("value",value);
-        json.put("unit",unit.toString());
-        json.put("type",type.toString());
-        json.put("timestamp",timestamp.toString());
+        if(unit!=null) {
+            json.put("unit", unit.toString());
+        }else {
+            json.put("unit", null);
+        }
+        if(type!=null) {
+            json.put("type", type.toString());
+        }else {
+            json.put("type", null);
+        }
+        if(timestamp!=null) {
+            json.put("timestamp", timestamp.toString());
+        }else {
+            json.put("timestamp", null);
+        }
         return json.toJson();
     }
 
@@ -53,11 +65,7 @@ public class Measurement implements Jsonable {
      */
     @Override
     public void toJson(Writer writable) throws IOException {
-        try {
-            writable.write(this.toJson());
-        } catch (Exception e) {
-            LOGGER.error(e);
-        }
+        throw new IOException("Method out of Order use toJson(File file) instead");
     }
 
     public void toJson(File file){
@@ -97,7 +105,7 @@ public class Measurement implements Jsonable {
 
     private static Unit searchUnit(String[] data){
         for (int i = 0; i < data.length; i++) {
-            if(data[i].equals("unit") && data.length>i+1){
+            if(data[i].equals("unit") && data.length>i+1 && !data[i+1].equals("null")){
                 return Unit.valueOf(data[i+1]);
             }
         }
@@ -106,7 +114,7 @@ public class Measurement implements Jsonable {
 
     private static Type searchType(String[] data){
         for (int i = 0; i < data.length; i++) {
-            if(data[i].equals("type") && data.length>i+1){
+            if(data[i].equals("type") && data.length>i+1 && !data[i+1].equals("null")){
                 return Type.valueOf(data[i+1]);
             }
         }
@@ -115,7 +123,7 @@ public class Measurement implements Jsonable {
 
     private static Timestamp searchTimestamp(String[] data){
         for (int i = 0; i < data.length; i++) {
-            if(data[i].equals("timestamp")){
+            if(data[i].equals("timestamp") && data.length>i+1 && !data[i+1].equals("null")){
                 StringBuilder buffer = new StringBuilder();
                 buffer.append(data[i+1]);
                 for (int j = i+2; j < data.length && (data[j].isEmpty() || Character.isDigit(data[j].charAt(0)));j++) {
