@@ -44,8 +44,9 @@ class MeasurementTest {
     }
 
     @Test
-    void toJson2(){
-        assertThrows(IOException.class ,()->measurement.toJson(new FileWriter(file)));
+    void toJson2() throws IOException {
+        FileWriter f = new FileWriter(file);
+        assertThrows(IOException.class ,()->measurement.toJson(f));
     }
 
     @Test
