@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,9 +39,9 @@ class MeasurementTest {
     @Test
     void fromJson() {
         measurement.toJson(file);
-        Measurement newMes = Measurement.fromJson(file);
-        assertNotNull(newMes);
-        assertEquals(compare , newMes.toJson());
+        List<Measurement> newMes = Measurement.fromJson(file);
+        assertEquals(newMes.size(),1);
+        assertEquals(compare , newMes.get(0).toJson());
     }
 
     @Test
@@ -55,8 +56,8 @@ class MeasurementTest {
         assertEquals("{\"unit\":null,\"type\":null,\"value\":0,\"timestamp\":null}",measurement.toJson());
         measurement.toJson(file);
         assertTrue(file.exists());
-        Measurement newMes = Measurement.fromJson(file);
-        assertNotNull(newMes);
-        assertEquals("{\"unit\":null,\"type\":null,\"value\":0,\"timestamp\":null}",newMes.toJson());
+        List<Measurement> newMes = Measurement.fromJson(file);
+        assertEquals(newMes.size(),1);
+        assertEquals("{\"unit\":null,\"type\":null,\"value\":0,\"timestamp\":null}",newMes.get(0).toJson());
     }
 }

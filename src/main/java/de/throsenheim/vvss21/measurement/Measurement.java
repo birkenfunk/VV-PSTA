@@ -80,8 +80,8 @@ public class Measurement implements Jsonable {
         LOGGER.debug(debugString);
     }
 
-    public static Measurement fromJson(File file){
-        Measurement res = null;
+    public static List<Measurement> fromJson(File file){
+        List<Measurement> res = new LinkedList<>();
         List<String> data = ReadFile.readFile(file);
         while (!data.isEmpty()) {
             int value;
@@ -95,7 +95,9 @@ public class Measurement implements Jsonable {
             unit = searchUnit(splitedline);
             type = searchType(splitedline);
             timestamp = searchTimestamp(splitedline);
-            res = new Measurement(value,unit,type,timestamp);
+            res.add(new Measurement(value,unit,type,timestamp));
+            String debugString = res.get(res.size()-1).toString();
+            LOGGER.debug(debugString);
         }
         return res;
     }
@@ -139,5 +141,15 @@ public class Measurement implements Jsonable {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Measurement{" +
+                "value=" + value +
+                ", unit=" + unit +
+                ", type=" + type +
+                ", timestamp=" + timestamp +
+                '}';
     }
 }
