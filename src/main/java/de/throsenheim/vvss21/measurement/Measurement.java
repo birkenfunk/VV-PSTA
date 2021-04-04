@@ -37,22 +37,26 @@ public class Measurement implements Jsonable {
      */
     @Override
     public String toJson() {
+        String keySting;
         JsonObject json = new JsonObject();
         json.put("value",value);
+        keySting = "unit";
         if(unit!=null) {
-            json.put("unit", unit.toString());
+            json.put(keySting, unit.toString());
         }else {
-            json.put("unit", null);
+            json.put(keySting, null);
         }
+        keySting = "type";
         if(type!=null) {
-            json.put("type", type.toString());
+            json.put(keySting, type.toString());
         }else {
-            json.put("type", null);
+            json.put(keySting, null);
         }
+        keySting = "timestamp";
         if(timestamp!=null) {
-            json.put("timestamp", timestamp.toString());
+            json.put(keySting, timestamp.toString());
         }else {
-            json.put("timestamp", null);
+            json.put(keySting, null);
         }
         return json.toJson();
     }
@@ -72,6 +76,8 @@ public class Measurement implements Jsonable {
         List<String> list = new LinkedList<>();
         list.add(toJson());
         WriteFiles.getWriteFiles().writeFile(file,list,true);
+        String debugString = "Written Json to: "+ file.getAbsolutePath();
+        LOGGER.debug(debugString);
     }
 
     public static Measurement fromJson(File file){
