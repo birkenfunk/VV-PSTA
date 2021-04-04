@@ -19,6 +19,7 @@ public class Main {
 
     private File configFile = new File("alexanderasbeck.conf");
     private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private final ReadConsole readConsole;
 
     public static void main(String[] args) {
         new Main(args);
@@ -30,6 +31,7 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
+        this.readConsole = new ReadConsole();
         logStartup();
         if(args.length>0){
             inputComparison(args);
@@ -39,7 +41,7 @@ public class Main {
         }
         readConf(ReadFile.readFile(configFile));
 
-        Thread consoleRead = new Thread(new ReadConsole());
+        Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
     }
 
