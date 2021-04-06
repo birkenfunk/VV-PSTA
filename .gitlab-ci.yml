@@ -32,4 +32,4 @@ test:
   script:
     - ls -la build/ 
     - ls -la build/reports
-    - gradle check
+    - gradle test
