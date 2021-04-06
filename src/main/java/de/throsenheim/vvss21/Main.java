@@ -17,8 +17,9 @@ import java.util.List;
  */
 public class Main {
 
-    private File configFile = new File("./alexanderasbeck.conf");
+    private File configFile = new File("alexanderasbeck.conf");
     private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private final ReadConsole readConsole;
 
     public static void main(String[] args) {
         new Main(args);
@@ -30,6 +31,7 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
+        this.readConsole = new ReadConsole();
         logStartup();
         if(args.length>0){
             inputComparison(args);
@@ -38,7 +40,8 @@ public class Main {
             WriteFiles.getWriteFiles().createConfig(configFile);
         }
         readConf(ReadFile.readFile(configFile));
-        Thread consoleRead = new Thread(new ReadConsole());
+
+        Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
     }
 
@@ -65,10 +68,10 @@ public class Main {
      * Reads out the Config out of a List
      * @param list List with the config
      */
-    private void readConf(List<String> list){
+    private boolean readConf(List<String> list){
         if(list.isEmpty()){
-            LOGGER.debug("No config received");
-            return;
+            LOGGER.info("No config received");
+            return false;
         }
         String confStart = "This is the config file for alexanderasbeck";
         if(list.remove(0).equals(confStart)){
@@ -82,6 +85,7 @@ public class Main {
             }
         }
         list.add(0,confStart);
+        return true;
     }
 
     /**
@@ -90,7 +94,7 @@ public class Main {
      */
     private void inputComparison(String[] input){
         for (int i = 0; i < input.length; i++) {
-            if(input[i].equalsIgnoreCase("--config")){
+            if(input[i].equalsIgnoreCase("--conf")){
                 if(input.length >= i+2 && input[i+1].endsWith(".conf")){
                     configFile = new File(input[i+1]);
                     if(!configFile.exists()){
@@ -108,6 +112,9 @@ public class Main {
         }
     }
 
+    public File getConfigFile() {
+        return configFile;
+    }
 
     /**
      * Class that reads from input from the Console
@@ -138,7 +145,6 @@ public class Main {
                     commandComparison(line);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 LOGGER.error(e);
             }
         }

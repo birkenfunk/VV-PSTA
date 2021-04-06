@@ -47,7 +47,6 @@ public class ReadFile {
             debugMsg = "File reading was successful";
             LOGGER.debug(debugMsg);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             LOGGER.error(e);
         }
         return out;
