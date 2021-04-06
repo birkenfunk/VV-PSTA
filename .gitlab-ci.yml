@@ -30,6 +30,7 @@ sonarqube:
 test:
   stage: test
   script:
+    - ls -la
     - ls -la build/ 
     - ls -la build/reports
     - gradle test
