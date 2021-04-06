@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id "org.sonarqube" version "3.0"
+    id 'jacoco'
 }
 
 group 'de.throsenheim'
@@ -9,6 +10,16 @@ version '1.0-SNAPSHOT'
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class' : 'de.throsenheim.vvss21.Main'
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -28,4 +39,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
 }
