@@ -2,7 +2,7 @@ image: gradle:6.8.3-jdk11
 
 stages:
   - build
- # - sonarqube
+  - sonarqube
   - test
 
 cache:
@@ -21,9 +21,11 @@ build:
       - ./build/libs/*.jar
     expire_in: 1 week
 
-#sonarqube:
-#  stage: sonarqube
-#  script: ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://birkenfunk.de:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
+sonarqube:
+  stage: sonarqube
+  tags: 
+    - sonar
+  script: ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
 
 test:
   stage: test
