@@ -48,7 +48,15 @@ class Connector implements Runnable{
                 toClient.println("Echo: " + line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
+        }
+    }
+
+    public void stop(){
+        try {
+            client.close();
+        } catch (IOException e) {
+            LOGGER.error(e);
         }
     }
 }
