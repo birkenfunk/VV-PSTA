@@ -1,2 +1,54 @@
-package de.throsenheim.vvss21.tcpserver;public class Connector {
+package de.throsenheim.vvss21.tcpserver;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.util.Scanner;
+
+class Connector implements Runnable{
+
+    private Socket client;
+    private static final Logger LOGGER = LogManager.getLogger(Connector.class);
+
+    public Connector(Socket client) {
+        this.client = client;
+    }
+
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+    @Override
+    public void run() {
+        try {
+            InputStream fromClientStream = client.getInputStream();
+            Scanner fromClient = new Scanner(fromClientStream);
+            OutputStream toClientStream = client.getOutputStream();
+            PrintStream toClient = new PrintStream(toClientStream);
+            toClient.println("Connection successful");
+            while (fromClient.hasNext()){
+                String line = fromClient.nextLine();
+                if(line.equalsIgnoreCase("exit")){
+                    client.close();
+                    break;
+                }
+                LOGGER.info(line);
+                toClient.println("Echo: " + line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
