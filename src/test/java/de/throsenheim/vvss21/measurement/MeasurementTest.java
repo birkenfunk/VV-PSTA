@@ -40,7 +40,7 @@ class MeasurementTest {
     void fromJson() {
         measurement.toJson(file);
         List<Measurement> newMes = Measurement.fromJson(file);
-        assertEquals(newMes.size(),1);
+        assertEquals(1, newMes.size());
         assertEquals(compare , newMes.get(0).toJson());
     }
 
@@ -57,7 +57,7 @@ class MeasurementTest {
         measurement.toJson(file);
         assertTrue(file.exists());
         List<Measurement> newMes = Measurement.fromJson(file);
-        assertEquals(newMes.size(),1);
+        assertEquals(1 , newMes.size());
         assertEquals("{\"unit\":null,\"type\":null,\"value\":0,\"timestamp\":null}",newMes.get(0).toJson());
     }
 }
