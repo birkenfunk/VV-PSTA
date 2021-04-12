@@ -26,7 +26,7 @@ sonarqube:
   tags: 
     - sonar
   script:
-    - gradle test
+    - ./gradlew test
     - ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
 
 test:
