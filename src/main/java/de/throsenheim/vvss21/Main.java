@@ -2,6 +2,7 @@ package de.throsenheim.vvss21;
 
 import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
+import de.throsenheim.vvss21.tcpserver.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public class Main {
 
     private File configFile = new File("alexanderasbeck.conf");
-    private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private final ReadConsole readConsole;
 
     public static void main(String[] args) {
@@ -43,6 +44,9 @@ public class Main {
 
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
+        Server server = Server.getServerSocket();
+        Thread serverthread = new Thread(server);
+        serverthread.start();
     }
 
     /**
@@ -156,8 +160,8 @@ public class Main {
         private void commandComparison(String command){
             if(command.equalsIgnoreCase("exit")){
                 read = false;
+                Server.stop();
                 LOGGER.info("Stopped Program");
-                return;
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){
