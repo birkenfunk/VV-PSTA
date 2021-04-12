@@ -17,7 +17,7 @@ import java.util.List;
 public class WriteFiles {
 
     private static final WriteFiles writeFiles = new WriteFiles();
-    private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger(WriteFiles.class);
     private WriteFiles() {
     }
 
