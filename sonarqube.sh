@@ -1,0 +1,1 @@
+./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://birkenfunk.de:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
