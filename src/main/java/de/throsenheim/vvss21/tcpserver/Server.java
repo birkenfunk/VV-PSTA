@@ -88,7 +88,7 @@ public class Server implements Runnable{
             try {
                 SERVERTHREAD.start();
             }catch (Exception e){
-                e.printStackTrace();
+                LOGGER.error(e);
             }
         }
     }
