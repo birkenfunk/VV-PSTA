@@ -84,22 +84,25 @@ public class Measurement implements Jsonable {
         List<Measurement> res = new LinkedList<>();
         List<String> data = ReadFile.readFile(file);
         while (!data.isEmpty()) {
-            int value;
-            Unit unit;
-            Timestamp timestamp;
-            Type type;
-            String line = data.remove(0);
-            line=line.replaceAll("[\"{}]","");
-            String[] splitedline = line.split("[,:]");
-            value = searchValue(splitedline);
-            unit = searchUnit(splitedline);
-            type = searchType(splitedline);
-            timestamp = searchTimestamp(splitedline);
-            res.add(new Measurement(value,unit,type,timestamp));
+            res.add(fromJson(data.remove(0)));
             String debugString = res.get(res.size()-1).toString();
             LOGGER.debug(debugString);
         }
         return res;
+    }
+
+    public static Measurement fromJson(String line){
+        int value;
+        Unit unit;
+        Timestamp timestamp;
+        Type type;
+        line=line.replaceAll("[\"{}]","");
+        String[] splitedline = line.split("[,:]");
+        value = searchValue(splitedline);
+        unit = searchUnit(splitedline);
+        type = searchType(splitedline);
+        timestamp = searchTimestamp(splitedline);
+        return new Measurement(value,unit,type,timestamp);
     }
 
     private static int searchValue(String[] data){
