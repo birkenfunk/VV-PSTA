@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.LinkedList;
 
 public class Server implements Runnable{
@@ -35,10 +36,16 @@ public class Server implements Runnable{
         try {
             setServer();
             while (run){
-                connectors.add(new Connector(serverSocket.accept()));
-                Thread connector = new Thread(connectors.getLast());
-                connector.start();
-                LOGGER.info("Connection");
+                Socket socket = serverSocket.accept();
+                if(connectors.size()<50) {
+                    connectors.add(new Connector(socket));
+                    Thread connector = new Thread(connectors.getLast());
+                    connector.start();
+                    LOGGER.info("Connection");
+                }else {
+                    socket.close();
+                    LOGGER.info("Connection Denied");
+                }
             }
         } catch (IOException e) {
             LOGGER.error(e);
