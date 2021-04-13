@@ -160,6 +160,7 @@ public class Main {
                 read = false;
                 Server.stop();
                 LOGGER.info("Stopped Program");
+                System.exit(0);
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){

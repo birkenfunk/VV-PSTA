@@ -81,7 +81,7 @@ public class Measurement implements Jsonable {
         }
         List<String> list = new LinkedList<>();
         list.add(toJson());
-        WriteFiles.writeFile(file,list,true);
+        WriteFiles.writeFile(file,list,false);
         String debugString = "Written Json to: "+ file.getAbsolutePath();
         LOGGER.debug(debugString);
     }

@@ -1,13 +1,14 @@
 package de.throsenheim.vvss21.tcpserver;
 
+import de.throsenheim.vvss21.measurement.Measurement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 class Connector implements Runnable{
@@ -45,7 +46,10 @@ class Connector implements Runnable{
                     break;
                 }
                 LOGGER.info(line);
-                toClient.println("Echo: " + line);
+                Measurement  mes = Measurement.fromJson(line);
+                String fileLocation = LocalDateTime.now() + ".json";
+                mes.toJson(new File(fileLocation));
+                toClient.println("Data written.");
             }
             Server.removeConnector(this);
         } catch (IOException e) {
