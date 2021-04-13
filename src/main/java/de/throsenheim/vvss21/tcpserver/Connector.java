@@ -46,10 +46,7 @@ class Connector implements Runnable{
                     break;
                 }
                 LOGGER.info(line);
-                Measurement  mes = Measurement.fromJson(line);
-                String fileLocation = LocalDateTime.now() + ".json";
-                mes.toJson(new File(fileLocation));
-                toClient.println("Data written.");
+
             }
             Server.removeConnector(this);
         } catch (IOException e) {
