@@ -92,6 +92,9 @@ public class Measurement implements Jsonable {
      * @return List off Measurement
      */
     public static List<Measurement> fromJson(File file){
+        if (!file.getName().endsWith(".json")){
+            throw new IllegalArgumentException("File has to be a .json file!");
+        }
         List<Measurement> res = new LinkedList<>();
         List<String> data = ReadFile.readFile(file);
         while (!data.isEmpty()) {
