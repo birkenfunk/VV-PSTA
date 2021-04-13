@@ -14,7 +14,6 @@ public class Server implements Runnable{
 
     private static final int PORT = 1024;
     private static boolean run = true;
-    private static Server server;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();
     private final ExecutorService executer = Executors.newFixedThreadPool(50);
