@@ -44,9 +44,7 @@ public class Main {
 
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
-        Server server = Server.getServer();
-        Thread serverthread = new Thread(server);
-        serverthread.start();
+        Server.startServer();
     }
 
     /**

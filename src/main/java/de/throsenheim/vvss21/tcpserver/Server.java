@@ -19,6 +19,7 @@ public class Server implements Runnable{
     private static final LinkedList<Connector> connectors = new LinkedList<>();
     private final ExecutorService executer = Executors.newFixedThreadPool(50);
     private static ServerSocket serverSocket;
+    private static final Thread SERVERTHREAD = new Thread(new Server());
 
     private Server() {
     }
@@ -56,7 +57,7 @@ public class Server implements Runnable{
 
     }
 
-    public boolean removeConnector(Connector connector){
+    public static boolean removeConnector(Connector connector){
         return connectors.remove(connector);
     }
 
@@ -82,10 +83,13 @@ public class Server implements Runnable{
         }
     }
 
-    public static Server getServer() {
-        if(server == null){
-            server = new Server();
+    public static void startServer() {
+        if(!SERVERTHREAD.isAlive()){
+            try {
+                SERVERTHREAD.start();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
-        return server;
     }
 }
