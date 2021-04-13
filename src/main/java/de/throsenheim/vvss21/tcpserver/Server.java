@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server implements Runnable{
 
@@ -15,6 +17,7 @@ public class Server implements Runnable{
     private static Server server;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();
+    private final ExecutorService executer = Executors.newFixedThreadPool(50);
     private static ServerSocket serverSocket;
 
     private Server() {
@@ -37,15 +40,9 @@ public class Server implements Runnable{
             setServerSocket();
             while (run){
                 Socket socket = serverSocket.accept();
-                if(connectors.size()<50) {
-                    connectors.add(new Connector(socket));
-                    Thread connector = new Thread(connectors.getLast());
-                    connector.start();
-                    LOGGER.info("Connection");
-                }else {
-                    socket.close();
-                    LOGGER.info("Connection Denied");
-                }
+                connectors.add(new Connector(socket));
+                executer.execute(connectors.getLast());
+                LOGGER.info("Connection");
             }
         } catch (IOException e) {
             LOGGER.error(e);
@@ -59,11 +56,21 @@ public class Server implements Runnable{
 
     }
 
-    private static void setServerSocket() throws IOException {
-        serverSocket = new ServerSocket(PORT);
+    public boolean removeConnector(Connector connector){
+        return connectors.remove(connector);
     }
 
+    private static void setServerSocket() throws IOException {
+        if(serverSocket == null || serverSocket.isClosed()){
+            serverSocket = new ServerSocket(PORT);
+        }
+    }
+
+
     public static void stop(){
+        if(serverSocket == null || serverSocket.isClosed()){
+            return;
+        }
         run = false;
         try {
             serverSocket.close();
@@ -75,8 +82,8 @@ public class Server implements Runnable{
         }
     }
 
-    public static Server getServerSocket() {
-        if(serverSocket == null){
+    public static Server getServer() {
+        if(server == null){
             server = new Server();
         }
         return server;
