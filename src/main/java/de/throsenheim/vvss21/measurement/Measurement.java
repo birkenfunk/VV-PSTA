@@ -1,16 +1,12 @@
 package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Measurement{
 
-
-    private static final Logger LOGGER = LogManager.getLogger(Measurement.class);
     private int value;
     private Unit unit;
     private Type type;
