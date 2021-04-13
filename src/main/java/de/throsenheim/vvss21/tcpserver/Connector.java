@@ -47,6 +47,7 @@ class Connector implements Runnable{
                 LOGGER.info(line);
                 toClient.println("Echo: " + line);
             }
+            Server.getServer().removeConnector(this);
         } catch (IOException e) {
             LOGGER.error(e);
         }
