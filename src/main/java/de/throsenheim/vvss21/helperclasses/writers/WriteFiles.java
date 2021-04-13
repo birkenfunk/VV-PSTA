@@ -34,7 +34,7 @@ public class WriteFiles {
         }
     }
 
-    public boolean writeFile(File file, List<String> content, boolean overwrite){
+    public synchronized boolean writeFile(File file, List<String> content, boolean overwrite){
         String debugMsg;
         if(file.exists() && !overwrite){
             debugMsg = "File already exists and overwrite is off";
