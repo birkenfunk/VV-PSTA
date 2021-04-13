@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.2.0
+ * @version 1.3.1
  */
 public class Main {
 
@@ -34,7 +34,7 @@ public class Main {
     public Main(String[] args) {
         this.readConsole = new ReadConsole();
         logStartup();
-        if(args.length>0){
+        if(args!= null && args.length>0){
             inputComparison(args);
         }
         if(!configFile.exists()){
@@ -44,7 +44,7 @@ public class Main {
 
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
-        Server server = Server.getServerSocket();
+        Server server = Server.getServer();
         Thread serverthread = new Thread(server);
         serverthread.start();
     }
