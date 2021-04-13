@@ -32,7 +32,6 @@ public class Measurement implements Jsonable {
 
     /**
      * Serialize to a JSON formatted string.
-     *
      * @return a string, formatted in JSON, that represents the Jsonable.
      */
     @Override
@@ -72,36 +71,64 @@ public class Measurement implements Jsonable {
         throw new IOException("Method out of Order use toJson(File file) instead");
     }
 
+    /**
+     * Writes the params to a file witch is declared
+     * @param file Where to write the file has to be a .json file
+     */
     public void toJson(File file){
+        if (!file.getName().endsWith(".json")){
+            throw new IllegalArgumentException("File has to be a .json file!");
+        }
         List<String> list = new LinkedList<>();
         list.add(toJson());
-        WriteFiles.getWriteFiles().writeFile(file,list,true);
+        WriteFiles.writeFile(file,list,false);
         String debugString = "Written Json to: "+ file.getAbsolutePath();
         LOGGER.debug(debugString);
     }
 
+    /**
+     * Gets all data from a file and translates into {@link Measurement} Objects
+     * @param file Where to get the data
+     * @return List off Measurement
+     */
     public static List<Measurement> fromJson(File file){
+        if (!file.getName().endsWith(".json")){
+            throw new IllegalArgumentException("File has to be a .json file!");
+        }
         List<Measurement> res = new LinkedList<>();
         List<String> data = ReadFile.readFile(file);
         while (!data.isEmpty()) {
-            int value;
-            Unit unit;
-            Timestamp timestamp;
-            Type type;
-            String line = data.remove(0);
-            line=line.replaceAll("[\"{}]","");
-            String[] splitedline = line.split("[,:]");
-            value = searchValue(splitedline);
-            unit = searchUnit(splitedline);
-            type = searchType(splitedline);
-            timestamp = searchTimestamp(splitedline);
-            res.add(new Measurement(value,unit,type,timestamp));
+            res.add(fromJson(data.remove(0)));
             String debugString = res.get(res.size()-1).toString();
             LOGGER.debug(debugString);
         }
         return res;
     }
 
+    /**
+     * Translates a String to a {@link Measurement} Object
+     * @param line Sting with the data
+     * @return Measurement Object with the data of the Sting
+     */
+    public static Measurement fromJson(String line){
+        int value;
+        Unit unit;
+        Timestamp timestamp;
+        Type type;
+        line=line.replaceAll("[\"{}]","");
+        String[] splitedline = line.split("[,:]");
+        value = searchValue(splitedline);
+        unit = searchUnit(splitedline);
+        type = searchType(splitedline);
+        timestamp = searchTimestamp(splitedline);
+        return new Measurement(value,unit,type,timestamp);
+    }
+
+    /**
+     * Gets the value of a sting Array
+     * @param data the data of a json string
+     * @return value part of the json sting
+     */
     private static int searchValue(String[] data){
         for (int i = 0; i < data.length; i++) {
             if(data[i].equals("value") && data.length>i+1){
@@ -111,6 +138,11 @@ public class Measurement implements Jsonable {
         return Integer.MIN_VALUE;
     }
 
+    /**
+     * Gets the {@link Unit} of a sting Array
+     * @param data the data of a json string
+     * @return Unit part of the json sting
+     */
     private static Unit searchUnit(String[] data){
         for (int i = 0; i < data.length; i++) {
             if(data[i].equals("unit") && data.length>i+1 && !data[i+1].equals("null")){
@@ -120,6 +152,11 @@ public class Measurement implements Jsonable {
         return null;
     }
 
+    /**
+     * Gets the {@link Type} of a sting Array
+     * @param data the data of a json string
+     * @return Type part of the json sting
+     */
     private static Type searchType(String[] data){
         for (int i = 0; i < data.length; i++) {
             if(data[i].equals("type") && data.length>i+1 && !data[i+1].equals("null")){
@@ -129,6 +166,11 @@ public class Measurement implements Jsonable {
         return null;
     }
 
+    /**
+     * Gets the {@link Timestamp} of a sting Array
+     * @param data the data of a json string
+     * @return Timestamp part of the json sting
+     */
     private static Timestamp searchTimestamp(String[] data){
         for (int i = 0; i < data.length; i++) {
             if(data[i].equals("timestamp") && data.length>i+1 && !data[i+1].equals("null")){

@@ -2,6 +2,7 @@ package de.throsenheim.vvss21;
 
 import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
+import de.throsenheim.vvss21.tcpserver.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,12 +14,12 @@ import java.util.List;
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.2.0
+ * @version 1.3.1
  */
 public class Main {
 
     private File configFile = new File("alexanderasbeck.conf");
-    private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private final ReadConsole readConsole;
 
     public static void main(String[] args) {
@@ -33,16 +34,17 @@ public class Main {
     public Main(String[] args) {
         this.readConsole = new ReadConsole();
         logStartup();
-        if(args.length>0){
+        if(args!= null && args.length>0){
             inputComparison(args);
         }
         if(!configFile.exists()){
-            WriteFiles.getWriteFiles().createConfig(configFile);
+            WriteFiles.createConfig(configFile);
         }
         readConf(ReadFile.readFile(configFile));
 
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
+        Server.startServer();
     }
 
     /**
@@ -98,7 +100,7 @@ public class Main {
                 if(input.length >= i+2 && input[i+1].endsWith(".conf")){
                     configFile = new File(input[i+1]);
                     if(!configFile.exists()){
-                        WriteFiles.getWriteFiles().createConfig(configFile);
+                        WriteFiles.createConfig(configFile);
                     }
                 }else {
                     String debugMsg = "Use --conf [filepath]\n" +
@@ -156,15 +158,16 @@ public class Main {
         private void commandComparison(String command){
             if(command.equalsIgnoreCase("exit")){
                 read = false;
+                Server.stop();
                 LOGGER.info("Stopped Program");
-                return;
+                System.exit(0);
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){
                 if(splittedCommand.length == 2 && splittedCommand[1].endsWith(".conf")){
                     configFile = new File(splittedCommand[1]);
                     if(!configFile.exists()){
-                        WriteFiles.getWriteFiles().createConfig(configFile);
+                        WriteFiles.createConfig(configFile);
                     }
                 }else {
                     LOGGER.info("Use Command like config [filepath]\n Note that you have to enter a .conf file");

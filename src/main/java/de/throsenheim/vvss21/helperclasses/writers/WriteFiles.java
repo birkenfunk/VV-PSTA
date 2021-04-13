@@ -16,12 +16,11 @@ import java.util.List;
  */
 public class WriteFiles {
 
-    private static final WriteFiles writeFiles = new WriteFiles();
-    private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger(WriteFiles.class);
     private WriteFiles() {
     }
 
-    public synchronized void createConfig(File file){
+    public static synchronized void createConfig(File file){
         String debugMsg = "Creating new File at " + file.getAbsolutePath();
         LOGGER.info(debugMsg);
         try (FileWriter writer = new FileWriter(file)){
@@ -34,14 +33,9 @@ public class WriteFiles {
         }
     }
 
-    public boolean writeFile(File file, List<String> content, boolean overwrite){
+    public static synchronized boolean writeFile(File file, List<String> content, boolean overwrite){
         String debugMsg;
-        if(file.exists() && !overwrite){
-            debugMsg = "File already exists and overwrite is off";
-            LOGGER.debug(debugMsg);
-            return false;
-        }
-        try (FileWriter writer = new FileWriter(file)){
+        try (FileWriter writer = new FileWriter(file,!overwrite)){
             for (String s : content) {
                 writer.write(s + "\n");
             }
@@ -52,9 +46,5 @@ public class WriteFiles {
             return false;
         }
         return true;
-    }
-
-    public static WriteFiles getWriteFiles() {
-        return writeFiles;
     }
 }

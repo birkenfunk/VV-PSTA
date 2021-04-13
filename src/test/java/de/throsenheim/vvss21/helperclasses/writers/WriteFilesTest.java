@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WriteFilesTest {
 
-    WriteFiles writeFiles = WriteFiles.getWriteFiles();
+
     File file= new File("./KRwaG3kax9w2nHedwfTvgdYHwggAnJbYChDKaqnBQJsqi5yNDduugbUvCh5XzouYKrXdLs7JEQZV5syZxwopHwj74iE2NLUonsCnWPCd4tMvfBqdpYdf6yF7WjpQWNMR.conf");
 
     @Test
     void createConfig() {
-        writeFiles.createConfig(file);
+        WriteFiles.createConfig(file);
         assertTrue(file.exists());
         List<String> list = new LinkedList<>();
         list.add("This is the config file for alexanderasbeck");
@@ -34,7 +34,7 @@ class WriteFilesTest {
         list.add("This is a random text.");
         list.add("It belongs to a test.");
         list.add("If this file still exists you can delete it!");
-        assertTrue(writeFiles.writeFile(file, list, true));
+        assertTrue(WriteFiles.writeFile(file, list, true));
         assertEquals(list, ReadFile.readFile(file));
     }
 
@@ -49,7 +49,11 @@ class WriteFilesTest {
         list.add("This is a random text.");
         list.add("It belongs to a test.");
         list.add("If this file still exists you can delete it!");
-        assertFalse(writeFiles.writeFile(file, list, false));
-        assertEquals(new LinkedList<String>(), ReadFile.readFile(file));
+        assertTrue(WriteFiles.writeFile(file, list, true));
+        list.add("New Line");
+        List<String> list1 = new LinkedList<>();
+        list1.add("New Line");
+        assertTrue(WriteFiles.writeFile(file, list1,false));
+        assertEquals(list, ReadFile.readFile(file));
     }
 }
