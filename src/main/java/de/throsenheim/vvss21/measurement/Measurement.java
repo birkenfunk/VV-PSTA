@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 public class Measurement{
 
@@ -54,5 +55,18 @@ public class Measurement{
                 ", type=" + type +
                 ", timestamp=" + timestamp +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Measurement that = (Measurement) o;
+        return value == that.value && unit == that.unit && type == that.type && timestamp.equals(that.timestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, unit, type, timestamp);
     }
 }
