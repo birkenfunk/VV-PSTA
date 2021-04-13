@@ -34,7 +34,7 @@ public class Server implements Runnable{
     @Override
     public void run() {
         try {
-            setServer();
+            setServerSocket();
             while (run){
                 Socket socket = serverSocket.accept();
                 if(connectors.size()<50) {
@@ -59,7 +59,7 @@ public class Server implements Runnable{
 
     }
 
-    private static void setServer() throws IOException {
+    private static void setServerSocket() throws IOException {
         serverSocket = new ServerSocket(PORT);
     }
 
