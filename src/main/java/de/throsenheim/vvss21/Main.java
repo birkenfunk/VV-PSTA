@@ -38,7 +38,7 @@ public class Main {
             inputComparison(args);
         }
         if(!configFile.exists()){
-            WriteFiles.getWriteFiles().createConfig(configFile);
+            WriteFiles.createConfig(configFile);
         }
         readConf(ReadFile.readFile(configFile));
 
@@ -102,7 +102,7 @@ public class Main {
                 if(input.length >= i+2 && input[i+1].endsWith(".conf")){
                     configFile = new File(input[i+1]);
                     if(!configFile.exists()){
-                        WriteFiles.getWriteFiles().createConfig(configFile);
+                        WriteFiles.createConfig(configFile);
                     }
                 }else {
                     String debugMsg = "Use --conf [filepath]\n" +
@@ -168,7 +168,7 @@ public class Main {
                 if(splittedCommand.length == 2 && splittedCommand[1].endsWith(".conf")){
                     configFile = new File(splittedCommand[1]);
                     if(!configFile.exists()){
-                        WriteFiles.getWriteFiles().createConfig(configFile);
+                        WriteFiles.createConfig(configFile);
                     }
                 }else {
                     LOGGER.info("Use Command like config [filepath]\n Note that you have to enter a .conf file");

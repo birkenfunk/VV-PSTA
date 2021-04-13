@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ReadFileTest {
 
-    WriteFiles writeFiles = WriteFiles.getWriteFiles();
+
     File file= new File("./KRwaG3kax9w2nHedwfTvgdYHwggAnJbYChDKaqnBQJsqi5yNDduugbUvCh5XzouYKrXdLs7JEQZV5syZxwopHwj74iE2NLUonsCnWPCd4tMvfBqdpYdf6yF7WjpQWNMR.conf");
 
     @Test
@@ -20,7 +20,7 @@ class ReadFileTest {
         list.add("This is a random text.");
         list.add("It belongs to a test.");
         list.add("If this file still exists you can delete it!");
-        writeFiles.writeFile(file, list, true);
+        WriteFiles.writeFile(file, list, true);
         assertEquals(list, ReadFile.readFile(file));
     }
 
