@@ -16,7 +16,6 @@ class ServerTest {
 
     @Test
     void run() throws Exception {
-        Server.startServer();
         Socket socket = new Socket("localhost", 1024);
         InputStream fromClientStream = socket.getInputStream();
         Scanner fromClient = new Scanner(fromClientStream);
