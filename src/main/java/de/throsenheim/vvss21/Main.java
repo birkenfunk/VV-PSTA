@@ -1,14 +1,19 @@
 package de.throsenheim.vvss21;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import de.throsenheim.vvss21.helperclasses.json.Json;
 import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
+import de.throsenheim.vvss21.measurement.MeasurementList;
 import de.throsenheim.vvss21.tcpserver.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,6 +26,8 @@ public class Main {
     private File configFile = new File("alexanderasbeck.conf");
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private final ReadConsole readConsole;
+    private MeasurementList measurementList;
+    private static String jsonLocation = "data.json";
 
     public static void main(String[] args) {
         new Main(args);
@@ -41,7 +48,16 @@ public class Main {
             WriteFiles.createConfig(configFile);
         }
         readConf(ReadFile.readFile(configFile));
-
+        String jsonString = ReadFile.readFileToString(new File(jsonLocation));
+        try {
+            JsonNode node = Json.parse(jsonString);
+            measurementList = Json.fromJson(node, MeasurementList.class);
+        } catch (IOException e) {
+            LOGGER.error(e);
+            measurementList = new MeasurementList(new LinkedList<>());
+        }
+        Thread measurementSave  = new Thread(measurementList);
+        measurementSave.start();
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
         Server.startServer();
@@ -78,10 +94,9 @@ public class Main {
         String confStart = "This is the config file for alexanderasbeck";
         if(list.remove(0).equals(confStart)){
             for (String s: list) {
-                //String[] splittedConf = s.split(" "); Used Later
-                if(s.startsWith("JSON_Location")){
-                    s = "JSON is in: " + s;
-                    LOGGER.info(s);
+                String[] splittedConf = s.split("=");
+                if(s.startsWith("JSON_Location") && splittedConf.length>2){
+                    jsonLocation = splittedConf[1];
                 }
                 //here can other config parameter be sorted out
             }
@@ -116,6 +131,10 @@ public class Main {
 
     public File getConfigFile() {
         return configFile;
+    }
+
+    public static String getJsonLocation() {
+        return jsonLocation;
     }
 
     /**
@@ -158,9 +177,10 @@ public class Main {
         private void commandComparison(String command){
             if(command.equalsIgnoreCase("exit")){
                 read = false;
+                measurementList.stop();
                 Server.stop();
                 LOGGER.info("Stopped Program");
-                System.exit(0);
+                //System.exit(0);
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){
