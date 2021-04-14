@@ -86,7 +86,7 @@ public class Main {
      * Reads out the Config out of a List
      * @param list List with the config
      */
-    private boolean readConf(List<String> list){
+    private static boolean readConf(List<String> list){
         if(list.isEmpty()){
             LOGGER.info("No config received");
             return false;
