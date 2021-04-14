@@ -5,11 +5,7 @@ stages:
   - test
   - sonarqube
 
-cache:
-  paths:
-    - .gradle/wrapper
-    - .gradle/caches
-    - build
+
 
 build:
   stage: build
