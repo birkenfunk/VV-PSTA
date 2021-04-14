@@ -60,7 +60,6 @@ public class Main {
         measurementSave.start();
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
-        Server.startServer();
     }
 
     /**

@@ -18,7 +18,7 @@ public class Server implements Runnable{
     private static final LinkedList<Connector> connectors = new LinkedList<>();
     private final ExecutorService executer = Executors.newFixedThreadPool(50);
     private static ServerSocket serverSocket;
-    private static final Thread SERVERTHREAD = new Thread(new Server());
+    private static final Thread SERVERTHREAD = start();
 
     private Server() {
     }
@@ -82,13 +82,9 @@ public class Server implements Runnable{
         }
     }
 
-    public static void startServer() {
-        if(!SERVERTHREAD.isAlive()){
-            try {
-                SERVERTHREAD.start();
-            }catch (Exception e){
-                LOGGER.error(e);
-            }
-        }
+    private static Thread start(){
+        Thread newThread = new Thread(new Server());
+        newThread.start();
+        return newThread;
     }
 }
