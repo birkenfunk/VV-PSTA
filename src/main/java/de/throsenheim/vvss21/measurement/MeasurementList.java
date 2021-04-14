@@ -83,12 +83,14 @@ public class MeasurementList implements Runnable{
                     measurements.add(measurement);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error(e);
+                Thread.currentThread().interrupt();
             }
         }
     }
 
     public void stop(){
+        saveToJsonFile();
         run = false;
     }
 
