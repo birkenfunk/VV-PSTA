@@ -180,7 +180,7 @@ public class Main {
                 measurementList.stop();
                 Server.stop();
                 LOGGER.info("Stopped Program");
-                //System.exit(0);
+                return;
             }
             String[] splittedCommand = command.split(" ");
             if(splittedCommand[0].equalsIgnoreCase("config")){
