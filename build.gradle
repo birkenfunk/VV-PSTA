@@ -34,7 +34,7 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j-api:2.14.1'
     compile 'org.apache.logging.log4j:log4j-core:2.14.1'
 
-    implementation 'com.github.cliftonlabs:json-simple:3.1.0'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
 }
 
 jacoco{

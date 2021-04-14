@@ -1,25 +1,33 @@
 package de.throsenheim.vvss21;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import de.throsenheim.vvss21.helperclasses.json.Json;
 import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
+import de.throsenheim.vvss21.measurement.MeasurementList;
+import de.throsenheim.vvss21.tcpserver.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.2.0
+ * @version 1.3.1
  */
 public class Main {
 
     private File configFile = new File("alexanderasbeck.conf");
-    private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private final ReadConsole readConsole;
+    private MeasurementList measurementList;
+    private static String jsonLocation = "data.json";
 
     public static void main(String[] args) {
         new Main(args);
@@ -33,14 +41,23 @@ public class Main {
     public Main(String[] args) {
         this.readConsole = new ReadConsole();
         logStartup();
-        if(args.length>0){
+        if(args!= null && args.length>0){
             inputComparison(args);
         }
         if(!configFile.exists()){
-            WriteFiles.getWriteFiles().createConfig(configFile);
+            WriteFiles.createConfig(configFile);
         }
         readConf(ReadFile.readFile(configFile));
-
+        String jsonString = ReadFile.readFileToString(new File(jsonLocation));
+        try {
+            JsonNode node = Json.parse(jsonString);
+            measurementList = Json.fromJson(node, MeasurementList.class);
+        } catch (IOException e) {
+            LOGGER.error(e);
+            measurementList = new MeasurementList(new LinkedList<>());
+        }
+        Thread measurementSave  = new Thread(measurementList);
+        measurementSave.start();
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
     }
@@ -68,7 +85,7 @@ public class Main {
      * Reads out the Config out of a List
      * @param list List with the config
      */
-    private boolean readConf(List<String> list){
+    private static boolean readConf(List<String> list){
         if(list.isEmpty()){
             LOGGER.info("No config received");
             return false;
@@ -76,10 +93,9 @@ public class Main {
         String confStart = "This is the config file for alexanderasbeck";
         if(list.remove(0).equals(confStart)){
             for (String s: list) {
-                //String[] splittedConf = s.split(" "); Used Later
-                if(s.startsWith("JSON_Location")){
-                    s = "JSON is in: " + s;
-                    LOGGER.info(s);
+                String[] splittedConf = s.split("=");
+                if(s.startsWith("JSON_Location") && splittedConf.length>2){
+                    jsonLocation = splittedConf[1];
                 }
                 //here can other config parameter be sorted out
             }
@@ -98,7 +114,7 @@ public class Main {
                 if(input.length >= i+2 && input[i+1].endsWith(".conf")){
                     configFile = new File(input[i+1]);
                     if(!configFile.exists()){
-                        WriteFiles.getWriteFiles().createConfig(configFile);
+                        WriteFiles.createConfig(configFile);
                     }
                 }else {
                     String debugMsg = "Use --conf [filepath]\n" +
@@ -114,6 +130,10 @@ public class Main {
 
     public File getConfigFile() {
         return configFile;
+    }
+
+    public static String getJsonLocation() {
+        return jsonLocation;
     }
 
     /**
@@ -156,6 +176,8 @@ public class Main {
         private void commandComparison(String command){
             if(command.equalsIgnoreCase("exit")){
                 read = false;
+                measurementList.stop();
+                Server.stop();
                 LOGGER.info("Stopped Program");
                 return;
             }
@@ -164,7 +186,7 @@ public class Main {
                 if(splittedCommand.length == 2 && splittedCommand[1].endsWith(".conf")){
                     configFile = new File(splittedCommand[1]);
                     if(!configFile.exists()){
-                        WriteFiles.getWriteFiles().createConfig(configFile);
+                        WriteFiles.createConfig(configFile);
                     }
                 }else {
                     LOGGER.info("Use Command like config [filepath]\n Note that you have to enter a .conf file");

@@ -3,13 +3,9 @@ image: gradle:6.8.3-jdk11
 stages:
   - build
   - test
-  - sonarqube
+  #- sonarqube
 
-cache:
-  paths:
-    - .gradle/wrapper
-    - .gradle/caches
-    - build
+
 
 build:
   stage: build
@@ -21,16 +17,16 @@ build:
       - ./build/libs/*.jar
     expire_in: 1 week
 
-sonarqube:
-  stage: sonarqube
-  tags: 
-    - sonar
-  script: ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
+#sonarqube:
+#  stage: sonarqube
+#  tags:
+#    - sonar
+#  script:
+#    - ./gradlew test
+#    - ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
 
 test:
   stage: test
   script:
     - ls -la
-    - ls -la build/ 
-    - ls -la build/reports
     - gradle test

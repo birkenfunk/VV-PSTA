@@ -73,6 +73,11 @@ class MainTest {
         Method method = readConsole.getClass().getDeclaredMethod("commandComparison", String.class);
         method.setAccessible(true);
         method.invoke(readConsole,"config test.conf");
+        field = Main.ReadConsole.class.getDeclaredField("read");
+        field.setAccessible(true);
+        assertTrue((Boolean) field.get(readConsole));
+        method.invoke(readConsole, "exit");
+        assertFalse((Boolean) field.get(readConsole));
         assertEquals(new File("test.conf"),main.getConfigFile());
     }
 }
