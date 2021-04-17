@@ -1,31 +1,35 @@
 package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.helperclasses.json.Json;
 import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MeasurementListTest {
 
-    MeasurementList measurementList = new MeasurementList(new LinkedList<>());
+    MeasurementList measurementList = Main.getMeasurementList();
 
     @Test
     void add() throws InterruptedException {
         Thread thread = new Thread(measurementList);
         thread.start();
-        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE", "2021-04-03 17:48:01.0");
+        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE", Timestamp.valueOf(LocalDateTime.now()).toString());
         measurementList.add(measurement);
         Thread.sleep(1000);
         assertTrue(measurementList.getMeasurements().contains(measurement));
-        measurementList.getMeasurements().clear();
+        measurementList.getMeasurements().remove(measurement);
         measurementList.add(null);
-        assertTrue(measurementList.getMeasurements().isEmpty());
-        thread.stop();
+        assertFalse(measurementList.getMeasurements().contains(measurement));
+        measurementList.stop();
     }
 
     @Test
