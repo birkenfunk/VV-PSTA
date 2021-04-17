@@ -88,6 +88,7 @@ public class MeasurementList implements Runnable{
                 Thread.currentThread().interrupt();
             }
         }
+        LOGGER.debug("Remove from Blocking queue stopped");
     }
 
     public void stop(){
@@ -113,6 +114,8 @@ public class MeasurementList implements Runnable{
      */
     @Override
     public void run() {
+        run = true;
+        LOGGER.debug("Remove from Blocking queue stated");
         addToMeasurement();
     }
 }

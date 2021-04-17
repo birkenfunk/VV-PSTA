@@ -38,6 +38,7 @@ class ServerTest {
     @AfterEach
     void tearDown() {
         Server.stop();
+        Main.getMeasurementList().stop();
     }
 
     /**
@@ -67,7 +68,7 @@ class ServerTest {
         List<Measurement> measurements = measurementList.getMeasurements();
         Measurement dataTestMeasurement = Json.fromJson(node, Measurement.class);
         boolean iscontained = false;
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         for (Measurement measurement: measurements) {//Checks if the object is in the MeasurementList
             if(measurement.equals(dataTestMeasurement)){
                 iscontained = true;
