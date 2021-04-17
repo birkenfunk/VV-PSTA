@@ -1,5 +1,10 @@
 package de.throsenheim.vvss21.tcpserver;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import de.throsenheim.vvss21.Main;
+import de.throsenheim.vvss21.helperclasses.json.Json;
+import de.throsenheim.vvss21.measurement.Measurement;
+import de.throsenheim.vvss21.measurement.MeasurementList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,8 +49,10 @@ class Connector implements Runnable{
                     client.close();
                     break;
                 }
-                LOGGER.info(line);
-
+                JsonNode node = Json.parse(line);
+                MeasurementList measurementList = Main.getMeasurementList();
+                measurementList.add(Json.fromJson(node , Measurement.class));
+                toClient.println("Added: " + node.toString());
             }
             Server.removeConnector(this);
         } catch (IOException e) {
