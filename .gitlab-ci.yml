@@ -32,6 +32,7 @@ test:
     - gradle test
     - cat ./logs/log.log
   artifacts:
+    when: on_failure
     paths:
       - ./*
     expire_in: 1 week

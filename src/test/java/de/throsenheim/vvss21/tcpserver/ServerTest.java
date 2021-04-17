@@ -63,7 +63,7 @@ class ServerTest {
         List<Measurement> measurements = measurementList.getMeasurements();
         Measurement dataTestMeasurement = Json.fromJson(node, Measurement.class);
         boolean iscontained = false;
-        Thread.sleep(10000);
+        Thread.sleep(1000);
         for (Measurement measurement: measurements) {//Checks if the object is in the MeasurementList
             if(measurement.equals(dataTestMeasurement)){
                 iscontained = true;
