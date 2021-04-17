@@ -1,5 +1,7 @@
 package de.throsenheim.vvss21;
 
+import de.throsenheim.vvss21.tcpserver.Server;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,9 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
 
-    Main main;
+    private Main main;
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
+    @AfterAll
+    static void afterAll() {
+        Server.stop();
+    }
 
     @BeforeEach
     void setUp() {
