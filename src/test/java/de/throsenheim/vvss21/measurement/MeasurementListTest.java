@@ -7,10 +7,8 @@ import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
