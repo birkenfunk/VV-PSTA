@@ -47,6 +47,7 @@ class ServerTest {
     @Test
     void giveJson() throws Exception {
         LOGGER.debug("Executing Task giveJson\n\n\n");
+        Thread.sleep(1000);
         Socket socket = new Socket("localhost", 1024);
         InputStream fromClientStream = socket.getInputStream();
         Scanner fromClient = new Scanner(fromClientStream);
