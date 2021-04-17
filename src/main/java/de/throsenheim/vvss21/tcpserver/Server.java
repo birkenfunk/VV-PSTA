@@ -37,6 +37,7 @@ public class Server implements Runnable{
     @Override
     public void run() {
         try {
+            LOGGER.debug("Server listening");
             setRunTrue();
             setServerSocket();
             while (run){
