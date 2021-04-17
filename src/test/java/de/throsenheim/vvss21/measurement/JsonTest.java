@@ -2,6 +2,9 @@ package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.helperclasses.json.Json;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -12,7 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JsonTest {
 
+    private static final Logger LOGGER = LogManager.getLogger(JsonTest.class);
     private String TestCase = "{\"unit\":\"CELSIUS\",\"type\":\"TEMPERATURE\",\"value\":10,\"timestamp\":\"2021-04-03 17:48:01.0\"}";
+
+    @BeforeAll
+    static void beforeAll() {
+        LOGGER.debug("Executing Test Json\n\n\n");
+    }
 
     @Test
     void parse() throws IOException {

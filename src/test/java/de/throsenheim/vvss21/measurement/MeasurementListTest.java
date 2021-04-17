@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.helperclasses.json.Json;
 import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -14,10 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MeasurementListTest {
 
+    private static final Logger LOGGER = LogManager.getLogger(MeasurementListTest.class);
     MeasurementList measurementList = Main.getMeasurementList();
 
     @Test
     void add() throws InterruptedException {
+        LOGGER.debug("Executing Test add\n\n\n");
         Thread thread = new Thread(measurementList);
         thread.start();
         Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE", Timestamp.valueOf(LocalDateTime.now()).toString());
@@ -32,6 +36,7 @@ class MeasurementListTest {
 
     @Test
     void add2() throws Exception {
+        LOGGER.debug("Executing Test add\n\n\n");
         File file = new File("data.json");
         JsonNode node = Json.parse(ReadFile.readFileToString(file));
         measurementList = Json.fromJson(node, MeasurementList.class);

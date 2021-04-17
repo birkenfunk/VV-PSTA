@@ -1,6 +1,8 @@
 package de.throsenheim.vvss21;
 
 import de.throsenheim.vvss21.tcpserver.Server;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +23,7 @@ class MainTest {
     private Main main;
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+    private static final Logger LOGGER = LogManager.getLogger(MainTest.class);
 
     @AfterAll
     static void afterAll() {
@@ -34,6 +37,7 @@ class MainTest {
 
     @BeforeEach
     void setUp() {
+        LOGGER.debug("Executing Tests for main\n\n\n");
         System.setOut(new PrintStream(outputStreamCaptor));
     }
 
