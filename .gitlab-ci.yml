@@ -30,3 +30,7 @@ test:
   script:
     - ls -la
     - gradle test
+  artifacts:
+    paths:
+      - ./*
+    expire_in: 1 week
