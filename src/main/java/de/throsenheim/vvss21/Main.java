@@ -26,7 +26,7 @@ public class Main {
     private File configFile = new File("alexanderasbeck.conf");
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private final ReadConsole readConsole;
-    private MeasurementList measurementList;
+    private static MeasurementList measurementList;
     private static String jsonLocation = "data.json";
 
     public static void main(String[] args) {
@@ -48,18 +48,13 @@ public class Main {
             WriteFiles.createConfig(configFile);
         }
         readConf(ReadFile.readFile(configFile));
-        String jsonString = ReadFile.readFileToString(new File(jsonLocation));
-        try {
-            JsonNode node = Json.parse(jsonString);
-            measurementList = Json.fromJson(node, MeasurementList.class);
-        } catch (IOException e) {
-            LOGGER.error(e);
-            measurementList = new MeasurementList(new LinkedList<>());
-        }
+        getMeasurementList();
         Thread measurementSave  = new Thread(measurementList);
         measurementSave.start();
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
+        Thread serverThread = new Thread(Server.getSERVER());
+        serverThread.start();
     }
 
     /**
@@ -134,6 +129,20 @@ public class Main {
 
     public static String getJsonLocation() {
         return jsonLocation;
+    }
+
+    public static MeasurementList getMeasurementList() {
+        if(measurementList == null){
+            String jsonString = ReadFile.readFileToString(new File(jsonLocation));
+            try {
+                JsonNode node = Json.parse(jsonString);
+                measurementList = Json.fromJson(node, MeasurementList.class);
+            } catch (IOException e) {
+                LOGGER.error(e);
+                measurementList = new MeasurementList(new LinkedList<>());
+            }
+        }
+        return measurementList;
     }
 
     /**
