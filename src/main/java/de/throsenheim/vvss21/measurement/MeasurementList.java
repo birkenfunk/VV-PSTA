@@ -80,6 +80,7 @@ public class MeasurementList implements Runnable{
             try {
                 Measurement measurement = measurementBlockingQueue.poll(1, TimeUnit.SECONDS);
                 if (measurement != null) {
+                    LOGGER.debug("Consumed: "+ measurement);
                     measurements.add(measurement);
                 }
             } catch (InterruptedException e) {

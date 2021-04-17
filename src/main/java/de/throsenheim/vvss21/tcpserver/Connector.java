@@ -39,6 +39,7 @@ class Connector implements Runnable{
                 }
                 JsonNode node = Json.parse(line);
                 MeasurementList measurementList = Main.getMeasurementList();
+                LOGGER.debug(node.toString());
                 measurementList.add(Json.fromJson(node , Measurement.class));
                 toClient.println("Added: " + node.toString());
             }
