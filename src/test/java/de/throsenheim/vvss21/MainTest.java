@@ -24,6 +24,7 @@ class MainTest {
     @AfterAll
     static void afterAll() {
         Server.stop();
+        Main.getMeasurementList().stop();
     }
 
     @BeforeEach
