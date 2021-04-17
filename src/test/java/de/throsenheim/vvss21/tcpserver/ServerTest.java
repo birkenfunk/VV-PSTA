@@ -5,6 +5,8 @@ import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.helperclasses.json.Json;
 import de.throsenheim.vvss21.measurement.Measurement;
 import de.throsenheim.vvss21.measurement.MeasurementList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 
 import java.io.InputStream;
@@ -23,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ServerTest {
 
+    private static final Logger LOGGER = LogManager.getLogger(ServerTest.class);
     private  static Thread serverThread;
 
     @BeforeEach
@@ -42,6 +45,7 @@ class ServerTest {
      */
     @Test
     void giveJson() throws Exception {
+        LOGGER.debug("Executing Task giveJson\n\n\n");
         Socket socket = new Socket("localhost", 1024);
         InputStream fromClientStream = socket.getInputStream();
         Scanner fromClient = new Scanner(fromClientStream);
@@ -78,6 +82,7 @@ class ServerTest {
      */
     @Test
     void stop() throws  Exception{
+        LOGGER.debug("Executing Task stopServer\n\n\n");
         Socket socket = new Socket("localhost", 1024);
         InputStream fromClientStream = socket.getInputStream();
         Scanner fromClient = new Scanner(fromClientStream);
