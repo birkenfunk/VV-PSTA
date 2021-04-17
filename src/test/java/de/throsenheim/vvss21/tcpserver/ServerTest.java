@@ -1,6 +1,7 @@
 package de.throsenheim.vvss21.tcpserver;
 
 import de.throsenheim.vvss21.Main;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ServerTest {
+
+    private  static Thread serverThread;
+
+    @BeforeAll
+    static void beforeAll() {
+        Server.stop();
+        serverThread = new Thread(Server.getSERVER());
+        serverThread.start();
+    }
 
     @Test
     void run() throws Exception {
