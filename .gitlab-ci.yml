@@ -1,8 +1,8 @@
 image: gradle:6.8.3-jdk11
 
 stages:
-  - test
   - build
+  - test
   - sonarqube
 
 
@@ -30,7 +30,6 @@ test:
   script:
     - ls -la
     - gradle test
-    - cat ./logs/log.log
   artifacts:
     when: on_failure
     paths:
