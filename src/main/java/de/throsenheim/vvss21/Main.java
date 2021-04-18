@@ -133,13 +133,20 @@ public class Main {
 
     public static MeasurementList getMeasurementList() {
         if(measurementList == null){
-            String jsonString = ReadFile.readFileToString(new File(jsonLocation));
+            File jsonFile = new File(jsonLocation);
+            measurementList = new MeasurementList(new LinkedList<>());
+            if(!jsonFile.exists()){
+                return measurementList;
+            }
+            String jsonString = ReadFile.readFileToString(jsonFile);
+            if(jsonString.isEmpty()){
+                return measurementList;
+            }
             try {
                 JsonNode node = Json.parse(jsonString);
                 measurementList = Json.fromJson(node, MeasurementList.class);
             } catch (IOException e) {
                 LOGGER.error(e);
-                measurementList = new MeasurementList(new LinkedList<>());
             }
         }
         return measurementList;
