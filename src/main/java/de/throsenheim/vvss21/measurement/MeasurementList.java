@@ -92,8 +92,8 @@ public class MeasurementList implements Runnable{
     }
 
     public void stop(){
-        saveToJsonFile();
         run = false;
+        saveToJsonFile();
     }
 
     @Override
