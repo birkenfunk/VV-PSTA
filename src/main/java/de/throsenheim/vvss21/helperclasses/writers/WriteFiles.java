@@ -25,7 +25,8 @@ public class WriteFiles {
         LOGGER.info(debugMsg);
         try (FileWriter writer = new FileWriter(file)){
             writer.write("This is the config file for alexanderasbeck\n"+
-                    "Nothing yet ");
+                    "JSON_Location=data.json\n" +
+                    "Server_Port=1024");
             debugMsg = "New log file has been created";
             LOGGER.debug(debugMsg);
         } catch (IOException e) {

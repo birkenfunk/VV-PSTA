@@ -21,7 +21,8 @@ class WriteFilesTest {
         assertTrue(file.exists());
         List<String> list = new LinkedList<>();
         list.add("This is the config file for alexanderasbeck");
-        list.add("Nothing yet ");
+        list.add("JSON_Location=data.json");
+        list.add("Server_Port=1024");
         assertEquals(list, ReadFile.readFile(file));
         if(file.exists()){
             file.delete();
