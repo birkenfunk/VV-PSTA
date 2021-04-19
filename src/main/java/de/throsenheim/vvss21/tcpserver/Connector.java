@@ -28,7 +28,7 @@ class Connector implements Runnable{
         this.client = client;
     }
 
-    
+
     private void connection(){
         try {
             InputStream fromClientStream = client.getInputStream();
@@ -44,7 +44,8 @@ class Connector implements Runnable{
                 }
                 JsonNode node = Json.parse(line);
                 MeasurementList measurementList = Main.getMeasurementList();
-                LOGGER.debug(node.toString());
+                String debugString = "Received: " + line;
+                LOGGER.debug(debugString);
                 measurementList.add(Json.fromJson(node , Measurement.class));
                 toClient.println("Added: " + node.toString());
             }
