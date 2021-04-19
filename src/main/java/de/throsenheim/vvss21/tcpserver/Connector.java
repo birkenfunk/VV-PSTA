@@ -20,10 +20,15 @@ class Connector implements Runnable{
     private Socket client;
     private static final Logger LOGGER = LogManager.getLogger(Connector.class);
 
+    /**
+     * Constructor for {@link Connector}
+     * @param client a Socket to a client
+     */
     public Connector(Socket client) {
         this.client = client;
     }
 
+    
     private void connection(){
         try {
             InputStream fromClientStream = client.getInputStream();

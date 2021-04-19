@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.3.1
+ * @version 1.3.2
  */
 public class Main {
 
@@ -123,14 +123,28 @@ public class Main {
         }
     }
 
+    /**
+     * Returns the location for the configFile
+     * @return Location for the config File
+     */
     public File getConfigFile() {
         return configFile;
     }
 
+    /**
+     * Returns the location for the json file
+     * <p> Gets location from the config file
+     * @return location for the json file
+     */
     public static String getJsonLocation() {
         return jsonLocation;
     }
 
+    /**
+     * Returns the {@link MeasurementList} that is stored in the main class
+     * <p>Creates a new {@link MeasurementList} if measurementList in main is null
+     * @return MeasurementList that is stored in the main class
+     */
     public static MeasurementList getMeasurementList() {
         if(measurementList == null){
             File jsonFile = new File(jsonLocation);
@@ -160,13 +174,7 @@ public class Main {
     class ReadConsole implements Runnable{
         private boolean read = true;
         /**
-         * When an object implementing interface <code>Runnable</code> is used
-         * to create a thread, starting the thread causes the object's
-         * <code>run</code> method to be called in that separately executing
-         * thread.
-         * <p>
-         * The general contract of the method <code>run</code> is that it may
-         * take any action whatsoever.
+         * Starts a Commandline reader
          *
          * @see Thread#run()
          */
