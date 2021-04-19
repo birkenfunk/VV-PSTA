@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 
 public class Server implements Runnable{
 
-    private static final int PORT = 1024;
+    private static final int PORT = 1024;// TODO: 19.04.21 Get from ConfigFile
     private static boolean run = true;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();
