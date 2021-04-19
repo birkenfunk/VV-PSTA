@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.tcpserver;
 
+import de.throsenheim.vvss21.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +13,7 @@ import java.util.concurrent.Executors;
 
 public class Server implements Runnable{
 
-    private static final int PORT = 1024;// TODO: 19.04.21 Get from ConfigFile
+    private static final int PORT = Main.getPort();
     private static boolean run = true;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();

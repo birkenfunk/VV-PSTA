@@ -28,6 +28,7 @@ public class Main {
     private final ReadConsole readConsole;
     private static MeasurementList measurementList;
     private static String jsonLocation = "data.json";
+    private static int port = 1024;
 
     public static void main(String[] args) {
         new Main(args);
@@ -91,6 +92,9 @@ public class Main {
                 String[] splittedConf = s.split("=");
                 if(s.startsWith("JSON_Location") && splittedConf.length>2){
                     jsonLocation = splittedConf[1];
+                }
+                if(s.startsWith("PORT") && splittedConf.length>2){
+                    port = Integer.parseInt(splittedConf[1]);
                 }
                 //here can other config parameter be sorted out
             }
@@ -164,6 +168,10 @@ public class Main {
             }
         }
         return measurementList;
+    }
+
+    public static int getPort() {
+        return port;
     }
 
     /**
