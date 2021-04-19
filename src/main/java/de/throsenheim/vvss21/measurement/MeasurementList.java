@@ -105,7 +105,8 @@ public class MeasurementList implements Runnable{
             try {
                 Measurement measurement = measurementBlockingQueue.poll(1, TimeUnit.SECONDS);
                 if (measurement != null) {
-                    LOGGER.debug("Consumed: "+ measurement);
+                    String debugString = "Consumed: "+ measurement;
+                    LOGGER.debug(debugString);
                     measurements.add(measurement);
                 }
             } catch (InterruptedException e) {
