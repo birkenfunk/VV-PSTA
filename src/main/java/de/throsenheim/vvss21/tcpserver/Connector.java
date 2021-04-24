@@ -12,13 +12,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.EnumMap;
 import java.util.Scanner;
 
 class Connector implements Runnable{
 
     private Socket client;
     private static final Logger LOGGER = LogManager.getLogger(Connector.class);
+    private final EnumMap<State, EnumMap<Symbol, State>> stateSymbolStateHashmap = new EnumMap<>(State.class);
+    private State state = State.WAIT_FOR_CLIENT;
 
     /**
      * Constructor for {@link Connector}
@@ -26,8 +30,35 @@ class Connector implements Runnable{
      */
     public Connector(Socket client) {
         this.client = client;
+        initEnumMap();
     }
 
+    /**
+     * Initialises the stateSymbolStateHashmap
+     */
+    private void initEnumMap(){
+        EnumMap<Symbol,State> symbolStateHashMap = new EnumMap<>(Symbol.class);
+        symbolStateHashMap.put(Symbol.SENSOR_HELLO, State.WAIT_FOR_ACKNOWLEDGE);
+        stateSymbolStateHashmap.put(State.WAIT_FOR_CLIENT, symbolStateHashMap);
+        symbolStateHashMap = new EnumMap<>(Symbol.class);
+        symbolStateHashMap.put(Symbol.ACKNOWLEDGE, State.WAIT_FOR_MEASUREMENT);
+        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
+        symbolStateHashMap.put(Symbol.MEASUREMENT, State.TERMINATED);
+        stateSymbolStateHashmap.put(State.WAIT_FOR_ACKNOWLEDGE,symbolStateHashMap);
+        symbolStateHashMap = new EnumMap<>(Symbol.class);
+        symbolStateHashMap.put(Symbol.MEASUREMENT,State.WAIT_FOR_MEASUREMENT);
+        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
+        stateSymbolStateHashmap.put(State.WAIT_FOR_MEASUREMENT, symbolStateHashMap);
+        symbolStateHashMap = new EnumMap<>(Symbol.class);
+        symbolStateHashMap.put(Symbol.SENSOR_HELLO, State.TERMINATED);
+        symbolStateHashMap.put(Symbol.ACKNOWLEDGE, State.TERMINATED);
+        symbolStateHashMap.put(Symbol.MEASUREMENT, State.TERMINATED);
+        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
+        stateSymbolStateHashmap.put(State.TERMINATED, symbolStateHashMap);
+        symbolStateHashMap = new EnumMap<>(Symbol.class);
+        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
+        stateSymbolStateHashmap.put(State.ERROR, symbolStateHashMap);
+    }
 
     private void connection(){
         try {
