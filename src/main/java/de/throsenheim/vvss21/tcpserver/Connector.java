@@ -60,30 +60,79 @@ class Connector implements Runnable{
         stateSymbolStateHashmap.put(State.ERROR, symbolStateHashMap);
     }
 
-    private void connection(){
-        try {
-            InputStream fromClientStream = client.getInputStream();
-            Scanner fromClient = new Scanner(fromClientStream);
-            OutputStream toClientStream = client.getOutputStream();
-            PrintStream toClient = new PrintStream(toClientStream);
-            toClient.println("Connection successful");
-            while (fromClient.hasNext()){
-                String line = fromClient.nextLine();
-                if(line.equalsIgnoreCase("exit")){
-                    client.close();
-                    break;
-                }
-                JsonNode node = Json.parse(line);
-                MeasurementList measurementList = Main.getMeasurementList();
-                String debugString = "Received: " + line;
-                LOGGER.debug(debugString);
-                measurementList.add(Json.fromJson(node , Measurement.class));
-                toClient.println("Added: " + node.toString());
+    /**
+     * Handels the Input and output of a connection with a client
+     * @throws IOException If something went wrong with the Server Client Connection
+     */
+    private void connection() throws IOException {
+        InputStream fromClientStream = client.getInputStream();
+        Scanner fromClient = new Scanner(fromClientStream);
+        OutputStream toClientStream = client.getOutputStream();
+        PrintStream toClient = new PrintStream(toClientStream);
+        while (state != State.TERMINATED){
+            if(!fromClient.hasNext()){
+                break;
             }
-            Server.removeConnector(this);
-        } catch (IOException e) {
-            LOGGER.error(e);
+            JsonNode node = null;
+            String line = fromClient.nextLine();
+            try {
+                node = Json.parse(line);
+                nextState(node.get("type").asText());
+            }catch (IOException e){
+                nextState(line);
+            }
+
+
+            if(state == State.WAIT_FOR_ACKNOWLEDGE){
+                toClient.println(Symbol.STATION_HELLO);
+            }
+            if(state == State.WAIT_FOR_MEASUREMENT){
+                putToMeasurement(node);
+                toClient.println(Symbol.STATION_READY);
+            }
+            if(state == State.ERROR){
+                toClient.println(State.ERROR);
+            }
         }
+        toClient.println(Symbol.TERMINATE_STATION);
+        stop();
+        Server.removeConnector(this);
+    }
+
+    /**
+     * Goes to the next State
+     * @param input the State of the input
+     */
+    private void nextState(String input){
+        input = input.toUpperCase();
+        Symbol inputSymbol;
+        try {
+            inputSymbol = Symbol.valueOf(input);
+        }catch (IllegalArgumentException e){
+            inputSymbol = Symbol.UNKNOWN;
+        }
+        state = stateSymbolStateHashmap.get(state).get(inputSymbol);
+        if(state == null)
+            state = State.ERROR;
+    }
+
+    /**
+     * Adds a measurement Input to the {@link MeasurementList} queue
+     * @param input Input form the Client
+     * @throws IOException If something with the Json transformation goes wrong
+     */
+    private void putToMeasurement(JsonNode input) throws IOException {
+        if(input == null){
+            return;
+        }
+        if(!input.get("type").asText().equalsIgnoreCase(Symbol.MEASUREMENT.toString())){
+            return;
+        }
+        JsonNode node = input.get("payload");
+        MeasurementList measurementList = Main.getMeasurementList();
+        String debugString = "Received: " + input;
+        LOGGER.debug(debugString);
+        measurementList.add(Json.fromJson(node, Measurement.class));
     }
 
     /**
@@ -94,14 +143,21 @@ class Connector implements Runnable{
      * <p>
      * The general contract of the method <code>run</code> is that it may
      * take any action whatsoever.
-     *
+     * 
      * @see Thread#run()
      */
     @Override
     public void run() {
-        connection();
+        try {
+            connection();
+        } catch (IOException e) {
+            LOGGER.error(e);
+        }
     }
 
+    /**
+     * To Stop the connection to a client
+     */
     public void stop(){
         try {
             client.close();
