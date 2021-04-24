@@ -40,6 +40,7 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
+        // TODO: 20.04.21 Get environment variables
         this.readConsole = new ReadConsole();
         logStartup();
         if(args!= null && args.length>0){
