@@ -143,7 +143,7 @@ class Connector implements Runnable{
      * <p>
      * The general contract of the method <code>run</code> is that it may
      * take any action whatsoever.
-     * 
+     *
      * @see Thread#run()
      */
     @Override
