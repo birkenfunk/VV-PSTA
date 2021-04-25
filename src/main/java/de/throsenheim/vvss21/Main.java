@@ -197,6 +197,7 @@ public class Main {
                     line = reader.readLine();
                     commandComparison(line);
                 }
+                LOGGER.debug("Commandline Reader Closed");
             } catch (Exception e) {
                 LOGGER.error(e);
             }
