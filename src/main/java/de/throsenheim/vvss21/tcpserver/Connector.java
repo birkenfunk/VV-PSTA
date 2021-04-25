@@ -12,12 +12,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.EnumMap;
 import java.util.Scanner;
 
-class Connector implements Runnable{
+public class Connector implements Runnable{
 
     private Socket client;
     private static final Logger LOGGER = LogManager.getLogger(Connector.class);
