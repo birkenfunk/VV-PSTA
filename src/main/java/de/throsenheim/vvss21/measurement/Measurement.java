@@ -3,6 +3,7 @@ package de.throsenheim.vvss21.measurement;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.sql.Timestamp;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Measurement{
@@ -13,16 +14,18 @@ public class Measurement{
     private Timestamp timestamp;
 
     public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") String unit, @JsonProperty("type") String type, @JsonProperty("timestamp") String timestamp) {
+        unit = unit.toUpperCase();
+        type = type.toUpperCase();
         this.value = value;
         try {
             this.unit = Unit.valueOf(unit);
         }catch (IllegalArgumentException e){
-            this.unit = null;
+            this.unit = Unit.NONE;
         }
         try {
             this.type = Type.valueOf(type);
         }catch (IllegalArgumentException e){
-            this.type = null;
+            this.type = Type.NONE;
         }
         this.timestamp = Timestamp.valueOf(timestamp);
     }
