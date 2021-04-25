@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.tcpserver;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.helperclasses.json.Json;
@@ -68,32 +69,48 @@ public class Connector implements Runnable{
         Scanner fromClient = new Scanner(fromClientStream);
         OutputStream toClientStream = client.getOutputStream();
         PrintStream toClient = new PrintStream(toClientStream);
+        JsonNode emptyNote = Json.parse("{}");
+        SendAndReceive send = new SendAndReceive("", emptyNote);
         while (state != State.TERMINATED){
             if(!fromClient.hasNext()){
                 break;
             }
             JsonNode node = null;
             String line = fromClient.nextLine();
+            SendAndReceive receive = new SendAndReceive("",emptyNote);
             try {
                 node = Json.parse(line);
-                nextState(node.get("type").asText());
+                receive = Json.fromJson(node, SendAndReceive.class);
+                nextState(receive.getType());
             }catch (IOException e){
                 nextState(line);
             }
 
 
             if(state == State.WAIT_FOR_ACKNOWLEDGE){
-                toClient.println(Symbol.STATION_HELLO);
+                send.setType(Symbol.STATION_HELLO.toString());
+                send.setPayload(emptyNote);
+                node = Json.toJson(send);
+                toClient.println(Json.stringify(node));
             }
             if(state == State.WAIT_FOR_MEASUREMENT){
-                putToMeasurement(node);
-                toClient.println(Symbol.STATION_READY);
+                putToMeasurement(receive);
+                send.setType(Symbol.STATION_READY.toString());
+                send.setPayload(emptyNote);
+                node = Json.toJson(send);
+                toClient.println(Json.stringify(node));
             }
             if(state == State.ERROR){
-                toClient.println(State.ERROR);
+                send.setType(State.ERROR.toString());
+                send.setPayload(emptyNote);
+                node = Json.toJson(receive);
+                toClient.println(Json.stringify(node));
             }
         }
-        toClient.println(Symbol.TERMINATE_STATION);
+        send.setType(Symbol.TERMINATE_STATION.toString());
+        send.setPayload(emptyNote);
+        JsonNode node = Json.toJson(send);
+        toClient.println(Json.stringify(node));
         stop();
         Server.removeConnector(this);
     }
@@ -117,21 +134,27 @@ public class Connector implements Runnable{
 
     /**
      * Adds a measurement Input to the {@link MeasurementList} queue
-     * @param input Input form the Client
+     * @param input {@link SendAndReceive} Object with the input parameters from the sensor
      * @throws IOException If something with the Json transformation goes wrong
      */
-    private void putToMeasurement(JsonNode input) throws IOException {
+    private void putToMeasurement(SendAndReceive input) throws IOException {
         if(input == null){
             return;
         }
-        if(!input.get("type").asText().equalsIgnoreCase(Symbol.MEASUREMENT.toString())){
+        if(!input.getType().equalsIgnoreCase(Symbol.MEASUREMENT.toString())){
             return;
         }
-        JsonNode node = input.get("payload");
+        JsonNode node = input.getPayload();
         MeasurementList measurementList = Main.getMeasurementList();
         String debugString = "Received: " + input;
         LOGGER.debug(debugString);
-        measurementList.add(Json.fromJson(node, Measurement.class));
+        try {
+            Measurement mes = Json.fromJson(node, Measurement.class);
+            measurementList.add(mes);
+        }catch (IOException e){
+            LOGGER.error(e);
+        }
+
     }
 
     /**
@@ -151,7 +174,9 @@ public class Connector implements Runnable{
             connection();
         } catch (IOException e) {
             LOGGER.error(e);
+            stop();
         }
+        LOGGER.debug("Thread Connector Stopped");
     }
 
     /**
@@ -160,8 +185,11 @@ public class Connector implements Runnable{
     public void stop(){
         try {
             client.close();
+            LOGGER.debug("Client Connection Closed");
         } catch (IOException e) {
             LOGGER.error(e);
         }
     }
+
+
 }
