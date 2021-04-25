@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -46,39 +47,30 @@ class ServerTest {
      */
     @Test
     void giveJson() throws Exception {
-        LOGGER.debug("Executing Task giveJson\n\n\n");
+        LOGGER.debug("Executing Task giveJson");
+        Thread mesThread = new Thread(Main.getMeasurementList());
+        mesThread.start();
         Thread.sleep(1000);
         Socket socket = new Socket("localhost", 1024);
-        InputStream fromClientStream = socket.getInputStream();
-        Scanner fromClient = new Scanner(fromClientStream);
-        // TODO: 24.04.21 New Tests to match Automat
-        /*
-        String output = fromClient.nextLine();
-        assertEquals("Connection successful",output);//Checks if Connection was successful
+        InputStream fromServerStream = socket.getInputStream();
+        Scanner fromServer = new Scanner(fromServerStream);
+        OutputStream toServerStream = socket.getOutputStream();
+        PrintStream toServer = new PrintStream(toServerStream);
 
-        OutputStream toClientStream = socket.getOutputStream();
-        PrintStream toClient = new PrintStream(toClientStream); //Creates a printStream to send data to the connector
-        MeasurementList measurementList = Main.getMeasurementList();
-        Thread measurementListThread = new Thread(measurementList);//Creates a Thread for the Blocking Queue
-        measurementListThread.start();
-
-        String dataTestStream = "{\"unit\":\"CELSIUS\",\"type\":\"TEMPERATURE\",\"value\":10,\"timestamp\":\""+ Timestamp.valueOf(LocalDateTime.now()) +"\"}";//A json String to send to the Connector
-        toClient.println(dataTestStream);
-
-        JsonNode node = Json.parse(dataTestStream);
-        assertEquals("Added: "+ node.toString(),fromClient.nextLine());//Checks if the return of the Connector is correct
-
-        List<Measurement> measurements = measurementList.getMeasurements();
-        Measurement dataTestMeasurement = Json.fromJson(node, Measurement.class);
-        boolean iscontained = false;
-        Thread.sleep(2000);
-        for (Measurement measurement: measurements) {//Checks if the object is in the MeasurementList
-            if(measurement.equals(dataTestMeasurement)){
-                iscontained = true;
-                break;
-            }
-        }
-        assertTrue(iscontained);*/
+        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
+        assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
+        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE",  Timestamp.valueOf(LocalDateTime.now()).toString());
+        String data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
+        toServer.println(data);
+        assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
+        measurement = new Measurement(10, "Random Stuff", "Random Stuff",  Timestamp.valueOf(LocalDateTime.now()).toString());
+        data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
+        toServer.println(data);
+        Thread.sleep(1000);
+        assertTrue(Main.getMeasurementList().getMeasurements().contains(measurement));
+        assertTrue(Main.getMeasurementList().getMeasurements().contains(measurement));
     }
 
     /**
@@ -87,28 +79,46 @@ class ServerTest {
     @Test
     void stop() throws  Exception{
         LOGGER.debug("Executing Task stopServer\n\n\n");
+        Thread.sleep(1000);
         Socket socket = new Socket("localhost", 1024);
-        InputStream fromClientStream = socket.getInputStream();
-        Scanner fromClient = new Scanner(fromClientStream);
-        // TODO: 24.04.21 New Tests to match Automat
-        /*
-        String output = fromClient.nextLine();
-        assertEquals("Connection successful",output);
-
-        Socket socket1 = new Socket("localhost", 1024);
-        OutputStream toClientStream = socket1.getOutputStream();
-        PrintStream toClient = new PrintStream(toClientStream);
-        toClient.println("exit");
-        Field connectors = Server.getSERVER().getClass().getDeclaredField("connectors");
-        connectors.setAccessible(true);
-        LinkedList<Connector> connectorLinkedList = (LinkedList<Connector>) connectors.get(Server.getSERVER());
-        Thread.sleep(100);
-        assertEquals(1 , connectorLinkedList.size());
-
+        InputStream fromServerStream = socket.getInputStream();
+        Scanner fromServer = new Scanner(fromServerStream);
+        OutputStream toServerStream = socket.getOutputStream();
+        PrintStream toServer = new PrintStream(toServerStream);
+        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
         Server.stop();
-        assertEquals(0 , connectorLinkedList.size());
-        Thread.sleep(100);
-        assertThrows(ConnectException.class,()->new Socket("localhost", 1024));*/
+        assertFalse(fromServer.hasNext());
     }
 
+    @Test
+    void TestAutomat() throws IOException, InterruptedException {
+        LOGGER.debug("Executing Task TestAutomat\n\n\n");
+        Thread.sleep(1000);
+        Socket socket = new Socket("localhost", 1024);
+        InputStream fromServerStream = socket.getInputStream();
+        Scanner fromServer = new Scanner(fromServerStream);
+        OutputStream toServerStream = socket.getOutputStream();
+        PrintStream toServer = new PrintStream(toServerStream);
+        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
+        assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"ERROR\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"Terminate\",\"payload\":{}}");
+        assertEquals("{\"type\":\"TERMINATE_STATION\",\"payload\":{}}", fromServer.nextLine());
+        assertFalse(fromServer.hasNext());
+
+        socket = new Socket("localhost", 1024);
+        fromServerStream = socket.getInputStream();
+        fromServer = new Scanner(fromServerStream);
+        toServerStream = socket.getOutputStream();
+        toServer = new PrintStream(toServerStream);
+        toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
+        assertEquals("{\"type\":\"ERROR\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"Terminate\",\"payload\":{}}");
+        assertEquals("{\"type\":\"TERMINATE_STATION\",\"payload\":{}}", fromServer.nextLine());
+        assertFalse(fromServer.hasNext());
+    }
 }
