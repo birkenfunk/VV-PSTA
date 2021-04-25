@@ -3,12 +3,12 @@
 1. [General Info](#general-info)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-4. [Collaboration](#collaboration)
-5. [FAQs](#faqs)
 
 # General-info
 
-This is a simple server application witch can receive a Json String with a measurement Object
+This is a simple server application witch can receive a Json String with a measurement Object. 
+After receiving the String it will get converted into a measurement object witch is then added to a List of measurement objects. 
+When the programm stopps it will save all saved measurement objects into a file.
 
 ## How To talk to the Server:
 
@@ -20,7 +20,7 @@ This is a simple server application witch can receive a Json String with a measu
 | You can send more Measurement jsons                                    |                                             |
 | `{"type":"Terminate","payload":{}}`                                    | `{"type":"TERMINATE_STATION","payload":{}}` |
 
-## Mearuement json
+## Measurement json
 
 A measurement has to contain:
 
@@ -40,7 +40,7 @@ In the end it sould look like this
 
 ### Type
 
-The different Tpes you can use:
+The different Types you can use:
 
 - TEMPERATURE  
 
@@ -74,7 +74,7 @@ The different Units you can use:
 
 - KWH3
 
-## Digaramms
+## Diagrams
 
 The connection automat (Warning: Symbols are a bit different!)
 ![Connection automat](Automate.png)
@@ -82,3 +82,19 @@ A simple connection between the server and the station (Warning: Messages look d
 ![Connection Example](Connection.png)
 
 # Technologies
+
+ A list of technologies used within the project:
+
+* [Log4j2](https://logging.apache.org/log4j/2.x/) Version: 2.14.1
+
+* [Jackson](https://github.com/FasterXML/jackson) Version: 2.12.3
+
+* [Jacoco](https://www.jacoco.org/jacoco/trunk/index.html) Version: 0.8.6
+
+* [SonarQube](https://www.sonarqube.org/) Version: 8.8
+
+# Installation
+
+How to install:
+
+Coming soon
