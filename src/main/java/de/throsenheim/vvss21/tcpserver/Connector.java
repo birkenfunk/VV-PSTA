@@ -1,6 +1,5 @@
 package de.throsenheim.vvss21.tcpserver;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.helperclasses.json.Json;
