@@ -8,5 +8,6 @@ public enum Unit {
     HECTOPASCAL,
     UNITS,
     CMS2,
-    KWH3
+    KWH3,
+    NONE
 }

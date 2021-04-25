@@ -6,5 +6,6 @@ public enum Type {
     PRESSURE,
     COUNT,
     FLOW_RATE,
-    ENERGY
+    ENERGY,
+    NONE
 }
