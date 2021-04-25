@@ -45,6 +45,7 @@ class MeasurementListTest {
         if(file.exists()){
             file.delete();
         }
+        Thread.sleep(1000);
         measurementList.stop();
         assertTrue(file.exists());
         assertFalse(measurementList.isRuning());
