@@ -102,7 +102,7 @@ public class Connector implements Runnable{
             if(state == State.ERROR){
                 send.setType(State.ERROR.toString());
                 send.setPayload(emptyNote);
-                node = Json.toJson(receive);
+                node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
         }
@@ -152,8 +152,9 @@ public class Connector implements Runnable{
             measurementList.add(mes);
         }catch (IOException e){
             LOGGER.error(e);
+            Measurement mes = new Measurement(node.get("value").intValue(),node.get("unit").asText(),node.get("type").asText(),node.get("timestamp").asText());
+            measurementList.add(mes);
         }
-
     }
 
     /**
