@@ -17,7 +17,7 @@ public class Server implements Runnable{
     private static boolean run = true;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();
-    private static final ExecutorService executer = Executors.newFixedThreadPool(50);
+    private static ExecutorService executer = Executors.newFixedThreadPool(50);
     private static ServerSocket serverSocket;
     private static final Server SERVER = new Server();
 
@@ -39,7 +39,7 @@ public class Server implements Runnable{
     public void run() {
         try {
             LOGGER.debug("Server listening");
-            setRunTrue();
+            init();
             setServerSocket();
             while (run){
                 Socket socket = serverSocket.accept();
@@ -61,8 +61,11 @@ public class Server implements Runnable{
         LOGGER.debug("Thread Server Stopped");
     }
 
-    private static void setRunTrue(){
+    private static void init(){
         run = true;
+        if(executer.isShutdown()){
+            executer = Executors.newFixedThreadPool(50);
+        }
     }
 
     public static boolean removeConnector(Connector connector){
