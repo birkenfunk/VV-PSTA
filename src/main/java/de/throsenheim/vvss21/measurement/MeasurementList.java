@@ -125,6 +125,10 @@ public class MeasurementList implements Runnable{
         saveToJsonFile();
     }
 
+    public boolean isRuning() {
+        return run;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(measurements);
