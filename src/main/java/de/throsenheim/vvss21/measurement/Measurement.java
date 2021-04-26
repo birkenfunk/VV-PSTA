@@ -2,8 +2,9 @@ package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.sql.Timestamp;
-import java.util.Locale;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class Measurement{
@@ -11,7 +12,7 @@ public class Measurement{
     private int value;
     private Unit unit;
     private Type type;
-    private Timestamp timestamp;
+    private LocalDateTime timestamp;
 
     public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") String unit, @JsonProperty("type") String type, @JsonProperty("timestamp") String timestamp) {
         unit = unit.toUpperCase();
@@ -27,7 +28,13 @@ public class Measurement{
         }catch (IllegalArgumentException e){
             this.type = Type.NONE;
         }
-        this.timestamp = Timestamp.valueOf(timestamp);
+        try {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+            this.timestamp = LocalDateTime.parse(timestamp, dateTimeFormatter);
+        }catch (DateTimeParseException e){
+            this.timestamp = LocalDateTime.parse(timestamp);
+        }
+
     }
 
     public int getValue() {
@@ -43,7 +50,8 @@ public class Measurement{
     }
 
     public String getTimestamp() {
-        return timestamp.toString();
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+        return timestamp.format(myFormatObj);
     }
 
     @Override
