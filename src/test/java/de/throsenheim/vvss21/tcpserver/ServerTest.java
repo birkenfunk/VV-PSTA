@@ -18,6 +18,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -57,15 +58,16 @@ class ServerTest {
         OutputStream toServerStream = socket.getOutputStream();
         PrintStream toServer = new PrintStream(toServerStream);
 
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
         toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
         assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
         toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
         assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
-        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE",  Timestamp.valueOf(LocalDateTime.now()).toString());
+        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE",  LocalDateTime.now().format(dateTimeFormatter));
         String data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
         toServer.println(data);
         assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
-        measurement = new Measurement(10, "Random Stuff", "Random Stuff",  Timestamp.valueOf(LocalDateTime.now()).toString());
+        measurement = new Measurement(10, "Random Stuff", "Random Stuff",  LocalDateTime.now().format(dateTimeFormatter));
         data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
         toServer.println(data);
         Thread.sleep(1000);

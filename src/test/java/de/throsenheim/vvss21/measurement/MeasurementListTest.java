@@ -7,6 +7,7 @@ import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.ClearEnvironmentVariable;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -24,7 +25,7 @@ class MeasurementListTest {
         LOGGER.debug("Executing Test add\n\n\n");
         Thread thread = new Thread(measurementList);
         thread.start();
-        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE", Timestamp.valueOf(LocalDateTime.now()).toString());
+        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE", LocalDateTime.now().toString());
         measurementList.add(measurement);
         Thread.sleep(1000);
         assertTrue(measurementList.getMeasurements().contains(measurement));
@@ -37,7 +38,7 @@ class MeasurementListTest {
     @Test
     void add2() throws Exception {
         LOGGER.debug("Executing Test add\n\n\n");
-        File file = new File("data.json");
+        File file = new File(Main.getJsonLocation());
         JsonNode node = Json.parse(ReadFile.readFileToString(file));
         measurementList = Json.fromJson(node, MeasurementList.class);
         Thread thread = new Thread(measurementList);
@@ -47,7 +48,6 @@ class MeasurementListTest {
         }
         Thread.sleep(1000);
         measurementList.stop();
-        Thread.sleep(1000);
         assertTrue(file.exists());
         assertFalse(measurementList.isRuning());
     }
