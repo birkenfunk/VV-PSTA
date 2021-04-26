@@ -21,24 +21,6 @@ public class WriteFiles {
     }
 
     /**
-     * Creates a predefined Config file at a specific location
-     * @param file location for the file
-     */
-    public static synchronized void createConfig(File file){
-        String debugMsg = "Creating new File at " + file.getAbsolutePath();
-        LOGGER.info(debugMsg);
-        try (FileWriter writer = new FileWriter(file)){
-            writer.write("This is the config file for alexanderasbeck\n"+
-                    "JSON_Location=data.json\n" +
-                    "Server_Port=1024");
-            debugMsg = "New log file has been created";
-            LOGGER.debug(debugMsg);
-        } catch (IOException e) {
-            LOGGER.error(e);
-        }
-    }
-
-    /**
      * Creates a file at a specific location
      * @param file location of the file
      * @param content content of the file each entry of the list is a new line
