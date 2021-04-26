@@ -3,35 +3,31 @@ package de.throsenheim.vvss21;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.helperclasses.json.Json;
 import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
-import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
 import de.throsenheim.vvss21.measurement.MeasurementList;
 import de.throsenheim.vvss21.tcpserver.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Main Class from where the program should be started
  * @author Alexander
- * @version 1.3.1
+ * @version 1.3.2
  */
 public class Main {
-
-    private File configFile = new File("alexanderasbeck.conf");
-    private static final Logger LOGGER = LogManager.getLogger(Main.class);
-    private final ReadConsole readConsole;
-    private MeasurementList measurementList;
-    private static String jsonLocation = "data.json";
 
     public static void main(String[] args) {
         new Main(args);
     }
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
+    private static MeasurementList measurementList;
+    private static String jsonLocation = "data.json";
+    private static int port = 1024;
+    private final ReadConsole readConsole;
 
     /**
      * Constructor for Main Class
@@ -41,25 +37,87 @@ public class Main {
     public Main(String[] args) {
         this.readConsole = new ReadConsole();
         logStartup();
-        if(args!= null && args.length>0){
-            inputComparison(args);
-        }
-        if(!configFile.exists()){
-            WriteFiles.createConfig(configFile);
-        }
-        readConf(ReadFile.readFile(configFile));
-        String jsonString = ReadFile.readFileToString(new File(jsonLocation));
-        try {
-            JsonNode node = Json.parse(jsonString);
-            measurementList = Json.fromJson(node, MeasurementList.class);
-        } catch (IOException e) {
-            LOGGER.error(e);
-            measurementList = new MeasurementList(new LinkedList<>());
-        }
+        readProperties();
+        getMeasurementList();
         Thread measurementSave  = new Thread(measurementList);
         measurementSave.start();
         Thread consoleRead = new Thread(readConsole);
         consoleRead.start();
+        Thread serverThread = new Thread(Server.getSERVER());
+        serverThread.start();
+    }
+
+    private static void readProperties(){
+        try (InputStream fileInputStream = Main.class.getClassLoader().getResourceAsStream("alexanderasbeck.properties")){
+            Properties properties = new Properties();
+            properties.load(fileInputStream);
+            String temp = properties.getProperty("JSON_FILE");
+            jsonLocation = transformProperties(temp);
+            temp = properties.getProperty("PORT");
+            temp = transformProperties(temp);
+            port = Integer.parseInt(temp);
+        } catch (IOException e) {
+            LOGGER.error(e);
+        }
+
+    }
+
+    private static String transformProperties(String property){
+        if(!property.startsWith("${") && !property.endsWith("}")){
+            return property;
+        }
+        String copyProperty = property.replaceAll("[${|}]","");
+        String[] splitedProperty = copyProperty.split(":");
+        if (!splitedProperty[0].equals("env") && splitedProperty.length<3){
+            return property;
+        }
+        Map<String, String> env = System.getenv();
+        if(env.containsKey(splitedProperty[1])){
+            return env.get(splitedProperty[1]);
+        }
+
+        return splitedProperty[2].replaceAll("[-]","");
+    }
+
+    /**
+     * Returns the location for the json file
+     * <p> Gets location from the config file
+     * @return location for the json file
+     */
+    public static String getJsonLocation() {
+        return jsonLocation;
+    }
+
+    /**
+     * Returns the {@link MeasurementList} that is stored in the main class
+     * <p>Creates a new {@link MeasurementList} if measurementList in main is null
+     * @return MeasurementList that is stored in the main class
+     */
+    public static MeasurementList getMeasurementList() {
+        readProperties();
+        if(measurementList == null){
+            File jsonFile = new File(jsonLocation);
+            measurementList = new MeasurementList(new LinkedList<>());
+            if(!jsonFile.exists()){
+                return measurementList;
+            }
+            String jsonString = ReadFile.readFileToString(jsonFile);
+            if(jsonString.isEmpty()){
+                return measurementList;
+            }
+            try {
+                JsonNode node = Json.parse(jsonString);
+                measurementList = Json.fromJson(node, MeasurementList.class);
+            } catch (IOException e) {
+                LOGGER.error(e);
+            }
+        }
+        return measurementList;
+    }
+
+    public static int getPort() {
+        readProperties();
+        return port;
     }
 
     /**
@@ -82,61 +140,6 @@ public class Main {
     }
 
     /**
-     * Reads out the Config out of a List
-     * @param list List with the config
-     */
-    private static boolean readConf(List<String> list){
-        if(list.isEmpty()){
-            LOGGER.info("No config received");
-            return false;
-        }
-        String confStart = "This is the config file for alexanderasbeck";
-        if(list.remove(0).equals(confStart)){
-            for (String s: list) {
-                String[] splittedConf = s.split("=");
-                if(s.startsWith("JSON_Location") && splittedConf.length>2){
-                    jsonLocation = splittedConf[1];
-                }
-                //here can other config parameter be sorted out
-            }
-        }
-        list.add(0,confStart);
-        return true;
-    }
-
-    /**
-     * Used to see if the input parameters are correct
-     * @param input the inputs that should be compared
-     */
-    private void inputComparison(String[] input){
-        for (int i = 0; i < input.length; i++) {
-            if(input[i].equalsIgnoreCase("--conf")){
-                if(input.length >= i+2 && input[i+1].endsWith(".conf")){
-                    configFile = new File(input[i+1]);
-                    if(!configFile.exists()){
-                        WriteFiles.createConfig(configFile);
-                    }
-                }else {
-                    String debugMsg = "Use --conf [filepath]\n" +
-                            "Note that you have to enter a .conf file";
-                    LOGGER.info(debugMsg);
-                    debugMsg = "Now using default config "+ configFile.getPath();
-                    LOGGER.debug(debugMsg);
-                }
-
-            }
-        }
-    }
-
-    public File getConfigFile() {
-        return configFile;
-    }
-
-    public static String getJsonLocation() {
-        return jsonLocation;
-    }
-
-    /**
      * Class that reads from input from the Console
      * @author Alexander Asbeck
      * @version 1.1.0
@@ -144,13 +147,7 @@ public class Main {
     class ReadConsole implements Runnable{
         private boolean read = true;
         /**
-         * When an object implementing interface <code>Runnable</code> is used
-         * to create a thread, starting the thread causes the object's
-         * <code>run</code> method to be called in that separately executing
-         * thread.
-         * <p>
-         * The general contract of the method <code>run</code> is that it may
-         * take any action whatsoever.
+         * Starts a Commandline reader
          *
          * @see Thread#run()
          */
@@ -164,6 +161,7 @@ public class Main {
                     line = reader.readLine();
                     commandComparison(line);
                 }
+                LOGGER.debug("Commandline Reader Closed");
             } catch (Exception e) {
                 LOGGER.error(e);
             }
@@ -179,18 +177,6 @@ public class Main {
                 measurementList.stop();
                 Server.stop();
                 LOGGER.info("Stopped Program");
-                return;
-            }
-            String[] splittedCommand = command.split(" ");
-            if(splittedCommand[0].equalsIgnoreCase("config")){
-                if(splittedCommand.length == 2 && splittedCommand[1].endsWith(".conf")){
-                    configFile = new File(splittedCommand[1]);
-                    if(!configFile.exists()){
-                        WriteFiles.createConfig(configFile);
-                    }
-                }else {
-                    LOGGER.info("Use Command like config [filepath]\n Note that you have to enter a .conf file");
-                }
                 return;
             }
             LOGGER.info("Use help to get all commands");

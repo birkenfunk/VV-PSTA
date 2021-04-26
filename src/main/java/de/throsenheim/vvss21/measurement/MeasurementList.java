@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.measurement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
@@ -17,20 +18,39 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class to store {@link Measurement}
+ * <p> Can be converted to a Json
+ * @author Alexander Asbeck
+ * @version 1.1.0
+ */
 public class MeasurementList implements Runnable{
     private final List<Measurement> measurements;
     private static final Logger LOGGER = LogManager.getLogger(MeasurementList.class);
     private final BlockingQueue<Measurement> measurementBlockingQueue = new LinkedBlockingQueue<>();
     private boolean run = true;
 
+    /**
+     * Constructor for Class
+     * @param measurements {@link List} with {@link Measurement}
+     */
     public MeasurementList(@JsonProperty("measurements") List<Measurement> measurements) {
         this.measurements = measurements;
     }
 
+    /**
+     * To get a {@link List} with {@link Measurement}
+     * @return List of {@link Measurement} Objects
+     */
     public List<Measurement> getMeasurements() {
         return measurements;
     }
 
+    /**
+     * Adds a {@link Measurement} to a blocking queue
+     * <p>If a thread is started the blocking queue will be emptied and added to the list
+     * @param measurement {@link Measurement} object that should be added
+     */
     public void add(Measurement measurement){
         if(measurement == null){
             return;
@@ -47,6 +67,9 @@ public class MeasurementList implements Runnable{
 
     }
 
+    /**
+     * Saves the Class to a Json file
+     */
     private void saveToJsonFile(){
         List<String> strings = new LinkedList<>();
         JsonNode node = Json.toJson(this);
@@ -75,11 +98,16 @@ public class MeasurementList implements Runnable{
         return true;
     }
 
+    /**
+     * Removes objects from the measurement list and adds them to the list
+     */
     private void addToMeasurement(){
         while (run) {
             try {
                 Measurement measurement = measurementBlockingQueue.poll(1, TimeUnit.SECONDS);
                 if (measurement != null) {
+                    String debugString = "Consumed: "+ measurement;
+                    LOGGER.debug(debugString);
                     measurements.add(measurement);
                 }
             } catch (InterruptedException e) {
@@ -87,11 +115,20 @@ public class MeasurementList implements Runnable{
                 Thread.currentThread().interrupt();
             }
         }
+        LOGGER.debug("Remove from Blocking queue stopped");
     }
 
+    /**
+     * Stops the thread and saves everything to a json file
+     */
     public void stop(){
-        saveToJsonFile();
         run = false;
+        saveToJsonFile();
+    }
+
+    @JsonIgnore
+    public boolean isRuning() {
+        return run;
     }
 
     @Override
@@ -100,18 +137,13 @@ public class MeasurementList implements Runnable{
     }
 
     /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
+     * Starts the Thread and moves objects from the blocking queue to a list
      * @see Thread#run()
      */
     @Override
     public void run() {
+        run = true;
+        LOGGER.debug("Remove from Blocking queue stated");
         addToMeasurement();
     }
 }

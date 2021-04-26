@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.tcpserver;
 
+import de.throsenheim.vvss21.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,13 +13,13 @@ import java.util.concurrent.Executors;
 
 public class Server implements Runnable{
 
-    private static final int PORT = 1024;
+    private static final int PORT = Main.getPort();
     private static boolean run = true;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();
-    private final ExecutorService executer = Executors.newFixedThreadPool(50);
+    private static ExecutorService executer = Executors.newFixedThreadPool(50);
     private static ServerSocket serverSocket;
-    private static final Thread SERVERTHREAD = start();
+    private static final Server SERVER = new Server();
 
     private Server() {
     }
@@ -37,6 +38,8 @@ public class Server implements Runnable{
     @Override
     public void run() {
         try {
+            LOGGER.debug("Server listening");
+            init();
             setServerSocket();
             while (run){
                 Socket socket = serverSocket.accept();
@@ -48,12 +51,21 @@ public class Server implements Runnable{
             LOGGER.error(e);
         } finally {
             try {
-                serverSocket.close();
+                if(serverSocket != null) {
+                    serverSocket.close();
+                }
             } catch (IOException e) {
                 LOGGER.error(e);
             }
         }
+        LOGGER.debug("Thread Server Stopped");
+    }
 
+    private static void init(){
+        run = true;
+        if(executer.isShutdown()){
+            executer = Executors.newFixedThreadPool(50);
+        }
     }
 
     public static boolean removeConnector(Connector connector){
@@ -68,23 +80,23 @@ public class Server implements Runnable{
 
 
     public static void stop(){
-        if(serverSocket == null || serverSocket.isClosed()){
-            return;
+        if(serverSocket != null){
+            try {
+                serverSocket.close();
+                serverSocket = null;
+                LOGGER.debug("Server Closed");
+            } catch (IOException e) {
+                LOGGER.error(e);
+            }
         }
         run = false;
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            LOGGER.error(e);
-        }
         while (!connectors.isEmpty()){
             connectors.remove().stop();
         }
+        executer.shutdown();
     }
 
-    private static Thread start(){
-        Thread newThread = new Thread(new Server());
-        newThread.start();
-        return newThread;
+    public static Server getSERVER() {
+        return SERVER;
     }
 }

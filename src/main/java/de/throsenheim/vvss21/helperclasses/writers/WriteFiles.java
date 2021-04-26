@@ -20,19 +20,13 @@ public class WriteFiles {
     private WriteFiles() {
     }
 
-    public static synchronized void createConfig(File file){
-        String debugMsg = "Creating new File at " + file.getAbsolutePath();
-        LOGGER.info(debugMsg);
-        try (FileWriter writer = new FileWriter(file)){
-            writer.write("This is the config file for alexanderasbeck\n"+
-                    "Nothing yet ");
-            debugMsg = "New log file has been created";
-            LOGGER.debug(debugMsg);
-        } catch (IOException e) {
-            LOGGER.error(e);
-        }
-    }
-
+    /**
+     * Creates a file at a specific location
+     * @param file location of the file
+     * @param content content of the file each entry of the list is a new line
+     * @param overwrite If the file should be overwritten or the content should be just added
+     * @return true if file is created false if not
+     */
     public static synchronized boolean writeFile(File file, List<String> content, boolean overwrite){
         String debugMsg;
         try (FileWriter writer = new FileWriter(file,!overwrite)){

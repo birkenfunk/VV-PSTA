@@ -4,5 +4,10 @@ public enum Unit {
     CELSIUS,
     KELVIN,
     PERCENT,
-    FAHRENHEIT
+    FAHRENHEIT,
+    HECTOPASCAL,
+    UNITS,
+    CMS2,
+    KWH3,
+    NONE
 }
