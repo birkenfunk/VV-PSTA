@@ -94,6 +94,7 @@ public class Main {
      * @return MeasurementList that is stored in the main class
      */
     public static MeasurementList getMeasurementList() {
+        readProperties();
         if(measurementList == null){
             File jsonFile = new File(jsonLocation);
             measurementList = new MeasurementList(new LinkedList<>());
@@ -115,6 +116,7 @@ public class Main {
     }
 
     public static int getPort() {
+        readProperties();
         return port;
     }
 
