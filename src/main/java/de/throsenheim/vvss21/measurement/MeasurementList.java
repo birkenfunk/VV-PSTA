@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.measurement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
@@ -125,6 +126,7 @@ public class MeasurementList implements Runnable{
         saveToJsonFile();
     }
 
+    @JsonIgnore
     public boolean isRuning() {
         return run;
     }
