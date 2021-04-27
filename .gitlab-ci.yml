@@ -7,44 +7,6 @@ stages:
   - docerize
 
 
-
-build:
-  stage: build
-  tags:
-    - sonar
-  script: 
-    - ./gradlew assemble
-  artifacts:
-    paths:
-      - ./build/libs/*.jar
-    expire_in: 1 week
-
-sonarqube:
-  stage: sonarqube
-  tags:
-    - sonar
-  script:
-    - ./gradlew test
-    - ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
-  artifacts:
-    when: on_failure
-    paths:
-      - ./*
-    expire_in: 1 week
-
-test:
-  stage: test
-  tags:
-    - sonar
-  script:
-    - ls -la
-    - ./gradlew test
-  artifacts:
-    when: on_failure
-    paths:
-      - ./*
-    expire_in: 1 week
-
 docker-build:
   stage: docerize
   tags:
