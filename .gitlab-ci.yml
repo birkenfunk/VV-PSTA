@@ -1,9 +1,9 @@
 image: gradle:6.8.3-jdk11
 
 stages:
-  - build
-  - test
-  - sonarqube
+  #- build
+  #- test
+  #- sonarqube
   - docerize
 
 
@@ -46,14 +46,9 @@ test:
     expire_in: 1 week
 
 docker-build:
-  image: docker:latest
   stage: docerize
   tags:
     - sonar
-  services:
-    - docker:dind
-  before_script:
-    - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-    - docker push "$CI_REGISTRY_IMAGE"
+    - docker build --pull -t asbeck .
+    - docker push asbeck
