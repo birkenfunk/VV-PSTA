@@ -13,7 +13,7 @@ build:
   tags:
     - sonar
   script: 
-    - ./gradlew assemble && gradle jar
+    - ./gradlew assemble
   artifacts:
     paths:
       - ./build/libs/*.jar
