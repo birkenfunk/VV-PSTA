@@ -48,6 +48,8 @@ test:
 docker-build:
   image: docker:latest
   stage: docerize
+  tags:
+    - sonar
   services:
     - docker:dind
   before_script:
