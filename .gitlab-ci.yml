@@ -50,6 +50,8 @@ before_script:
 
 build-docker:
   stage: docerize
+  tags:
+    - sonar
   script:
     - ./gradlew build
     - docker pull $CI_REGISTRY_IMAGE:latest || true
