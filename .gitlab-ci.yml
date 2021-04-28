@@ -1,57 +1,58 @@
 image: gradle:6.8.3-jdk11
 
 stages:
-  - build
-  - test
-  - sonarqube
+#  - build
+#  - test
+#  - sonarqube
   - docerize
 
 
 
-build:
-  stage: build
-  tags:
-    - sonar
-  script:
-    - ./gradlew assemble
-  artifacts:
-    paths:
-      - ./build/libs/*.jar
-    expire_in: 1 week
+#build:
+#  stage: build
+#  tags:
+#    - sonar
+#  script:
+#    - ./gradlew assemble
+#  artifacts:
+#    paths:
+#      - ./build/libs/*.jar
+#    expire_in: 1 week
+#
+#sonarqube:
+#  stage: sonarqube
+#  tags:
+#    - sonar
+#  script:
+#    - ./gradlew test
+#    - ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
+#  artifacts:
+#    when: on_failure
+#    paths:
+#      - ./*
+#    expire_in: 1 week
+#
+#test:
+#  stage: test
+#  tags:
+#    - sonar
+#  script:
+#    - ls -la
+#    - ./gradlew test
+#  artifacts:
+#    when: on_failure
+#    paths:
+#      - ./*
+##    expire_in: 1 week
 
-sonarqube:
-  stage: sonarqube
-  tags:
-    - sonar
-  script:
-    - ./gradlew test
-    - ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
-  artifacts:
-    when: on_failure
-    paths:
-      - ./*
-    expire_in: 1 week
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-test:
-  stage: test
-  tags:
-    - sonar
-  script:
-    - ls -la
-    - ./gradlew test
-  artifacts:
-    when: on_failure
-    paths:
-      - ./*
-    expire_in: 1 week
-
-docker-build:
-  image: docker:latest
+build-docker:
   stage: docerize
-  services:
-    - docker:dind
-  before_script:
-    - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-    - docker push "$CI_REGISTRY_IMAGE"
+    - ./gradlew build
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
