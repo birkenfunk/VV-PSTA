@@ -51,5 +51,5 @@ build-docker:
     - sonar
   script:
     - ./gradlew build
-    - docker build -t asbeck .
-    - docker push asbeck:latest
+    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander .
+    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander
