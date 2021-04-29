@@ -11,6 +11,12 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * A Class for handling the Connections to the Client
+ * <p>If a Client wants to connect it will open a new Thread with the Connection</p>
+ * @version 1.0.0
+ * @author Alexander Asbeck
+ */
 public class Server implements Runnable{
 
     private static final int PORT = Main.getPort();
@@ -21,26 +27,32 @@ public class Server implements Runnable{
     private static ServerSocket serverSocket;
     private static final Server SERVER = new Server();
 
+    /**
+     * Is private due to the fact that only one Server should be active at the same time
+     */
     private Server() {
     }
 
     /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
-     * @see Thread#run()
+     * Initializes the variables for the Server
      */
-    @Override
-    public void run() {
+    private static void init() throws IOException {
+        run = true;
+        if(executer.isShutdown()){
+            executer = Executors.newFixedThreadPool(50);
+        }
+        if(serverSocket == null || serverSocket.isClosed()){
+            serverSocket = new ServerSocket(PORT);
+        }
+    }
+
+    /**
+     * Method used by {@link Server#run()} to start the Server
+     */
+    private void startServer() {
+        LOGGER.debug("Server listening");
         try {
-            LOGGER.debug("Server listening");
             init();
-            setServerSocket();
             while (run){
                 Socket socket = serverSocket.accept();
                 connectors.add(new Connector(socket));
@@ -50,35 +62,23 @@ public class Server implements Runnable{
         } catch (IOException e) {
             LOGGER.error(e);
         } finally {
-            try {
-                if(serverSocket != null) {
-                    serverSocket.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error(e);
-            }
+            stop();
         }
         LOGGER.debug("Thread Server Stopped");
     }
 
-    private static void init(){
-        run = true;
-        if(executer.isShutdown()){
-            executer = Executors.newFixedThreadPool(50);
-        }
-    }
-
+    /**
+     * Method to remove a Connector from the Connector list in case the connection is closed
+     * @param connector Connector that should be removed
+     * @return True if operation was a success False if operation failed
+     */
     public static boolean removeConnector(Connector connector){
         return connectors.remove(connector);
     }
 
-    private static void setServerSocket() throws IOException {
-        if(serverSocket == null || serverSocket.isClosed()){
-            serverSocket = new ServerSocket(PORT);
-        }
-    }
-
-
+    /**
+     * Method to stop the Server and the connections
+     */
     public static void stop(){
         if(serverSocket != null){
             try {
@@ -96,7 +96,21 @@ public class Server implements Runnable{
         executer.shutdown();
     }
 
+    /**
+     * Method to get the Server
+     * @return The Server object
+     */
     public static Server getSERVER() {
         return SERVER;
+    }
+
+    /**
+     * Method to start the Server Thread
+     *
+     * @see Thread#run()
+     */
+    @Override
+    public void run() {
+        startServer();
     }
 }

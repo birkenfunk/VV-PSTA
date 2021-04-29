@@ -16,11 +16,16 @@ import java.net.Socket;
 import java.util.EnumMap;
 import java.util.Scanner;
 
+/**
+ * Class for the communication with a client
+ * @version 1.0.0
+ * @author Alexander Asbeck
+ */
 public class Connector implements Runnable{
 
     private Socket client;
     private static final Logger LOGGER = LogManager.getLogger(Connector.class);
-    private final EnumMap<State, EnumMap<Symbol, State>> stateSymbolStateHashmap = new EnumMap<>(State.class);
+    private final EnumMap<State, EnumMap<Symbol, State>> stateSymbolStateHashmap = new EnumMap<>(State.class);//Map for the automat
     private State state = State.WAIT_FOR_CLIENT;
 
     /**

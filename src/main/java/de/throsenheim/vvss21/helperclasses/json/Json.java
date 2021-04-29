@@ -7,6 +7,8 @@ import java.io.IOException;
 
 /**
  * Class for json transformations
+ * @version 1.0.0
+ * @author Alexander Asbeck
  */
 public class Json {
     private static ObjectMapper objectMapper = getDefaultObjectMapper();

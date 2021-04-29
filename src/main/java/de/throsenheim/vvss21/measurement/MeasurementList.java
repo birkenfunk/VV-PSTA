@@ -82,21 +82,7 @@ public class MeasurementList implements Runnable{
         WriteFiles.writeFile(storeTo, strings, true);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MeasurementList that = (MeasurementList) o;
-        if(measurements.size()!=that.measurements.size()){
-            return false;
-        }
-        for (int i = 0; i < measurements.size(); i++) {
-            if(!measurements.get(i).equals(that.measurements.get(i))){
-                return false;
-            }
-        }
-        return true;
-    }
+
 
     /**
      * Removes objects from the measurement list and adds them to the list
@@ -126,14 +112,13 @@ public class MeasurementList implements Runnable{
         saveToJsonFile();
     }
 
+    /**
+     * Returns if the thread with the while loop is running
+     * @return false if thread is not running true if thread is running
+     */
     @JsonIgnore
     public boolean isRuning() {
         return run;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(measurements);
     }
 
     /**
@@ -145,5 +130,27 @@ public class MeasurementList implements Runnable{
         run = true;
         LOGGER.debug("Remove from Blocking queue stated");
         addToMeasurement();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MeasurementList that = (MeasurementList) o;
+        if(measurements.size()!=that.measurements.size()){
+            return false;
+        }
+        for (int i = 0; i < measurements.size(); i++) {
+            if(!measurements.get(i).equals(that.measurements.get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(measurements);
     }
 }
