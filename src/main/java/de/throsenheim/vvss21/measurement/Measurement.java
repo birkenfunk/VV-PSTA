@@ -32,7 +32,12 @@ public class Measurement{
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
             this.timestamp = LocalDateTime.parse(timestamp, dateTimeFormatter);
         }catch (DateTimeParseException e){
-            this.timestamp = LocalDateTime.parse(timestamp);
+            try {
+                this.timestamp = LocalDateTime.parse(timestamp);
+            }catch (DateTimeParseException dateTimeParseException){
+                this.timestamp = LocalDateTime.now();
+            }
+
         }
 
     }
