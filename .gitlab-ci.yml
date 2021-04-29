@@ -4,18 +4,16 @@ stages:
   - build
   - test
   - sonarqube
+  - docerize
 
-cache:
-  paths:
-    - .gradle/wrapper
-    - .gradle/caches
-    - build
+
 
 build:
   stage: build
-  image: gradle:6.8.3-jdk11
-  script: 
-    - gradle assemble && gradle jar
+  tags:
+    - sonar
+  script:
+    - ./gradlew assemble
   artifacts:
     paths:
       - ./build/libs/*.jar
@@ -23,14 +21,39 @@ build:
 
 sonarqube:
   stage: sonarqube
-  tags: 
+  tags:
     - sonar
-  script: ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
+  script:
+    - ./gradlew test
+    - ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
+  artifacts:
+    when: on_failure
+    paths:
+      - ./*
+    expire_in: 1 week
 
 test:
   stage: test
+  tags:
+    - sonar
   script:
     - ls -la
-    - ls -la build/ 
-    - ls -la build/reports
-    - gradle test
+    - ./gradlew test
+  artifacts:
+    when: on_failure
+    paths:
+      - ./*
+    expire_in: 1 week
+
+build-docker:
+  stage: docerize
+  tags:
+    - sonar
+  script:
+    - ./gradlew build
+    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander .
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander
+  only:
+    refs:
+      - master

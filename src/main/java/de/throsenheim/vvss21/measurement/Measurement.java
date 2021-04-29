@@ -1,146 +1,90 @@
 package de.throsenheim.vvss21.measurement;
 
-import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsonable;
-import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
-import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.Timestamp;
-import java.util.LinkedList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
-public class Measurement implements Jsonable {
+/**
+ * Object for storing a measurement data
+ * @version 1.0.0
+ * @author Alexander Asbeck
+ */
+public class Measurement{
 
-    private static final Logger LOGGER = LogManager.getLogger(Measurement.class);
-    private final int value;
-    private final Unit unit;
-    private final Type type;
-    private final Timestamp timestamp;
+    private int value;//Value of the measurement
+    private Unit unit;//Unit of the measurement eg. CELSIUS
+    private Type type;//Type of the measurement eg. TEMPERATURE
+    private LocalDateTime timestamp;//Time when the measurement happened
 
-
-    public Measurement(int value, Unit unit, Type type, Timestamp timestamp) {
+    /**
+     * Constructor for {@link Measurement}
+     * @param value Value of the measurement
+     * @param unit Unit of the measurement from {@link Unit}
+     * @param type Type of the measurement from {@link Type}
+     * @param timestamp Time when the measurement happened in the format 'yyyy-MM-dd HH:mm:ss.SS'
+     */
+    public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") String unit, @JsonProperty("type") String type, @JsonProperty("timestamp") String timestamp) {
+        unit = unit.toUpperCase();
+        type = type.toUpperCase();
         this.value = value;
-        this.unit = unit;
-        this.type = type;
-        this.timestamp = timestamp;
+        try {
+            this.unit = Unit.valueOf(unit);
+        }catch (IllegalArgumentException e){
+            this.unit = Unit.NONE;
+        }
+        try {
+            this.type = Type.valueOf(type);
+        }catch (IllegalArgumentException e){
+            this.type = Type.NONE;
+        }
+        try {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+            this.timestamp = LocalDateTime.parse(timestamp, dateTimeFormatter);
+        }catch (DateTimeParseException e){
+            try {
+                this.timestamp = LocalDateTime.parse(timestamp);
+            }catch (DateTimeParseException dateTimeParseException){
+                this.timestamp = LocalDateTime.now();
+            }
+
+        }
+
     }
 
     /**
-     * Serialize to a JSON formatted string.
-     *
-     * @return a string, formatted in JSON, that represents the Jsonable.
+     * Getter of value
+     * @return Integer with the value of the measurement
      */
-    @Override
-    public String toJson() {
-        String keySting;
-        JsonObject json = new JsonObject();
-        json.put("value",value);
-        keySting = "unit";
-        if(unit!=null) {
-            json.put(keySting, unit.toString());
-        }else {
-            json.put(keySting, null);
-        }
-        keySting = "type";
-        if(type!=null) {
-            json.put(keySting, type.toString());
-        }else {
-            json.put(keySting, null);
-        }
-        keySting = "timestamp";
-        if(timestamp!=null) {
-            json.put(keySting, timestamp.toString());
-        }else {
-            json.put(keySting, null);
-        }
-        return json.toJson();
+    public int getValue() {
+        return value;
     }
 
     /**
-     * Serialize to a JSON formatted stream.
-     *
-     * @param writable where the resulting JSON text should be sent.
-     * @throws IOException when the writable encounters an I/O error.
+     * Getter of Unit
+     * @return String with the Unit of the measurement
      */
-    @Override
-    public void toJson(Writer writable) throws IOException {
-        throw new IOException("Method out of Order use toJson(File file) instead");
+    public Unit getUnit() {
+        return unit;
     }
 
-    public void toJson(File file){
-        List<String> list = new LinkedList<>();
-        list.add(toJson());
-        WriteFiles.getWriteFiles().writeFile(file,list,true);
-        String debugString = "Written Json to: "+ file.getAbsolutePath();
-        LOGGER.debug(debugString);
+    /**
+     * Getter of Type
+     * @return String with the Type of the measurement
+     */
+    public Type getType() {
+        return type;
     }
 
-    public static List<Measurement> fromJson(File file){
-        List<Measurement> res = new LinkedList<>();
-        List<String> data = ReadFile.readFile(file);
-        while (!data.isEmpty()) {
-            int value;
-            Unit unit;
-            Timestamp timestamp;
-            Type type;
-            String line = data.remove(0);
-            line=line.replaceAll("[\"{}]","");
-            String[] splitedline = line.split("[,:]");
-            value = searchValue(splitedline);
-            unit = searchUnit(splitedline);
-            type = searchType(splitedline);
-            timestamp = searchTimestamp(splitedline);
-            res.add(new Measurement(value,unit,type,timestamp));
-            String debugString = res.get(res.size()-1).toString();
-            LOGGER.debug(debugString);
-        }
-        return res;
-    }
-
-    private static int searchValue(String[] data){
-        for (int i = 0; i < data.length; i++) {
-            if(data[i].equals("value") && data.length>i+1){
-                return Integer.parseInt(data[i+1]);
-            }
-        }
-        return Integer.MIN_VALUE;
-    }
-
-    private static Unit searchUnit(String[] data){
-        for (int i = 0; i < data.length; i++) {
-            if(data[i].equals("unit") && data.length>i+1 && !data[i+1].equals("null")){
-                return Unit.valueOf(data[i+1]);
-            }
-        }
-        return null;
-    }
-
-    private static Type searchType(String[] data){
-        for (int i = 0; i < data.length; i++) {
-            if(data[i].equals("type") && data.length>i+1 && !data[i+1].equals("null")){
-                return Type.valueOf(data[i+1]);
-            }
-        }
-        return null;
-    }
-
-    private static Timestamp searchTimestamp(String[] data){
-        for (int i = 0; i < data.length; i++) {
-            if(data[i].equals("timestamp") && data.length>i+1 && !data[i+1].equals("null")){
-                StringBuilder buffer = new StringBuilder();
-                buffer.append(data[i+1]);
-                for (int j = i+2; j < data.length && (data[j].isEmpty() || Character.isDigit(data[j].charAt(0)));j++) {
-                    buffer.append(":").append(data[j]);
-                }
-            return Timestamp.valueOf(buffer.toString());
-            }
-        }
-        return null;
+    /**
+     * Getter of Timestamp
+     * @return String with the Timestamp of the measurement with the pattern: 'yyyy-MM-dd HH:mm:ss.SS'
+     */
+    public String getTimestamp() {
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+        return timestamp.format(myFormatObj);
     }
 
     @Override
@@ -151,5 +95,18 @@ public class Measurement implements Jsonable {
                 ", type=" + type +
                 ", timestamp=" + timestamp +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Measurement that = (Measurement) o;
+        return value == that.value && unit == that.unit && type == that.type && timestamp.equals(that.timestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, unit, type, timestamp);
     }
 }

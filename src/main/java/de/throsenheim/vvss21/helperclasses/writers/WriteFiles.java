@@ -16,32 +16,20 @@ import java.util.List;
  */
 public class WriteFiles {
 
-    private static final WriteFiles writeFiles = new WriteFiles();
-    private final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger(WriteFiles.class);
     private WriteFiles() {
     }
 
-    public synchronized void createConfig(File file){
-        String debugMsg = "Creating new File at " + file.getAbsolutePath();
-        LOGGER.info(debugMsg);
-        try (FileWriter writer = new FileWriter(file)){
-            writer.write("This is the config file for alexanderasbeck\n"+
-                    "Nothing yet ");
-            debugMsg = "New log file has been created";
-            LOGGER.debug(debugMsg);
-        } catch (IOException e) {
-            LOGGER.error(e);
-        }
-    }
-
-    public boolean writeFile(File file, List<String> content, boolean overwrite){
+    /**
+     * Creates a file at a specific location
+     * @param file location of the file
+     * @param content content of the file each entry of the list is a new line
+     * @param overwrite If the file should be overwritten or the content should be just added
+     * @return true if file is created false if not
+     */
+    public static synchronized boolean writeFile(File file, List<String> content, boolean overwrite){
         String debugMsg;
-        if(file.exists() && !overwrite){
-            debugMsg = "File already exists and overwrite is off";
-            LOGGER.debug(debugMsg);
-            return false;
-        }
-        try (FileWriter writer = new FileWriter(file)){
+        try (FileWriter writer = new FileWriter(file,!overwrite)){
             for (String s : content) {
                 writer.write(s + "\n");
             }
@@ -52,9 +40,5 @@ public class WriteFiles {
             return false;
         }
         return true;
-    }
-
-    public static WriteFiles getWriteFiles() {
-        return writeFiles;
     }
 }

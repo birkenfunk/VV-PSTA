@@ -25,6 +25,24 @@ public class ReadFile {
     }
 
     /**
+     * Reads a file and puts the content into a String
+     * @param file witch file it should read
+     * @return String with the content of the file
+     */
+    public static String readFileToString(File file){
+        List<String> data = readFile(file);
+        if(data.isEmpty()){
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(data.remove(0));
+        for (String s: data) {
+            stringBuilder.append("\n").append(s);
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
      * A method for reading a File
      * @param file File that should be read
      * @return Gives a List with the content of the File each Line ist a entry in the List
