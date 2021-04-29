@@ -35,7 +35,7 @@ A measurement has to contain:
 In the end it sould look like this
 
 ```json
-{"value" : 10, "unit" : "CELSIUS", "type" : "TEMPERATURE", "timestamp" : "2021-04-17 18:09:10.189349"}
+{"value" : 10, "unit" : "CELSIUS", "type" : "TEMPERATURE", "timestamp" : "2021-04-17 18:09:10.18"}
 ```
 
 ### Type
@@ -97,4 +97,12 @@ A simple connection between the server and the station (Warning: Messages look d
 
 How to install:
 
-Coming soon
+Enter the following commands<br/>
+```shell
+docker pull inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander:latest
+run -p 1024:1024 asbeckalexander:latest
+```
+You might need root permissions on your system to run docker<br/>
+On Linux run the commands with sudo in at the start.<br/>
+In Windows just open the shell with administrator rights and run the commands<br/>
+[How to install docker](https://www.docker.com/get-started)

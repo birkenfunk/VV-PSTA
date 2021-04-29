@@ -47,21 +47,34 @@ public class Main {
         serverThread.start();
     }
 
+    /**
+     * Method reads the properties out of a file and sets it
+     */
     private static void readProperties(){
         try (InputStream fileInputStream = Main.class.getClassLoader().getResourceAsStream("alexanderasbeck.properties")){
             Properties properties = new Properties();
             properties.load(fileInputStream);
-            String temp = properties.getProperty("JSON_FILE");
-            jsonLocation = transformProperties(temp);
-            temp = properties.getProperty("PORT");
-            temp = transformProperties(temp);
-            port = Integer.parseInt(temp);
+            String temp;
+            if(properties.containsKey("JSON_FILE")) {
+                temp = properties.getProperty("JSON_FILE");
+                jsonLocation = transformProperties(temp);
+            }
+            if(properties.containsKey("PORT")) {
+                temp = properties.getProperty("PORT");
+                temp = transformProperties(temp);
+                port = Integer.parseInt(temp);
+            }
         } catch (IOException e) {
             LOGGER.error(e);
         }
 
     }
 
+    /**
+     * Transforms a property string into a Correct property
+     * @param property String from the property file
+     * @return String with the correct data
+     */
     private static String transformProperties(String property){
         if(!property.startsWith("${") && !property.endsWith("}")){
             return property;
@@ -75,7 +88,6 @@ public class Main {
         if(env.containsKey(splitedProperty[1])){
             return env.get(splitedProperty[1]);
         }
-
         return splitedProperty[2].replaceAll("[-]","");
     }
 

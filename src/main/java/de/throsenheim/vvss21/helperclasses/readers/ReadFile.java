@@ -24,6 +24,11 @@ public class ReadFile {
     private ReadFile(){
     }
 
+    /**
+     * Reads a file and puts the content into a String
+     * @param file witch file it should read
+     * @return String with the content of the file
+     */
     public static String readFileToString(File file){
         List<String> data = readFile(file);
         if(data.isEmpty()){
