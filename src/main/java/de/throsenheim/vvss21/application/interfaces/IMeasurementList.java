@@ -5,6 +5,9 @@ import de.throsenheim.vvss21.measurement.Measurement;
 
 import java.util.List;
 
+/**
+ * Interface for handling a list of Measurements
+ */
 public interface IMeasurementList extends Runnable{
 
     /**
