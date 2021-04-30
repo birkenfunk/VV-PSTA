@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
+/**
+ * Interface for handling Jsons
+ * Can be used to transform Strings to a Json, JsonNotes to a String or a class
+ */
 public interface IJson {
     /**
      * Transforms a {@link String} into a {@link JsonNode}
