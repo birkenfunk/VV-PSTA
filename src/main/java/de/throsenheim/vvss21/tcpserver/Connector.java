@@ -134,7 +134,7 @@ public class Connector implements Runnable{
         }
         state = stateSymbolStateHashmap.get(state).get(inputSymbol);
         if(state == null)
-            state = state.ERROR;
+            state = EState.ERROR;
     }
 
     /**
