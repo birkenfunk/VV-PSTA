@@ -1,11 +1,11 @@
-package de.throsenheim.vvss21.tcpserver;
+package de.throsenheim.vvss21.application.enums;
 
 /**
  * Enum for handling an connection automat
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public enum Symbol {
+public enum ESymbol {
     SENSOR_HELLO,
     STATION_HELLO,
     ACKNOWLEDGE,

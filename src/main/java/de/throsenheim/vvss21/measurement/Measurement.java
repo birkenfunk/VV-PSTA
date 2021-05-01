@@ -1,6 +1,8 @@
 package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.throsenheim.vvss21.application.enums.EType;
+import de.throsenheim.vvss21.application.enums.EUnit;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,15 +17,15 @@ import java.util.Objects;
 public class Measurement{
 
     private int value;//Value of the measurement
-    private Unit unit;//Unit of the measurement eg. CELSIUS
-    private Type type;//Type of the measurement eg. TEMPERATURE
+    private EUnit unit;//Unit of the measurement eg. CELSIUS
+    private EType type;//Type of the measurement eg. TEMPERATURE
     private LocalDateTime timestamp;//Time when the measurement happened
 
     /**
      * Constructor for {@link Measurement}
      * @param value Value of the measurement
-     * @param unit Unit of the measurement from {@link Unit}
-     * @param type Type of the measurement from {@link Type}
+     * @param unit Unit of the measurement from {@link EUnit}
+     * @param type Type of the measurement from {@link EType}
      * @param timestamp Time when the measurement happened in the format 'yyyy-MM-dd HH:mm:ss.SS'
      */
     public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") String unit, @JsonProperty("type") String type, @JsonProperty("timestamp") String timestamp) {
@@ -31,14 +33,14 @@ public class Measurement{
         type = type.toUpperCase();
         this.value = value;
         try {
-            this.unit = Unit.valueOf(unit);
+            this.unit = EUnit.valueOf(unit);
         }catch (IllegalArgumentException e){
-            this.unit = Unit.NONE;
+            this.unit = EUnit.NONE;
         }
         try {
-            this.type = Type.valueOf(type);
+            this.type = EType.valueOf(type);
         }catch (IllegalArgumentException e){
-            this.type = Type.NONE;
+            this.type = EType.NONE;
         }
         try {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
@@ -66,7 +68,7 @@ public class Measurement{
      * Getter of Unit
      * @return String with the Unit of the measurement
      */
-    public Unit getUnit() {
+    public EUnit getUnit() {
         return unit;
     }
 
@@ -74,7 +76,7 @@ public class Measurement{
      * Getter of Type
      * @return String with the Type of the measurement
      */
-    public Type getType() {
+    public EType getType() {
         return type;
     }
 

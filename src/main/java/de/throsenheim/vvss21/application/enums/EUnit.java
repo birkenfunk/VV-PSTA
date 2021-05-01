@@ -1,11 +1,13 @@
-package de.throsenheim.vvss21.measurement;
+package de.throsenheim.vvss21.application.enums;
+
+import de.throsenheim.vvss21.measurement.Measurement;
 
 /**
  * Enum with the units used in the {@link Measurement} object
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public enum Unit {
+public enum EUnit {
     CELSIUS,
     KELVIN,
     PERCENT,

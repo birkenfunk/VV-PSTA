@@ -1,7 +1,7 @@
 package de.throsenheim.vvss21.application.interfaces;
 
-import de.throsenheim.vvss21.measurement.Type;
-import de.throsenheim.vvss21.measurement.Unit;
+import de.throsenheim.vvss21.application.enums.EType;
+import de.throsenheim.vvss21.application.enums.EUnit;
 
 /**
  * Interface for handling measurement objects
@@ -15,16 +15,16 @@ public interface IMeasurement{
     public int getValue();
 
     /**
-     * Getter of Unit
-     * @return String with the Unit of the measurement
+     * Getter of EUnit
+     * @return String with the EUnit of the measurement
      */
-    public Unit getUnit();
+    public EUnit getUnit();
 
     /**
-     * Getter of Type
-     * @return String with the Type of the measurement
+     * Getter of EType
+     * @return String with the EType of the measurement
      */
-    public Type getType();
+    public EType getType();
 
     /**
      * Getter of Timestamp
