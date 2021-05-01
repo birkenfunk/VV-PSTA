@@ -43,26 +43,26 @@ public class Connector implements Runnable{
      */
     private void initEnumMap(){
         EnumMap<ESymbol,EState> symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.SENSOR_HELLO, state.WAIT_FOR_ACKNOWLEDGE);
-        stateSymbolStateHashmap.put(state.WAIT_FOR_CLIENT, symbolStateHashMap);
+        symbolStateHashMap.put(ESymbol.SENSOR_HELLO, EState.WAIT_FOR_ACKNOWLEDGE);
+        stateSymbolStateHashmap.put(EState.WAIT_FOR_CLIENT, symbolStateHashMap);
         symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.ACKNOWLEDGE, state.WAIT_FOR_MEASUREMENT);
-        symbolStateHashMap.put(ESymbol.TERMINATE, state.TERMINATED);
-        symbolStateHashMap.put(ESymbol.MEASUREMENT, state.TERMINATED);
-        stateSymbolStateHashmap.put(state.WAIT_FOR_ACKNOWLEDGE,symbolStateHashMap);
+        symbolStateHashMap.put(ESymbol.ACKNOWLEDGE, EState.WAIT_FOR_MEASUREMENT);
+        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
+        symbolStateHashMap.put(ESymbol.MEASUREMENT, EState.TERMINATED);
+        stateSymbolStateHashmap.put(EState.WAIT_FOR_ACKNOWLEDGE,symbolStateHashMap);
         symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.MEASUREMENT, state.WAIT_FOR_MEASUREMENT);
-        symbolStateHashMap.put(ESymbol.TERMINATE, state.TERMINATED);
-        stateSymbolStateHashmap.put(state.WAIT_FOR_MEASUREMENT, symbolStateHashMap);
+        symbolStateHashMap.put(ESymbol.MEASUREMENT, EState.WAIT_FOR_MEASUREMENT);
+        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
+        stateSymbolStateHashmap.put(EState.WAIT_FOR_MEASUREMENT, symbolStateHashMap);
         symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.SENSOR_HELLO, state.TERMINATED);
-        symbolStateHashMap.put(ESymbol.ACKNOWLEDGE, state.TERMINATED);
-        symbolStateHashMap.put(ESymbol.MEASUREMENT, state.TERMINATED);
-        symbolStateHashMap.put(ESymbol.TERMINATE, state.TERMINATED);
-        stateSymbolStateHashmap.put(state.TERMINATED, symbolStateHashMap);
+        symbolStateHashMap.put(ESymbol.SENSOR_HELLO, EState.TERMINATED);
+        symbolStateHashMap.put(ESymbol.ACKNOWLEDGE, EState.TERMINATED);
+        symbolStateHashMap.put(ESymbol.MEASUREMENT, EState.TERMINATED);
+        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
+        stateSymbolStateHashmap.put(EState.TERMINATED, symbolStateHashMap);
         symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.TERMINATE, state.TERMINATED);
-        stateSymbolStateHashmap.put(state.ERROR, symbolStateHashMap);
+        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
+        stateSymbolStateHashmap.put(EState.ERROR, symbolStateHashMap);
     }
 
     /**
@@ -76,7 +76,7 @@ public class Connector implements Runnable{
         PrintStream toClient = new PrintStream(toClientStream);
         JsonNode emptyNote = Json.parse("{}");
         SendAndReceive send = new SendAndReceive("", emptyNote);
-        while (state != state.TERMINATED){
+        while (state != EState.TERMINATED){
             if(!fromClient.hasNext()){
                 break;
             }
@@ -92,21 +92,21 @@ public class Connector implements Runnable{
             }
 
 
-            if(state == state.WAIT_FOR_ACKNOWLEDGE){
+            if(state == EState.WAIT_FOR_ACKNOWLEDGE){
                 send.setType(ESymbol.STATION_HELLO.toString());
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
-            if(state == state.WAIT_FOR_MEASUREMENT){
+            if(state == EState.WAIT_FOR_MEASUREMENT){
                 putToMeasurement(receive);
                 send.setType(ESymbol.STATION_READY.toString());
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
-            if(state == state.ERROR){
-                send.setType(state.ERROR.toString());
+            if(state == EState.ERROR){
+                send.setType(EState.ERROR.toString());
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
