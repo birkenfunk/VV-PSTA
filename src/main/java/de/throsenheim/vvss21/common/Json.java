@@ -30,6 +30,7 @@ public class Json {
      * Transforms a {@link String} into a {@link JsonNode}
      * @param src String that should be transformed
      * @return A JsonNote that contains the information from the string
+     * @throws IOException Because
      */
     public static JsonNode parse(String src) throws IOException {
         return objectMapper.readTree(src);
@@ -39,7 +40,9 @@ public class Json {
      * Transforms a {@link JsonNode} to a class
      * @param node The JsonNote with the inforation
      * @param clazz the class that it should be transformed into
+     * @param <A> Type of the Class
      * @return a object of the class clazz with the parameter of the node
+     * @throws JsonProcessingException Because
      */
     public static <A> A fromJson(JsonNode node , Class<A> clazz) throws JsonProcessingException {
         return objectMapper.treeToValue(node, clazz);
@@ -58,6 +61,7 @@ public class Json {
      * Transforms a {@link JsonNode} to a simple Sting
      * @param node The {@link JsonNode} that should be transformed
      * @return A String with the information in one Line
+     * @throws IOException Because
      */
     public static String stringify(JsonNode node) throws IOException {
         return generateString(node, false);
@@ -67,6 +71,7 @@ public class Json {
      * Transforms a {@link JsonNode} to a pritty Sting
      * @param node The {@link JsonNode} that should be transformed
      * @return A String with the information splitted on different lines
+     * @throws IOException Because
      */
     public static String prittyPrint(JsonNode node) throws IOException {
         return generateString(node,true);
@@ -77,6 +82,7 @@ public class Json {
      * @param node The {@link JsonNode} that should be transformed
      * @param pritty True for a pritty String False if String in one line
      * @return String with the information of the node
+     * @throws IOException Because
      */
     private static String generateString(JsonNode node, boolean pritty) throws IOException {
         ObjectWriter objectWriter = objectMapper.writer();

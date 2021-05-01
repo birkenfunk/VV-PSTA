@@ -19,7 +19,7 @@ public interface IMeasurementList extends Runnable{
     /**
      * Adds a {@link Measurement} to a blocking queue
      * <p>If a thread is started the blocking queue will be emptied and added to the list
-     * @param measurement {@link IMeasurement} object that should be added
+     * @param measurement {@link Measurement} object that should be added
      */
     public void add(Measurement measurement);
 
