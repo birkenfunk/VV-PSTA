@@ -1,10 +1,8 @@
 package de.throsenheim.vvss21.tcpserver;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import de.throsenheim.vvss21.measurement.Measurement;
-import de.throsenheim.vvss21.measurement.MeasurementList;
+import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.domain.models.Measurement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
@@ -13,14 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
-import java.net.ConnectException;
 import java.net.Socket;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;

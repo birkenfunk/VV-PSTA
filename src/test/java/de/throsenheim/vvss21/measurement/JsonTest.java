@@ -1,8 +1,10 @@
 package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import de.throsenheim.vvss21.domain.models.Measurement;
-import de.throsenheim.vvss21.helperclasses.json.Json;
+import de.throsenheim.vvss21.domain.models.MeasurementList;
+import de.throsenheim.vvss21.common.Json;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -71,8 +73,8 @@ class JsonTest {
         for (int i = 0; i < 50; i++) {
             measurements.add(new Measurement(10, "CELSIUS", "TEMPERATURE", "2021-04-26 17:04:10.11"));
         }
-        MeasurementList measurementList = new MeasurementList(measurements);
+        IMeasurementList measurementList = new MeasurementList(measurements);
         JsonNode node = Json.toJson(measurementList);
-        assertEquals(measurementList,Json.fromJson(node,MeasurementList.class));
+        assertEquals(measurementList,Json.fromJson(node, MeasurementList.class));
     }
 }

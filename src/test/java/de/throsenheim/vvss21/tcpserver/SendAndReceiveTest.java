@@ -1,8 +1,7 @@
 package de.throsenheim.vvss21.tcpserver;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import org.junit.jupiter.api.BeforeAll;
+import de.throsenheim.vvss21.common.Json;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

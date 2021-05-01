@@ -1,9 +1,9 @@
 package de.throsenheim.vvss21;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
-import de.throsenheim.vvss21.measurement.MeasurementList;
+import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.common.ReadFile;
+import de.throsenheim.vvss21.domain.models.MeasurementList;
 import de.throsenheim.vvss21.tcpserver.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

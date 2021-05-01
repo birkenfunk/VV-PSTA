@@ -1,8 +1,8 @@
 package de.throsenheim.vvss21.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.throsenheim.vvss21.application.enums.EType;
-import de.throsenheim.vvss21.application.enums.EUnit;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +14,7 @@ import java.util.Objects;
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public class Measurement{
+public class Measurement {
 
     private int value;//Value of the measurement
     private EUnit unit;//Unit of the measurement eg. CELSIUS

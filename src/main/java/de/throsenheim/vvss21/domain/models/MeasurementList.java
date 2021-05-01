@@ -1,13 +1,12 @@
-package de.throsenheim.vvss21.measurement;
+package de.throsenheim.vvss21.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
-import de.throsenheim.vvss21.application.interfaces.IMeasurement;
-import de.throsenheim.vvss21.domain.models.Measurement;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
+import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
+import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.common.WriteFiles;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,17 +25,17 @@ import java.util.concurrent.TimeUnit;
  * @author Alexander Asbeck
  * @version 1.1.0
  */
-public class MeasurementList implements Runnable{
-    private final List<IMeasurement> measurements;
+public class MeasurementList implements Runnable, IMeasurementList {
+    private final List<Measurement> measurements;
     private static final Logger LOGGER = LogManager.getLogger(MeasurementList.class);
-    private final BlockingQueue<IMeasurement> measurementBlockingQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Measurement> measurementBlockingQueue = new LinkedBlockingQueue<>();
     private boolean run = true;
 
     /**
      * Constructor for Class
      * @param measurements {@link List} with {@link Measurement}
      */
-    public MeasurementList(@JsonProperty("measurements") List<IMeasurement> measurements) {
+    public MeasurementList(@JsonProperty("measurements") List<Measurement> measurements) {
         this.measurements = measurements;
     }
 
@@ -44,7 +43,7 @@ public class MeasurementList implements Runnable{
      * To get a {@link List} with {@link Measurement}
      * @return List of {@link Measurement} Objects
      */
-    public List<IMeasurement> getMeasurements() {
+    public List<Measurement> getMeasurements() {
         return measurements;
     }
 
@@ -53,7 +52,7 @@ public class MeasurementList implements Runnable{
      * <p>If a thread is started the blocking queue will be emptied and added to the list
      * @param measurement {@link Measurement} object that should be added
      */
-    public void add(IMeasurement measurement){
+    public void add(Measurement measurement){
         if(measurement == null){
             return;
         }
@@ -92,7 +91,7 @@ public class MeasurementList implements Runnable{
     private void addToMeasurement(){
         while (run) {
             try {
-                IMeasurement measurement = measurementBlockingQueue.poll(1, TimeUnit.SECONDS);
+                Measurement measurement = measurementBlockingQueue.poll(1, TimeUnit.SECONDS);
                 if (measurement != null) {
                     String debugString = "Consumed: "+ measurement;
                     LOGGER.debug(debugString);

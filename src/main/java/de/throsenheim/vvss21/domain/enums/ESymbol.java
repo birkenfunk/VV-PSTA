@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.application.interfaces;
+package de.throsenheim.vvss21.domain.enums;
 
 /**
  * Enum for handling an connection automat
