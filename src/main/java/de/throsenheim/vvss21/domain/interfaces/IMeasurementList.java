@@ -14,14 +14,14 @@ public interface IMeasurementList extends Runnable{
      * To get a {@link List} with {@link Measurement}
      * @return List of {@link Measurement} Objects
      */
-    public List<Measurement> getMeasurements();
+    public List<IMeasurement> getMeasurements();
 
     /**
      * Adds a {@link Measurement} to a blocking queue
      * <p>If a thread is started the blocking queue will be emptied and added to the list
-     * @param measurement {@link Measurement} object that should be added
+     * @param measurement {@link IMeasurement} object that should be added
      */
-    public void add(Measurement measurement);
+    public void add(IMeasurement measurement);
 
     /**
      * Stops the thread and saves everything to a json file

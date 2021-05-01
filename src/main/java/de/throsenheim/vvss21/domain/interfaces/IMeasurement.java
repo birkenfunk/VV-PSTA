@@ -1,7 +1,7 @@
 package de.throsenheim.vvss21.application.interfaces;
 
-import de.throsenheim.vvss21.application.enums.EType;
-import de.throsenheim.vvss21.application.enums.EUnit;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
 
 /**
  * Interface for handling measurement objects
