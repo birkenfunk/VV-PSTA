@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.measurement;
+package de.throsenheim.vvss21.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.throsenheim.vvss21.application.enums.EType;

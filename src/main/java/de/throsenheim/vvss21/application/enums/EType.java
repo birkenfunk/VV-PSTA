@@ -1,6 +1,6 @@
 package de.throsenheim.vvss21.application.enums;
 
-import de.throsenheim.vvss21.measurement.Measurement;
+import de.throsenheim.vvss21.domain.models.Measurement;
 
 /**
  * Enum with the types to used in the {@link Measurement} object

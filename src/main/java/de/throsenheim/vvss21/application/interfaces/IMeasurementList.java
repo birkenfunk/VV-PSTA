@@ -1,7 +1,7 @@
 package de.throsenheim.vvss21.application.interfaces;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.throsenheim.vvss21.measurement.Measurement;
+import de.throsenheim.vvss21.domain.models.Measurement;
 
 import java.util.List;
 
