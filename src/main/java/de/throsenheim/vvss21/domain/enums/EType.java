@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.application.enums;
+package de.throsenheim.vvss21.domain.enums;
 
 import de.throsenheim.vvss21.domain.models.Measurement;
 
