@@ -1,5 +1,7 @@
 package de.throsenheim.vvss21.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.throsenheim.vvss21.domain.models.Measurement;
 
 /**
@@ -8,11 +10,11 @@ import de.throsenheim.vvss21.domain.models.Measurement;
  * @author Alexander Asbeck
  */
 public enum EType {
-    TEMPERATURE,
-    HUMIDITY,
-    PRESSURE,
-    COUNT,
-    FLOW_RATE,
-    ENERGY,
-    NONE
+    @JsonProperty("TEMPERATURE") TEMPERATURE,
+    @JsonProperty("HUMIDITY") HUMIDITY,
+    @JsonProperty("PRESSURE") PRESSURE,
+    @JsonProperty("COUNT") COUNT,
+    @JsonProperty("FLOW_RATE") FLOW_RATE,
+    @JsonProperty("ENERGY") ENERGY,
+    @JsonProperty("NONE") NONE
 }

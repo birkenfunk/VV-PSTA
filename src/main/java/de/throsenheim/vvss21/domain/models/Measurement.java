@@ -1,12 +1,13 @@
 package de.throsenheim.vvss21.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.throsenheim.vvss21.domain.enums.EType;
 import de.throsenheim.vvss21.domain.enums.EUnit;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 /**
@@ -14,6 +15,8 @@ import java.util.Objects;
  * @version 1.0.0
  * @author Alexander Asbeck
  */
+@JsonPropertyOrder(value = {"value", "unit", "type", "timestamp"})
+
 public class Measurement {
 
     private int value;//Value of the measurement
@@ -28,31 +31,12 @@ public class Measurement {
      * @param type Type of the measurement from {@link EType}
      * @param timestamp Time when the measurement happened in the format 'yyyy-MM-dd HH:mm:ss.SS'
      */
-    public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") String unit, @JsonProperty("type") String type, @JsonProperty("timestamp") String timestamp) {
-        unit = unit.toUpperCase();
-        type = type.toUpperCase();
+    public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") EUnit unit, @JsonProperty("type") EType type, @JsonProperty("timestamp") LocalDateTime timestamp) {
+        this.unit = unit;
+        this.type = type;
         this.value = value;
-        try {
-            this.unit = EUnit.valueOf(unit);
-        }catch (IllegalArgumentException e){
-            this.unit = EUnit.NONE;
-        }
-        try {
-            this.type = EType.valueOf(type);
-        }catch (IllegalArgumentException e){
-            this.type = EType.NONE;
-        }
-        try {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-            this.timestamp = LocalDateTime.parse(timestamp, dateTimeFormatter);
-        }catch (DateTimeParseException e){
-            try {
-                this.timestamp = LocalDateTime.parse(timestamp);
-            }catch (DateTimeParseException dateTimeParseException){
-                this.timestamp = LocalDateTime.now();
-            }
 
-        }
+        this.timestamp = timestamp;
 
     }
 
@@ -84,9 +68,8 @@ public class Measurement {
      * Getter of Timestamp
      * @return String with the Timestamp of the measurement with the pattern: 'yyyy-MM-dd HH:mm:ss.SS'
      */
-    public String getTimestamp() {
-        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-        return timestamp.format(myFormatObj);
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
     @Override

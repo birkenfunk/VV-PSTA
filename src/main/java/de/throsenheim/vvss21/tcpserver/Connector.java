@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.domain.enums.EState;
 import de.throsenheim.vvss21.domain.enums.ESymbol;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import de.throsenheim.vvss21.domain.models.Measurement;
 import de.throsenheim.vvss21.common.Json;
@@ -14,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.Scanner;
 
@@ -158,7 +161,7 @@ public class Connector implements Runnable{
             measurementList.add(mes);
         }catch (IOException e){
             LOGGER.error(e);
-            Measurement mes = new Measurement(node.get("value").intValue(),node.get("unit").asText(),node.get("type").asText(),node.get("timestamp").asText());
+            Measurement mes = new Measurement(node.get("value").intValue(), EUnit.NONE, EType.NONE, LocalDateTime.now());
             measurementList.add(mes);
         }
     }

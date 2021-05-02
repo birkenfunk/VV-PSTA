@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.throsenheim.vvss21.domain.models.Measurement;
 
 /**
@@ -8,13 +9,13 @@ import de.throsenheim.vvss21.domain.models.Measurement;
  * @author Alexander Asbeck
  */
 public enum EUnit {
-    CELSIUS,
-    KELVIN,
-    PERCENT,
-    FAHRENHEIT,
-    HECTOPASCAL,
-    UNITS,
-    CMS2,
-    KWH3,
-    NONE
+    @JsonProperty("CELSIUS") CELSIUS,
+    @JsonProperty("KELVIN") KELVIN,
+    @JsonProperty("PERCENT") PERCENT,
+    @JsonProperty("FAHRENHEIT") FAHRENHEIT,
+    @JsonProperty("HECTOPASCAL") HECTOPASCAL,
+    @JsonProperty("UNITS") UNITS,
+    @JsonProperty("CMS2") CMS2,
+    @JsonProperty("KWH3") KWH3,
+    @JsonProperty("NONE")  NONE
 }

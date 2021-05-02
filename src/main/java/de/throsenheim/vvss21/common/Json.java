@@ -2,6 +2,7 @@ package de.throsenheim.vvss21.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
 
@@ -23,6 +24,7 @@ public class Json {
     private static ObjectMapper getDefaultObjectMapper(){
         ObjectMapper defaultObjectMapper = new ObjectMapper();
         defaultObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+        defaultObjectMapper.registerModule(new JavaTimeModule());
         return defaultObjectMapper;
     }
 

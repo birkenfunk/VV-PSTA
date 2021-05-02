@@ -2,6 +2,8 @@ package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.models.Measurement;
 import de.throsenheim.vvss21.domain.models.MeasurementList;
 import de.throsenheim.vvss21.common.Json;
@@ -25,7 +27,7 @@ class MeasurementListTest {
         LOGGER.debug("Executing Test add\n\n\n");
         Thread thread = new Thread(measurementList);
         thread.start();
-        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE", LocalDateTime.now().toString());
+        Measurement measurement = new Measurement(10, EUnit.CELSIUS, EType.TEMPERATURE, LocalDateTime.now());
         measurementList.add(measurement);
         Thread.sleep(1000);
         assertTrue(measurementList.getMeasurements().contains(measurement));

@@ -1,6 +1,8 @@
 package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import de.throsenheim.vvss21.domain.models.Measurement;
 import de.throsenheim.vvss21.domain.models.MeasurementList;
@@ -11,6 +13,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +27,7 @@ class JsonTest {
             "  \"value\" : 10,\n" +
             "  \"unit\" : \"CELSIUS\",\n" +
             "  \"type\" : \"TEMPERATURE\",\n" +
-            "  \"timestamp\" : \"2021-04-26 17:04:10.11\"\n" +
+            "  \"timestamp\" : \""+ LocalDateTime.now() +"\"\n" +
             "}";
 
     @BeforeAll
@@ -41,7 +45,7 @@ class JsonTest {
     void fromJson() throws IOException {
         JsonNode node = Json.parse(TestCase);
         Measurement measurement = Json.fromJson(node, Measurement.class);
-        assertEquals("Measurement{value=10, unit=CELSIUS, type=TEMPERATURE, timestamp=2021-04-26T17:04:10.110}",measurement.toString());
+        assertEquals("Measurement{value=10, unit=CELSIUS, type=TEMPERATURE, timestamp="+measurement.getTimestamp()+"}",measurement.toString());
     }
 
     @Test
@@ -52,26 +56,20 @@ class JsonTest {
         assertEquals("CELSIUS", node.get("unit").asText());
         assertEquals("TEMPERATURE", node.get("type").asText());
         assertEquals("10",node.get("value").asText());
-        assertEquals("2021-04-26 17:04:10.11", node.get("timestamp").asText());
     }
 
     @Test
     void stringify() throws IOException {
         JsonNode node = Json.parse(TestCase);
-        assertEquals("{\n" +
-                "  \"value\" : 10,\n" +
-                "  \"unit\" : \"CELSIUS\",\n" +
-                "  \"type\" : \"TEMPERATURE\",\n" +
-                "  \"timestamp\" : \"2021-04-26 17:04:10.11\"\n" +
-                "}", Json.prittyPrint(node));
-        assertEquals("{\"value\":10,\"unit\":\"CELSIUS\",\"type\":\"TEMPERATURE\",\"timestamp\":\"2021-04-26 17:04:10.11\"}", Json.stringify(node));
+        assertEquals(TestCase, Json.prittyPrint(node));
+        assertEquals(TestCase.replaceAll("[\n| ]",""), Json.stringify(node));
     }
 
     @Test
     void measurementListTest() throws IOException {
         List<Measurement> measurements = new LinkedList<>();
         for (int i = 0; i < 50; i++) {
-            measurements.add(new Measurement(10, "CELSIUS", "TEMPERATURE", "2021-04-26 17:04:10.11"));
+            measurements.add(new Measurement(10, EUnit.CELSIUS, EType.TEMPERATURE, LocalDateTime.now()));
         }
         IMeasurementList measurementList = new MeasurementList(measurements);
         JsonNode node = Json.toJson(measurementList);

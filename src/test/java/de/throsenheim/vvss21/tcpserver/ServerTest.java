@@ -2,6 +2,8 @@ package de.throsenheim.vvss21.tcpserver;
 
 import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.models.Measurement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,16 +53,15 @@ class ServerTest {
         OutputStream toServerStream = socket.getOutputStream();
         PrintStream toServer = new PrintStream(toServerStream);
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
         toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
         assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
         toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
         assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
-        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE",  LocalDateTime.now().format(dateTimeFormatter));
+        Measurement measurement = new Measurement(10, EUnit.CELSIUS, EType.TEMPERATURE,  LocalDateTime.now());
         String data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
         toServer.println(data);
         assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
-        measurement = new Measurement(10, "Random Stuff", "Random Stuff",  LocalDateTime.now().format(dateTimeFormatter));
+        measurement = new Measurement(10, EUnit.NONE, EType.NONE,  LocalDateTime.now());
         data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
         toServer.println(data);
         Thread.sleep(1000);
