@@ -1,11 +1,12 @@
-package de.throsenheim.vvss21.measurement;
+package de.throsenheim.vvss21.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import de.throsenheim.vvss21.Main;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import de.throsenheim.vvss21.helperclasses.writers.WriteFiles;
+import de.throsenheim.vvss21.common.ConfigData;
+import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.common.WriteFiles;
+import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @author Alexander Asbeck
  * @version 1.1.0
  */
-public class MeasurementList implements Runnable{
+public class MeasurementList implements Runnable, IMeasurementList {
     private final List<Measurement> measurements;
     private static final Logger LOGGER = LogManager.getLogger(MeasurementList.class);
     private final BlockingQueue<Measurement> measurementBlockingQueue = new LinkedBlockingQueue<>();
@@ -78,7 +79,7 @@ public class MeasurementList implements Runnable{
         } catch (IOException e) {
             LOGGER.error(e);
         }
-        File storeTo = new File(Main.getJsonLocation());
+        File storeTo = new File(ConfigData.getJsonLocation());
         WriteFiles.writeFile(storeTo, strings, true);
     }
 

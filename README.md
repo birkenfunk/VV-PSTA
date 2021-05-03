@@ -12,19 +12,19 @@ When the programm stopps it will save all saved measurement objects into a file.
 
 ## How To talk to the Server:
 
-| Send                                                                   | Recive                                      |
+| Send                                                                   | Receive                                      |
 |:---------------------------------------------------------------------- | ------------------------------------------- |
-| `{"type":"Sensor_Hello","payload":{}}`                                 | `{"type":"STATION_HELLO","payload":{}}`     |
-| `{"type":"Acknowledge","payload":{}}`                                  | `{"type":"STATION_READY","payload":{}}`     |
-| `{"type":"Measurement","payload":{`[Measurement](#Mearuement json)`}}` | `{"type":"STATION_READY","payload":{}}`     |
+| `{"type":"sensor_hello","payload":{}}`                                 | `{"type":"statopn_hello","payload":{}}`     |
+| `{"type":"acknowledge","payload":{}}`                                  | `{"type":"station_ready","payload":{}}`     |
+| `{"type":"measurement","payload":{`[Measurement](#Mearuement json)`}}` | `{"type":"station_ready","payload":{}}`     |
 | You can send more Measurement jsons                                    |                                             |
-| `{"type":"Terminate","payload":{}}`                                    | `{"type":"TERMINATE_STATION","payload":{}}` |
+| `{"type":"terminate","payload":{}}`                                    | `{"type":"terminate_station","payload":{}}` |
 
 ## Measurement json
 
 A measurement has to contain:
 
-- A Value whitch is a int
+- A Value witch is a int
 
 - A [type](#type)
 
@@ -32,10 +32,10 @@ A measurement has to contain:
 
 - A Timestamp
 
-In the end it sould look like this
+In the end it should look like this
 
 ```json
-{"value" : 10, "unit" : "CELSIUS", "type" : "TEMPERATURE", "timestamp" : "2021-04-17 18:09:10.18"}
+{"value" : 10,"unit" : "none","type" : "none","timestamp" : [ 2021, 5, 2, 15, 8, 29, 191725000 ]}
 ```
 
 ### Type

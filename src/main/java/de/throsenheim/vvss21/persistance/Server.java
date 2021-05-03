@@ -1,6 +1,7 @@
-package de.throsenheim.vvss21.tcpserver;
+package de.throsenheim.vvss21.persistance;
 
-import de.throsenheim.vvss21.Main;
+import de.throsenheim.vvss21.application.interfaces.IServer;
+import de.throsenheim.vvss21.common.ConfigData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,14 +18,14 @@ import java.util.concurrent.Executors;
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public class Server implements Runnable{
+public class Server implements IServer, Runnable {
 
-    private static final int PORT = Main.getPort();
-    private static boolean run = true;
+    private static final int PORT = ConfigData.getPort();
+    private boolean run = true;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();
-    private static ExecutorService executer = Executors.newFixedThreadPool(50);
-    private static ServerSocket serverSocket;
+    private ExecutorService executer = Executors.newFixedThreadPool(50);
+    private ServerSocket serverSocket;
     private static final Server SERVER = new Server();
 
     /**
@@ -36,7 +37,7 @@ public class Server implements Runnable{
     /**
      * Initializes the variables for the Server
      */
-    private static void init() throws IOException {
+    private void init() throws IOException {
         run = true;
         if(executer.isShutdown()){
             executer = Executors.newFixedThreadPool(50);
@@ -70,16 +71,15 @@ public class Server implements Runnable{
     /**
      * Method to remove a Connector from the Connector list in case the connection is closed
      * @param connector Connector that should be removed
-     * @return True if operation was a success False if operation failed
      */
-    public static boolean removeConnector(Connector connector){
-        return connectors.remove(connector);
+    public static void removeConnector(Connector connector){
+        connectors.remove(connector);
     }
 
     /**
      * Method to stop the Server and the connections
      */
-    public static void stop(){
+    public void stop(){
         if(serverSocket != null){
             try {
                 serverSocket.close();

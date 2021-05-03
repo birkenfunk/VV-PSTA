@@ -1,10 +1,11 @@
 package de.throsenheim.vvss21.tcpserver;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import de.throsenheim.vvss21.measurement.Measurement;
-import de.throsenheim.vvss21.measurement.MeasurementList;
+import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
+import de.throsenheim.vvss21.domain.models.Measurement;
+import de.throsenheim.vvss21.persistance.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
@@ -13,14 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
-import java.net.ConnectException;
 import java.net.Socket;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,14 +27,14 @@ class ServerTest {
 
     @BeforeEach
     void setUp() {
-        Server.stop();
+        Server.getSERVER().stop();
         serverThread = new Thread(Server.getSERVER());
         serverThread.start();
     }
 
     @AfterEach
     void tearDown() {
-        Server.stop();
+        Server.getSERVER().stop();
         Main.getMeasurementList().stop();
     }
 
@@ -58,17 +53,16 @@ class ServerTest {
         OutputStream toServerStream = socket.getOutputStream();
         PrintStream toServer = new PrintStream(toServerStream);
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
-        assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
-        toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
-        assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
-        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE",  LocalDateTime.now().format(dateTimeFormatter));
-        String data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
+        toServer.println("{\"type\":\"sensor_hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"station_hello\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"acknowledge\",\"payload\":{}}");
+        assertEquals("{\"type\":\"station_ready\",\"payload\":{}}", fromServer.nextLine());
+        Measurement measurement = new Measurement(10, EUnit.CELSIUS, EType.TEMPERATURE,  LocalDateTime.now());
+        String data = "{\"type\":\"measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
         toServer.println(data);
-        assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
-        measurement = new Measurement(10, "Random Stuff", "Random Stuff",  LocalDateTime.now().format(dateTimeFormatter));
-        data = "{\"type\":\"Measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
+        assertEquals("{\"type\":\"station_ready\",\"payload\":{}}", fromServer.nextLine());
+        measurement = new Measurement(10, EUnit.NONE, EType.NONE,  LocalDateTime.now());
+        data = "{\"type\":\"measurement\",\"payload\":"+Json.stringify(Json.toJson(measurement))+"}";
         toServer.println(data);
         Thread.sleep(1000);
         assertTrue(Main.getMeasurementList().getMeasurements().contains(measurement));
@@ -87,9 +81,9 @@ class ServerTest {
         Scanner fromServer = new Scanner(fromServerStream);
         OutputStream toServerStream = socket.getOutputStream();
         PrintStream toServer = new PrintStream(toServerStream);
-        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
-        assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
-        Server.stop();
+        toServer.println("{\"type\":\"sensor_hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"station_hello\",\"payload\":{}}", fromServer.nextLine());
+        Server.getSERVER().stop();
         assertFalse(fromServer.hasNext());
     }
 
@@ -102,14 +96,14 @@ class ServerTest {
         Scanner fromServer = new Scanner(fromServerStream);
         OutputStream toServerStream = socket.getOutputStream();
         PrintStream toServer = new PrintStream(toServerStream);
-        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
-        assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
-        toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
-        assertEquals("{\"type\":\"STATION_READY\",\"payload\":{}}", fromServer.nextLine());
-        toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
-        assertEquals("{\"type\":\"ERROR\",\"payload\":{}}", fromServer.nextLine());
-        toServer.println("{\"type\":\"Terminate\",\"payload\":{}}");
-        assertEquals("{\"type\":\"TERMINATE_STATION\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"sensor_hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"station_hello\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"acknowledge\",\"payload\":{}}");
+        assertEquals("{\"type\":\"station_ready\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"sensor_hello\",\"payload\":{}}");
+        assertEquals("{\"type\":\"error\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"terminate\",\"payload\":{}}");
+        assertEquals("{\"type\":\"terminate_station\",\"payload\":{}}", fromServer.nextLine());
         assertFalse(fromServer.hasNext());
 
         socket = new Socket("localhost", 1024);
@@ -117,10 +111,10 @@ class ServerTest {
         fromServer = new Scanner(fromServerStream);
         toServerStream = socket.getOutputStream();
         toServer = new PrintStream(toServerStream);
-        toServer.println("{\"type\":\"Acknowledge\",\"payload\":{}}");
-        assertEquals("{\"type\":\"ERROR\",\"payload\":{}}", fromServer.nextLine());
-        toServer.println("{\"type\":\"Terminate\",\"payload\":{}}");
-        assertEquals("{\"type\":\"TERMINATE_STATION\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"acknowledge\",\"payload\":{}}");
+        assertEquals("{\"type\":\"error\",\"payload\":{}}", fromServer.nextLine());
+        toServer.println("{\"type\":\"terminate\",\"payload\":{}}");
+        assertEquals("{\"type\":\"terminate_station\",\"payload\":{}}", fromServer.nextLine());
         assertFalse(fromServer.hasNext());
     }
 }
