@@ -5,16 +5,17 @@ import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.application.StateMachine;
 import de.throsenheim.vvss21.application.interfaces.IClientConnection;
 import de.throsenheim.vvss21.application.interfaces.IStateMachine;
+import de.throsenheim.vvss21.common.Json;
 import de.throsenheim.vvss21.domain.enums.EState;
 import de.throsenheim.vvss21.domain.enums.ESymbol;
 import de.throsenheim.vvss21.domain.enums.EType;
 import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import de.throsenheim.vvss21.domain.models.Measurement;
-import de.throsenheim.vvss21.common.Json;
 import de.throsenheim.vvss21.domain.models.SendAndReceive;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -54,7 +55,7 @@ public class Connector implements IClientConnection, Runnable {
         OutputStream toClientStream = client.getOutputStream();
         PrintStream toClient = new PrintStream(toClientStream);
         JsonNode emptyNote = Json.parse("{}");
-        SendAndReceive send = new SendAndReceive("", emptyNote);
+        SendAndReceive send = new SendAndReceive(ESymbol.UNKNOWN, emptyNote);
         IStateMachine stateMachine = StateMachine.getStateMachine();
         while (state != EState.TERMINATED){
             if(!fromClient.hasNext()){
@@ -62,37 +63,38 @@ public class Connector implements IClientConnection, Runnable {
             }
             JsonNode node = null;
             String line = fromClient.nextLine();
-            SendAndReceive receive = new SendAndReceive("",emptyNote);
+            line = line.toLowerCase();
+            SendAndReceive receive = new SendAndReceive(ESymbol.UNKNOWN,emptyNote);
             try {
                 node = Json.parse(line);
                 receive = Json.fromJson(node, SendAndReceive.class);
-                state = stateMachine.nextState(receive.getType(), state);
+                state = stateMachine.nextState(receive.getType().toString(), state);
             }catch (IOException e){
                 state = stateMachine.nextState(line,state);
             }
 
 
             if(state == EState.WAIT_FOR_ACKNOWLEDGE){
-                send.setType(ESymbol.STATION_HELLO.toString());
+                send.setType(ESymbol.STATION_HELLO);
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
             if(state == EState.WAIT_FOR_MEASUREMENT){
                 putToMeasurement(receive);
-                send.setType(ESymbol.STATION_READY.toString());
+                send.setType(ESymbol.STATION_READY);
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
             if(state == EState.ERROR){
-                send.setType(EState.ERROR.toString());
+                send.setType(ESymbol.ERROR);
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
         }
-        send.setType(ESymbol.TERMINATE_STATION.toString());
+        send.setType(ESymbol.TERMINATE_STATION);
         send.setPayload(emptyNote);
         JsonNode node = Json.toJson(send);
         toClient.println(Json.stringify(node));
@@ -109,7 +111,7 @@ public class Connector implements IClientConnection, Runnable {
         if(input == null){
             return;
         }
-        if(!input.getType().equalsIgnoreCase(ESymbol.MEASUREMENT.toString())){
+        if(input.getType()!=ESymbol.MEASUREMENT){
             return;
         }
         JsonNode node = input.getPayload();

@@ -2,6 +2,7 @@ package de.throsenheim.vvss21.tcpserver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.domain.enums.ESymbol;
 import de.throsenheim.vvss21.domain.models.SendAndReceive;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,14 +17,14 @@ class SendAndReceiveTest {
 
     @BeforeEach
     void setUp() {
-        sendAndReceive = new SendAndReceive("", null);
+        sendAndReceive = new SendAndReceive(ESymbol.UNKNOWN, null);
     }
 
     @Test
     void setType() {
-        assertEquals("", sendAndReceive.getType());
-        sendAndReceive.setType("Test");
-        assertEquals("Test", sendAndReceive.getType());
+        assertEquals(ESymbol.UNKNOWN, sendAndReceive.getType());
+        sendAndReceive.setType(ESymbol.SENSOR_HELLO);
+        assertEquals(ESymbol.SENSOR_HELLO, sendAndReceive.getType());
     }
 
     @Test
