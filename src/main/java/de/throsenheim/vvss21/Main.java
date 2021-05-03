@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.common.Json;
 import de.throsenheim.vvss21.common.ReadFile;
 import de.throsenheim.vvss21.domain.models.MeasurementList;
-import de.throsenheim.vvss21.tcpserver.Server;
+import de.throsenheim.vvss21.persistance.CommandlineReader;
+import de.throsenheim.vvss21.persistance.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +28,7 @@ public class Main {
     private static MeasurementList measurementList;
     private static String jsonLocation = "data.json";
     private static int port = 1024;
-    private final ReadConsole readConsole;
+    private final CommandlineReader readConsole;
 
     /**
      * Constructor for Main Class
@@ -35,7 +36,7 @@ public class Main {
      * @param args args given by main
      */
     public Main(String[] args) {
-        this.readConsole = new ReadConsole();
+        this.readConsole = new CommandlineReader(getMeasurementList());
         logStartup();
         readProperties();
         getMeasurementList();
@@ -151,48 +152,4 @@ public class Main {
 
     }
 
-    /**
-     * Class that reads from input from the Console
-     * @author Alexander Asbeck
-     * @version 1.1.0
-     */
-    class ReadConsole implements Runnable{
-        private boolean read = true;
-        /**
-         * Starts a Commandline reader
-         *
-         * @see Thread#run()
-         */
-        @Override
-        public void run() {
-            String line;
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            try {
-                while (read){
-                    line = reader.readLine();
-                    commandComparison(line);
-                }
-                LOGGER.debug("Commandline Reader Closed");
-            } catch (Exception e) {
-                LOGGER.error(e);
-            }
-        }
-
-        /**
-         * Compares if a correct command has been entered
-         * @param command A string of the command witch has been entered
-         */
-        private void commandComparison(String command){
-            if(command.equalsIgnoreCase("exit")){
-                read = false;
-                measurementList.stop();
-                Server.stop();
-                LOGGER.info("Stopped Program");
-                return;
-            }
-            LOGGER.info("Use help to get all commands");
-        }
-
-    }
 }
