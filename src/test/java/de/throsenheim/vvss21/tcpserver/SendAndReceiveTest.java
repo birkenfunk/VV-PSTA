@@ -2,6 +2,7 @@ package de.throsenheim.vvss21.tcpserver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.domain.models.SendAndReceive;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

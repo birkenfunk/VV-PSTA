@@ -9,6 +9,7 @@ import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import de.throsenheim.vvss21.domain.models.Measurement;
 import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.domain.models.SendAndReceive;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.IOException;
