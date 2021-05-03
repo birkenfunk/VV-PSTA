@@ -1,6 +1,7 @@
-package de.throsenheim.vvss21.tcpserver;
+package de.throsenheim.vvss21.persistance;
 
 import de.throsenheim.vvss21.Main;
+import de.throsenheim.vvss21.application.interfaces.IServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.Executors;
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public class Server implements Runnable{
+public class Server implements IServer, Runnable {
 
     private static final int PORT = Main.getPort();
     private static boolean run = true;
@@ -79,7 +80,7 @@ public class Server implements Runnable{
     /**
      * Method to stop the Server and the connections
      */
-    public static void stop(){
+    public void stop(){
         if(serverSocket != null){
             try {
                 serverSocket.close();

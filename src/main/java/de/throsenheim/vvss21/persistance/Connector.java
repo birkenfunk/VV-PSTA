@@ -1,8 +1,9 @@
-package de.throsenheim.vvss21.tcpserver;
+package de.throsenheim.vvss21.persistance;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.application.StateMachine;
+import de.throsenheim.vvss21.application.interfaces.IClientConnection;
 import de.throsenheim.vvss21.application.interfaces.IStateMachine;
 import de.throsenheim.vvss21.domain.enums.EState;
 import de.throsenheim.vvss21.domain.enums.ESymbol;
@@ -27,7 +28,7 @@ import java.util.Scanner;
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public class Connector implements Runnable{
+public class Connector implements IClientConnection, Runnable {
 
     private Socket client;
     private static final Logger LOGGER = LogManager.getLogger(Connector.class);
@@ -157,6 +158,16 @@ public class Connector implements Runnable{
         } catch (IOException e) {
             LOGGER.error(e);
         }
+    }
+
+    /**
+     * To check if the connection is still running
+     *
+     * @return True if connection is still active False if connection isn't active any more
+     */
+    @Override
+    public boolean isRunning() {
+        return state!=EState.TERMINATED;
     }
 
 

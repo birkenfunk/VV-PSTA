@@ -5,6 +5,7 @@ import de.throsenheim.vvss21.common.Json;
 import de.throsenheim.vvss21.domain.enums.EType;
 import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.models.Measurement;
+import de.throsenheim.vvss21.persistance.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
@@ -15,7 +16,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
