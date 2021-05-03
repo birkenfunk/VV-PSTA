@@ -1,6 +1,7 @@
 package de.throsenheim.vvss21.helperclasses.writers;
 
-import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
+import de.throsenheim.vvss21.common.ReadFile;
+import de.throsenheim.vvss21.common.WriteFiles;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

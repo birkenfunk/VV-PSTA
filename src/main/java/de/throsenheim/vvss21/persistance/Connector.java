@@ -1,10 +1,18 @@
-package de.throsenheim.vvss21.tcpserver;
+package de.throsenheim.vvss21.persistance;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import de.throsenheim.vvss21.measurement.Measurement;
-import de.throsenheim.vvss21.measurement.MeasurementList;
+import de.throsenheim.vvss21.application.StateMachine;
+import de.throsenheim.vvss21.application.interfaces.IClientConnection;
+import de.throsenheim.vvss21.application.interfaces.IStateMachine;
+import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.domain.enums.EState;
+import de.throsenheim.vvss21.domain.enums.ESymbol;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
+import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
+import de.throsenheim.vvss21.domain.models.Measurement;
+import de.throsenheim.vvss21.domain.models.SendAndReceive;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,7 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.EnumMap;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 /**
@@ -21,12 +29,11 @@ import java.util.Scanner;
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public class Connector implements Runnable{
+public class Connector implements IClientConnection, Runnable {
 
     private Socket client;
     private static final Logger LOGGER = LogManager.getLogger(Connector.class);
-    private final EnumMap<State, EnumMap<Symbol, State>> stateSymbolStateHashmap = new EnumMap<>(State.class);//Map for the automat
-    private State state = State.WAIT_FOR_CLIENT;
+    private EState state = EState.WAIT_FOR_CLIENT;
 
     /**
      * Constructor for {@link Connector}
@@ -34,35 +41,9 @@ public class Connector implements Runnable{
      */
     public Connector(Socket client) {
         this.client = client;
-        initEnumMap();
     }
 
-    /**
-     * Initialises the stateSymbolStateHashmap
-     */
-    private void initEnumMap(){
-        EnumMap<Symbol,State> symbolStateHashMap = new EnumMap<>(Symbol.class);
-        symbolStateHashMap.put(Symbol.SENSOR_HELLO, State.WAIT_FOR_ACKNOWLEDGE);
-        stateSymbolStateHashmap.put(State.WAIT_FOR_CLIENT, symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(Symbol.class);
-        symbolStateHashMap.put(Symbol.ACKNOWLEDGE, State.WAIT_FOR_MEASUREMENT);
-        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
-        symbolStateHashMap.put(Symbol.MEASUREMENT, State.TERMINATED);
-        stateSymbolStateHashmap.put(State.WAIT_FOR_ACKNOWLEDGE,symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(Symbol.class);
-        symbolStateHashMap.put(Symbol.MEASUREMENT,State.WAIT_FOR_MEASUREMENT);
-        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
-        stateSymbolStateHashmap.put(State.WAIT_FOR_MEASUREMENT, symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(Symbol.class);
-        symbolStateHashMap.put(Symbol.SENSOR_HELLO, State.TERMINATED);
-        symbolStateHashMap.put(Symbol.ACKNOWLEDGE, State.TERMINATED);
-        symbolStateHashMap.put(Symbol.MEASUREMENT, State.TERMINATED);
-        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
-        stateSymbolStateHashmap.put(State.TERMINATED, symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(Symbol.class);
-        symbolStateHashMap.put(Symbol.TERMINATE, State.TERMINATED);
-        stateSymbolStateHashmap.put(State.ERROR, symbolStateHashMap);
-    }
+
 
     /**
      * Handels the Input and output of a connection with a client
@@ -74,44 +55,46 @@ public class Connector implements Runnable{
         OutputStream toClientStream = client.getOutputStream();
         PrintStream toClient = new PrintStream(toClientStream);
         JsonNode emptyNote = Json.parse("{}");
-        SendAndReceive send = new SendAndReceive("", emptyNote);
-        while (state != State.TERMINATED){
+        SendAndReceive send = new SendAndReceive(ESymbol.UNKNOWN, emptyNote);
+        IStateMachine stateMachine = StateMachine.getStateMachine();
+        while (state != EState.TERMINATED){
             if(!fromClient.hasNext()){
                 break;
             }
             JsonNode node = null;
             String line = fromClient.nextLine();
-            SendAndReceive receive = new SendAndReceive("",emptyNote);
+            line = line.toLowerCase();
+            SendAndReceive receive = new SendAndReceive(ESymbol.UNKNOWN,emptyNote);
             try {
                 node = Json.parse(line);
                 receive = Json.fromJson(node, SendAndReceive.class);
-                nextState(receive.getType());
+                state = stateMachine.nextState(receive.getType().toString(), state);
             }catch (IOException e){
-                nextState(line);
+                state = stateMachine.nextState(line,state);
             }
 
 
-            if(state == State.WAIT_FOR_ACKNOWLEDGE){
-                send.setType(Symbol.STATION_HELLO.toString());
+            if(state == EState.WAIT_FOR_ACKNOWLEDGE){
+                send.setType(ESymbol.STATION_HELLO);
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
-            if(state == State.WAIT_FOR_MEASUREMENT){
+            if(state == EState.WAIT_FOR_MEASUREMENT){
                 putToMeasurement(receive);
-                send.setType(Symbol.STATION_READY.toString());
+                send.setType(ESymbol.STATION_READY);
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
-            if(state == State.ERROR){
-                send.setType(State.ERROR.toString());
+            if(state == EState.ERROR){
+                send.setType(ESymbol.ERROR);
                 send.setPayload(emptyNote);
                 node = Json.toJson(send);
                 toClient.println(Json.stringify(node));
             }
         }
-        send.setType(Symbol.TERMINATE_STATION.toString());
+        send.setType(ESymbol.TERMINATE_STATION);
         send.setPayload(emptyNote);
         JsonNode node = Json.toJson(send);
         toClient.println(Json.stringify(node));
@@ -120,24 +103,7 @@ public class Connector implements Runnable{
     }
 
     /**
-     * Goes to the next State
-     * @param input the State of the input
-     */
-    private void nextState(String input){
-        input = input.toUpperCase();
-        Symbol inputSymbol;
-        try {
-            inputSymbol = Symbol.valueOf(input);
-        }catch (IllegalArgumentException e){
-            inputSymbol = Symbol.UNKNOWN;
-        }
-        state = stateSymbolStateHashmap.get(state).get(inputSymbol);
-        if(state == null)
-            state = State.ERROR;
-    }
-
-    /**
-     * Adds a measurement Input to the {@link MeasurementList} queue
+     * Adds a measurement Input to the {@link Measurement} queue
      * @param input {@link SendAndReceive} Object with the input parameters from the sensor
      * @throws IOException If something with the Json transformation goes wrong
      */
@@ -145,11 +111,11 @@ public class Connector implements Runnable{
         if(input == null){
             return;
         }
-        if(!input.getType().equalsIgnoreCase(Symbol.MEASUREMENT.toString())){
+        if(input.getType()!=ESymbol.MEASUREMENT){
             return;
         }
         JsonNode node = input.getPayload();
-        MeasurementList measurementList = Main.getMeasurementList();
+        IMeasurementList measurementList = Main.getMeasurementList();
         String debugString = "Received: " + input;
         LOGGER.debug(debugString);
         try {
@@ -157,7 +123,7 @@ public class Connector implements Runnable{
             measurementList.add(mes);
         }catch (IOException e){
             LOGGER.error(e);
-            Measurement mes = new Measurement(node.get("value").intValue(),node.get("unit").asText(),node.get("type").asText(),node.get("timestamp").asText());
+            Measurement mes = new Measurement(node.get("value").intValue(), EUnit.NONE, EType.NONE, LocalDateTime.now());
             measurementList.add(mes);
         }
     }
@@ -194,6 +160,16 @@ public class Connector implements Runnable{
         } catch (IOException e) {
             LOGGER.error(e);
         }
+    }
+
+    /**
+     * To check if the connection is still running
+     *
+     * @return True if connection is still active False if connection isn't active any more
+     */
+    @Override
+    public boolean isRunning() {
+        return state!=EState.TERMINATED;
     }
 
 

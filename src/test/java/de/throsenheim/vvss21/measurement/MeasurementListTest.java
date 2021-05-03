@@ -2,15 +2,18 @@ package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
-import de.throsenheim.vvss21.helperclasses.json.Json;
-import de.throsenheim.vvss21.helperclasses.readers.ReadFile;
+import de.throsenheim.vvss21.common.ConfigData;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
+import de.throsenheim.vvss21.domain.models.Measurement;
+import de.throsenheim.vvss21.domain.models.MeasurementList;
+import de.throsenheim.vvss21.common.Json;
+import de.throsenheim.vvss21.common.ReadFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.ClearEnvironmentVariable;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +28,7 @@ class MeasurementListTest {
         LOGGER.debug("Executing Test add\n\n\n");
         Thread thread = new Thread(measurementList);
         thread.start();
-        Measurement measurement = new Measurement(10, "CELSIUS", "TEMPERATURE", LocalDateTime.now().toString());
+        Measurement measurement = new Measurement(10, EUnit.CELSIUS, EType.TEMPERATURE, LocalDateTime.now());
         measurementList.add(measurement);
         Thread.sleep(1000);
         assertTrue(measurementList.getMeasurements().contains(measurement));
@@ -38,7 +41,7 @@ class MeasurementListTest {
     @Test
     void add2() throws Exception {
         LOGGER.debug("Executing Test add\n\n\n");
-        File file = new File(Main.getJsonLocation());
+        File file = new File(ConfigData.getJsonLocation());
         JsonNode node = Json.parse(ReadFile.readFileToString(file));
         measurementList = Json.fromJson(node, MeasurementList.class);
         Thread thread = new Thread(measurementList);

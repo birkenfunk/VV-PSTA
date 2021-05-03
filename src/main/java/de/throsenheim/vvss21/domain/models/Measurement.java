@@ -1,10 +1,11 @@
-package de.throsenheim.vvss21.measurement;
+package de.throsenheim.vvss21.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import de.throsenheim.vvss21.domain.enums.EType;
+import de.throsenheim.vvss21.domain.enums.EUnit;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 /**
@@ -12,45 +13,28 @@ import java.util.Objects;
  * @version 1.0.0
  * @author Alexander Asbeck
  */
-public class Measurement{
+@JsonPropertyOrder(value = {"value", "unit", "type", "timestamp"})
+
+public class Measurement {
 
     private int value;//Value of the measurement
-    private Unit unit;//Unit of the measurement eg. CELSIUS
-    private Type type;//Type of the measurement eg. TEMPERATURE
+    private EUnit unit;//Unit of the measurement eg. CELSIUS
+    private EType type;//Type of the measurement eg. TEMPERATURE
     private LocalDateTime timestamp;//Time when the measurement happened
 
     /**
      * Constructor for {@link Measurement}
      * @param value Value of the measurement
-     * @param unit Unit of the measurement from {@link Unit}
-     * @param type Type of the measurement from {@link Type}
+     * @param unit Unit of the measurement from {@link EUnit}
+     * @param type Type of the measurement from {@link EType}
      * @param timestamp Time when the measurement happened in the format 'yyyy-MM-dd HH:mm:ss.SS'
      */
-    public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") String unit, @JsonProperty("type") String type, @JsonProperty("timestamp") String timestamp) {
-        unit = unit.toUpperCase();
-        type = type.toUpperCase();
+    public Measurement(@JsonProperty("value") int value, @JsonProperty("unit") EUnit unit, @JsonProperty("type") EType type, @JsonProperty("timestamp") LocalDateTime timestamp) {
+        this.unit = unit;
+        this.type = type;
         this.value = value;
-        try {
-            this.unit = Unit.valueOf(unit);
-        }catch (IllegalArgumentException e){
-            this.unit = Unit.NONE;
-        }
-        try {
-            this.type = Type.valueOf(type);
-        }catch (IllegalArgumentException e){
-            this.type = Type.NONE;
-        }
-        try {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-            this.timestamp = LocalDateTime.parse(timestamp, dateTimeFormatter);
-        }catch (DateTimeParseException e){
-            try {
-                this.timestamp = LocalDateTime.parse(timestamp);
-            }catch (DateTimeParseException dateTimeParseException){
-                this.timestamp = LocalDateTime.now();
-            }
 
-        }
+        this.timestamp = timestamp;
 
     }
 
@@ -66,7 +50,7 @@ public class Measurement{
      * Getter of Unit
      * @return String with the Unit of the measurement
      */
-    public Unit getUnit() {
+    public EUnit getUnit() {
         return unit;
     }
 
@@ -74,7 +58,7 @@ public class Measurement{
      * Getter of Type
      * @return String with the Type of the measurement
      */
-    public Type getType() {
+    public EType getType() {
         return type;
     }
 
@@ -82,9 +66,8 @@ public class Measurement{
      * Getter of Timestamp
      * @return String with the Timestamp of the measurement with the pattern: 'yyyy-MM-dd HH:mm:ss.SS'
      */
-    public String getTimestamp() {
-        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-        return timestamp.format(myFormatObj);
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
     @Override
