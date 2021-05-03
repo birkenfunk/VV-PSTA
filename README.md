@@ -12,7 +12,7 @@ When the programm stopps it will save all saved measurement objects into a file.
 
 ## How To talk to the Server:
 
-| Send                                                                   | Recive                                      |
+| Send                                                                   | Receive                                      |
 |:---------------------------------------------------------------------- | ------------------------------------------- |
 | `{"type":"Sensor_Hello","payload":{}}`                                 | `{"type":"STATION_HELLO","payload":{}}`     |
 | `{"type":"Acknowledge","payload":{}}`                                  | `{"type":"STATION_READY","payload":{}}`     |
@@ -24,7 +24,7 @@ When the programm stopps it will save all saved measurement objects into a file.
 
 A measurement has to contain:
 
-- A Value whitch is a int
+- A Value witch is a int
 
 - A [type](#type)
 
@@ -32,10 +32,10 @@ A measurement has to contain:
 
 - A Timestamp
 
-In the end it sould look like this
+In the end it should look like this
 
 ```json
-{"value" : 10, "unit" : "CELSIUS", "type" : "TEMPERATURE", "timestamp" : "2021-04-17 18:09:10.18"}
+{"value" : 10,"unit" : "NONE","type" : "NONE","timestamp" : [ 2021, 5, 2, 15, 8, 29, 191725000 ]}
 ```
 
 ### Type
