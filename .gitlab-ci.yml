@@ -2,8 +2,8 @@ image: gradle:6.8.3-jdk11
 
 stages:
   - build
-  - test
-  - sonarqube
+  - javadoc
+  - sonarqube&test
   - docerize
 
 
@@ -20,7 +20,7 @@ build:
     expire_in: 1 week
 
 sonarqube:
-  stage: sonarqube
+  stage: sonarqube&test
   tags:
     - sonar
   script:
@@ -33,16 +33,14 @@ sonarqube:
     expire_in: 1 week
 
 test:
-  stage: test
+  stage: javadoc
   tags:
     - sonar
   script:
-    - ls -la
-    - ./gradlew test
+    - ./gradlew javadoc
   artifacts:
-    when: on_failure
     paths:
-      - ./*
+      - build/docs/javadoc/de
     expire_in: 1 week
 
 build-docker:
