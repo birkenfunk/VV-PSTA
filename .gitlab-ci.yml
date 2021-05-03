@@ -32,7 +32,7 @@ sonarqube:
       - ./*
     expire_in: 1 week
 
-test:
+javadoc:
   stage: javadoc
   tags:
     - sonar
