@@ -14,11 +14,11 @@ When the programm stopps it will save all saved measurement objects into a file.
 
 | Send                                                                   | Receive                                      |
 |:---------------------------------------------------------------------- | ------------------------------------------- |
-| `{"type":"Sensor_Hello","payload":{}}`                                 | `{"type":"STATION_HELLO","payload":{}}`     |
-| `{"type":"Acknowledge","payload":{}}`                                  | `{"type":"STATION_READY","payload":{}}`     |
-| `{"type":"Measurement","payload":{`[Measurement](#Mearuement json)`}}` | `{"type":"STATION_READY","payload":{}}`     |
+| `{"type":"sensor_hello","payload":{}}`                                 | `{"type":"statopn_hello","payload":{}}`     |
+| `{"type":"acknowledge","payload":{}}`                                  | `{"type":"station_ready","payload":{}}`     |
+| `{"type":"measurement","payload":{`[Measurement](#Mearuement json)`}}` | `{"type":"station_ready","payload":{}}`     |
 | You can send more Measurement jsons                                    |                                             |
-| `{"type":"Terminate","payload":{}}`                                    | `{"type":"TERMINATE_STATION","payload":{}}` |
+| `{"type":"terminate","payload":{}}`                                    | `{"type":"terminate_station","payload":{}}` |
 
 ## Measurement json
 
@@ -35,7 +35,7 @@ A measurement has to contain:
 In the end it should look like this
 
 ```json
-{"value" : 10,"unit" : "NONE","type" : "NONE","timestamp" : [ 2021, 5, 2, 15, 8, 29, 191725000 ]}
+{"value" : 10,"unit" : "none","type" : "none","timestamp" : [ 2021, 5, 2, 15, 8, 29, 191725000 ]}
 ```
 
 ### Type
