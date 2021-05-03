@@ -2,6 +2,7 @@ package de.throsenheim.vvss21.measurement;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
+import de.throsenheim.vvss21.common.ConfigData;
 import de.throsenheim.vvss21.domain.enums.EType;
 import de.throsenheim.vvss21.domain.enums.EUnit;
 import de.throsenheim.vvss21.domain.models.Measurement;
@@ -40,7 +41,7 @@ class MeasurementListTest {
     @Test
     void add2() throws Exception {
         LOGGER.debug("Executing Test add\n\n\n");
-        File file = new File(Main.getJsonLocation());
+        File file = new File(ConfigData.getJsonLocation());
         JsonNode node = Json.parse(ReadFile.readFileToString(file));
         measurementList = Json.fromJson(node, MeasurementList.class);
         Thread thread = new Thread(measurementList);

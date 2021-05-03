@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21;
 
+import de.throsenheim.vvss21.common.ConfigData;
 import de.throsenheim.vvss21.persistance.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,23 +15,18 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MainTest {
+class ConfigDataTest {
 
     private Main main;
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-    private static final Logger LOGGER = LogManager.getLogger(MainTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(ConfigDataTest.class);
 
     @AfterAll
     @ClearEnvironmentVariable(key = "JSON_FILE")
     @ClearEnvironmentVariable(key = "PORT")
     static void afterAll() {
-        Server.stop();
-    }
 
-    @AfterEach
-    void tearDown() {
-        Main.getMeasurementList().stop();
     }
 
     @Test
@@ -40,8 +36,8 @@ class MainTest {
         LOGGER.debug("Executing Tests customEnvironmentVariables\n\n\n");
         String[] s ={};
         main = new Main(s);
-        assertEquals("test.json",Main.getJsonLocation());
-        assertEquals(1000,Main.getPort());
+        assertEquals("test.json", ConfigData.getJsonLocation());
+        assertEquals(1000,ConfigData.getPort());
     }
 
     @Test
@@ -49,7 +45,7 @@ class MainTest {
         LOGGER.debug("Executing Tests defaultTest\n\n\n");
         String[] s ={};
         main = new Main(s);
-        assertEquals("data.json",Main.getJsonLocation());
-        assertEquals(1024,Main.getPort());
+        assertEquals("data.json",ConfigData.getJsonLocation());
+        assertEquals(1024,ConfigData.getPort());
     }
 }

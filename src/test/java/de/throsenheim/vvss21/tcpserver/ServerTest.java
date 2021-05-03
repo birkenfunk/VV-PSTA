@@ -27,14 +27,14 @@ class ServerTest {
 
     @BeforeEach
     void setUp() {
-        Server.stop();
+        Server.getSERVER().stop();
         serverThread = new Thread(Server.getSERVER());
         serverThread.start();
     }
 
     @AfterEach
     void tearDown() {
-        Server.stop();
+        Server.getSERVER().stop();
         Main.getMeasurementList().stop();
     }
 
@@ -83,7 +83,7 @@ class ServerTest {
         PrintStream toServer = new PrintStream(toServerStream);
         toServer.println("{\"type\":\"Sensor_Hello\",\"payload\":{}}");
         assertEquals("{\"type\":\"STATION_HELLO\",\"payload\":{}}", fromServer.nextLine());
-        Server.stop();
+        Server.getSERVER().stop();
         assertFalse(fromServer.hasNext());
     }
 

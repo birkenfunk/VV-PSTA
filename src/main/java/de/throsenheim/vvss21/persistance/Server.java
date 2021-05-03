@@ -2,6 +2,7 @@ package de.throsenheim.vvss21.persistance;
 
 import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.application.interfaces.IServer;
+import de.throsenheim.vvss21.common.ConfigData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.Executors;
  */
 public class Server implements IServer, Runnable {
 
-    private static final int PORT = Main.getPort();
+    private static final int PORT = ConfigData.getPort();
     private static boolean run = true;
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final LinkedList<Connector> connectors = new LinkedList<>();

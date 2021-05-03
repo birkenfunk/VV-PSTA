@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
+import de.throsenheim.vvss21.common.ConfigData;
 import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import de.throsenheim.vvss21.common.Json;
 import de.throsenheim.vvss21.common.WriteFiles;
@@ -79,7 +80,7 @@ public class MeasurementList implements Runnable, IMeasurementList {
         } catch (IOException e) {
             LOGGER.error(e);
         }
-        File storeTo = new File(Main.getJsonLocation());
+        File storeTo = new File(ConfigData.getJsonLocation());
         WriteFiles.writeFile(storeTo, strings, true);
     }
 
