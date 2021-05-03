@@ -8,14 +8,10 @@ package de.throsenheim.vvss21.domain.enums;
 public enum ESymbol {
     SENSOR_HELLO,
     STATION_HELLO,
-    SENSORHELLO,
-    STATIONHELLO,
     ACKNOWLEDGE,
     STATION_READY,
-    STATIONREADY,
     MEASUREMENT,
     TERMINATE,
     TERMINATE_STATION,
-    TERMINATESTATION,
     UNKNOWN
 }
