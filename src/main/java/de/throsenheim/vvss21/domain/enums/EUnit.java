@@ -9,13 +9,13 @@ import de.throsenheim.vvss21.domain.models.Measurement;
  * @author Alexander Asbeck
  */
 public enum EUnit {
-    @JsonProperty("CELSIUS") CELSIUS,
-    @JsonProperty("KELVIN") KELVIN,
-    @JsonProperty("PERCENT") PERCENT,
-    @JsonProperty("FAHRENHEIT") FAHRENHEIT,
-    @JsonProperty("HECTOPASCAL") HECTOPASCAL,
-    @JsonProperty("UNITS") UNITS,
-    @JsonProperty("CMS2") CMS2,
-    @JsonProperty("KWH3") KWH3,
-    @JsonProperty("NONE")  NONE
+    @JsonProperty("celsius") CELSIUS,
+    @JsonProperty("kelvin") KELVIN,
+    @JsonProperty("percent") PERCENT,
+    @JsonProperty("fahrenheit") FAHRENHEIT,
+    @JsonProperty("hectopascal") HECTOPASCAL,
+    @JsonProperty("units") UNITS,
+    @JsonProperty("cms2") CMS2,
+    @JsonProperty("kwh3") KWH3,
+    @JsonProperty("none")  NONE
 }

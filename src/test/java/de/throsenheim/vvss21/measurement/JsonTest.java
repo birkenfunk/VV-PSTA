@@ -25,8 +25,8 @@ class JsonTest {
     private static final Logger LOGGER = LogManager.getLogger(JsonTest.class);
     private String TestCase = "{\n" +
             "  \"value\" : 10,\n" +
-            "  \"unit\" : \"CELSIUS\",\n" +
-            "  \"type\" : \"TEMPERATURE\",\n" +
+            "  \"unit\" : \"celsius\",\n" +
+            "  \"type\" : \"temperature\",\n" +
             "  \"timestamp\" : \""+ LocalDateTime.now() +"\"\n" +
             "}";
 
@@ -38,7 +38,7 @@ class JsonTest {
     @Test
     void parse() throws IOException {
         JsonNode node = Json.parse(TestCase);
-        assertEquals("CELSIUS",node.get("unit").asText());
+        assertEquals("celsius",node.get("unit").asText());
     }
 
     @Test
@@ -53,8 +53,8 @@ class JsonTest {
         JsonNode node = Json.parse(TestCase);
         Measurement measurement = Json.fromJson(node, Measurement.class);
         node = Json.toJson(measurement);
-        assertEquals("CELSIUS", node.get("unit").asText());
-        assertEquals("TEMPERATURE", node.get("type").asText());
+        assertEquals("celsius", node.get("unit").asText());
+        assertEquals("temperature", node.get("type").asText());
         assertEquals("10",node.get("value").asText());
     }
 
