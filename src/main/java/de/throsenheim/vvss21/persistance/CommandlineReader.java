@@ -73,10 +73,12 @@ public class CommandlineReader implements ICommandlineReader, Runnable{
     @Override
     public void stop() {
         read = false;
-        try {
-            reader.close();
-        } catch (IOException e) {
-            LOGGER.error(e);
+        if(reader!=null) {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                LOGGER.error(e);
+            }
         }
     }
 }
