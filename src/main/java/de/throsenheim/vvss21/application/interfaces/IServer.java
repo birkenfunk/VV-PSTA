@@ -1,6 +1,5 @@
 package de.throsenheim.vvss21.application.interfaces;
 
-import de.throsenheim.vvss21.persistance.Connector;
 
 /**
  * Interface for handling the accepting of new connections

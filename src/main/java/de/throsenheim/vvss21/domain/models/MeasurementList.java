@@ -3,11 +3,10 @@ package de.throsenheim.vvss21.domain.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import de.throsenheim.vvss21.Main;
 import de.throsenheim.vvss21.common.ConfigData;
-import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import de.throsenheim.vvss21.common.Json;
 import de.throsenheim.vvss21.common.WriteFiles;
+import de.throsenheim.vvss21.domain.interfaces.IMeasurementList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

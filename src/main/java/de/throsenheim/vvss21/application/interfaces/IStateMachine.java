@@ -1,7 +1,6 @@
 package de.throsenheim.vvss21.application.interfaces;
 
 import de.throsenheim.vvss21.domain.enums.EState;
-import de.throsenheim.vvss21.domain.enums.ESymbol;
 
 public interface IStateMachine {
 

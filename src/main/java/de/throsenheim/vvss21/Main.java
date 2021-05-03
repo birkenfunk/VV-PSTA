@@ -1,6 +1,7 @@
 package de.throsenheim.vvss21;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.throsenheim.vvss21.application.interfaces.ICommandlineReader;
 import de.throsenheim.vvss21.common.ConfigData;
 import de.throsenheim.vvss21.common.Json;
 import de.throsenheim.vvss21.common.ReadFile;
@@ -25,7 +26,7 @@ public class Main {
     }
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private static MeasurementList measurementList;
-    private final CommandlineReader readConsole;
+    private final ICommandlineReader readConsole;
 
     /**
      * Constructor for Main Class

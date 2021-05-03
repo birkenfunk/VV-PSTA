@@ -1,7 +1,6 @@
 package de.throsenheim.vvss21.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.throsenheim.vvss21.domain.models.Measurement;
 
 /**

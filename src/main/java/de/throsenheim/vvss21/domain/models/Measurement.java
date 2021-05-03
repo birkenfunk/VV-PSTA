@@ -1,9 +1,7 @@
 package de.throsenheim.vvss21.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.throsenheim.vvss21.domain.enums.EType;
 import de.throsenheim.vvss21.domain.enums.EUnit;
 
