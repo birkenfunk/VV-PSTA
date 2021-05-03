@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.throsenheim.vvss21.domain.models.Measurement;
 
@@ -15,5 +16,5 @@ public enum EType {
     @JsonProperty("count") COUNT,
     @JsonProperty("flow_rate") FLOW_RATE,
     @JsonProperty("energy") ENERGY,
-    @JsonProperty("none") NONE
+    @JsonEnumDefaultValue @JsonProperty("none") NONE
 }

@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.throsenheim.vvss21.domain.models.Measurement;
 
@@ -17,5 +18,5 @@ public enum EUnit {
     @JsonProperty("units") UNITS,
     @JsonProperty("cms2") CMS2,
     @JsonProperty("kwh3") KWH3,
-    @JsonProperty("none")  NONE
+    @JsonEnumDefaultValue @JsonProperty("none") NONE
 }
