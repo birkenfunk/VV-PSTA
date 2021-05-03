@@ -9,6 +9,11 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Class for reading the properties file and returning the data
+ * @author Alexander Asbeck
+ * @version 1.0.0
+ */
 public class ConfigData {
 
     private static String jsonLocation = "data.json";
@@ -73,7 +78,10 @@ public class ConfigData {
         return jsonLocation;
     }
 
-
+    /**
+     * Returns the Port of the Server
+     * @return port for the Server
+     */
     public static int getPort() {
         readProperties();
         return port;

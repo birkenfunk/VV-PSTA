@@ -6,6 +6,11 @@ import de.throsenheim.vvss21.domain.enums.ESymbol;
 
 import java.util.EnumMap;
 
+/**
+ * Class for handling the Statemachine of the Connection class
+ * @author Alexander Asbeck
+ * @version 1.0.0
+ */
 public class StateMachine implements IStateMachine {
 
     private final EnumMap<EState, EnumMap<ESymbol, EState>> stateSymbolStateHashmap = new EnumMap<>(EState.class);//Map for the automat
