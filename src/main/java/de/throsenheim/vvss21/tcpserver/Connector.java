@@ -2,6 +2,8 @@ package de.throsenheim.vvss21.tcpserver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.throsenheim.vvss21.Main;
+import de.throsenheim.vvss21.application.StateMachine;
+import de.throsenheim.vvss21.application.interfaces.IStateMachine;
 import de.throsenheim.vvss21.domain.enums.EState;
 import de.throsenheim.vvss21.domain.enums.ESymbol;
 import de.throsenheim.vvss21.domain.enums.EType;
@@ -18,7 +20,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.util.EnumMap;
 import java.util.Scanner;
 
 /**
@@ -30,7 +31,6 @@ public class Connector implements Runnable{
 
     private Socket client;
     private static final Logger LOGGER = LogManager.getLogger(Connector.class);
-    private final EnumMap<EState, EnumMap<ESymbol, EState>> stateSymbolStateHashmap = new EnumMap<>(EState.class);//Map for the automat
     private EState state = EState.WAIT_FOR_CLIENT;
 
     /**
@@ -39,35 +39,9 @@ public class Connector implements Runnable{
      */
     public Connector(Socket client) {
         this.client = client;
-        initEnumMap();
     }
 
-    /**
-     * Initialises the stateSymbolStateHashmap
-     */
-    private void initEnumMap(){
-        EnumMap<ESymbol,EState> symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.SENSOR_HELLO, EState.WAIT_FOR_ACKNOWLEDGE);
-        stateSymbolStateHashmap.put(EState.WAIT_FOR_CLIENT, symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.ACKNOWLEDGE, EState.WAIT_FOR_MEASUREMENT);
-        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
-        symbolStateHashMap.put(ESymbol.MEASUREMENT, EState.TERMINATED);
-        stateSymbolStateHashmap.put(EState.WAIT_FOR_ACKNOWLEDGE,symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.MEASUREMENT, EState.WAIT_FOR_MEASUREMENT);
-        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
-        stateSymbolStateHashmap.put(EState.WAIT_FOR_MEASUREMENT, symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.SENSOR_HELLO, EState.TERMINATED);
-        symbolStateHashMap.put(ESymbol.ACKNOWLEDGE, EState.TERMINATED);
-        symbolStateHashMap.put(ESymbol.MEASUREMENT, EState.TERMINATED);
-        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
-        stateSymbolStateHashmap.put(EState.TERMINATED, symbolStateHashMap);
-        symbolStateHashMap = new EnumMap<>(ESymbol.class);
-        symbolStateHashMap.put(ESymbol.TERMINATE, EState.TERMINATED);
-        stateSymbolStateHashmap.put(EState.ERROR, symbolStateHashMap);
-    }
+
 
     /**
      * Handels the Input and output of a connection with a client
@@ -80,6 +54,7 @@ public class Connector implements Runnable{
         PrintStream toClient = new PrintStream(toClientStream);
         JsonNode emptyNote = Json.parse("{}");
         SendAndReceive send = new SendAndReceive("", emptyNote);
+        IStateMachine stateMachine = StateMachine.getStateMachine();
         while (state != EState.TERMINATED){
             if(!fromClient.hasNext()){
                 break;
@@ -90,9 +65,9 @@ public class Connector implements Runnable{
             try {
                 node = Json.parse(line);
                 receive = Json.fromJson(node, SendAndReceive.class);
-                nextState(receive.getType());
+                state = stateMachine.nextState(receive.getType(), state);
             }catch (IOException e){
-                nextState(line);
+                state = stateMachine.nextState(line,state);
             }
 
 
@@ -122,23 +97,6 @@ public class Connector implements Runnable{
         toClient.println(Json.stringify(node));
         stop();
         Server.removeConnector(this);
-    }
-
-    /**
-     * Goes to the next EState
-     * @param input the EState of the input
-     */
-    private void nextState(String input){
-        input = input.toUpperCase();
-        ESymbol inputSymbol;
-        try {
-            inputSymbol = ESymbol.valueOf(input);
-        }catch (IllegalArgumentException e){
-            inputSymbol = ESymbol.UNKNOWN;
-        }
-        state = stateSymbolStateHashmap.get(state).get(inputSymbol);
-        if(state == null)
-            state = EState.ERROR;
     }
 
     /**
