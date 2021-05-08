@@ -33,6 +33,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
 
+    compile 'mysql:mysql-connector-java:8.0.15'
+
 }
 
 jacoco{
