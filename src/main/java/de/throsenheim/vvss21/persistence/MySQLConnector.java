@@ -1,6 +1,5 @@
-package de.throsenheim.vvss21.persistance;
+package de.throsenheim.vvss21.persistence;
 
-import com.sun.security.auth.login.ConfigFile;
 import de.throsenheim.vvss21.application.interfaces.IDatabase;
 import de.throsenheim.vvss21.common.Config;
 import de.throsenheim.vvss21.domain.Actor;
@@ -8,10 +7,11 @@ import de.throsenheim.vvss21.domain.Rule;
 import de.throsenheim.vvss21.domain.Sensor;
 import de.throsenheim.vvss21.domain.SensorData;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 
 public class MySQLConnector implements IDatabase {
@@ -20,8 +20,21 @@ public class MySQLConnector implements IDatabase {
     private Connection con;
     private Statement stmt;
     private boolean running;
+    private EntityManager em;
+
+    public static void main(String[] args) {
+        MySQLConnector connector = MySQLConnector.getMySqlConnector();
+        Sensor sensor = new Sensor();
+        sensor.setSensorId(3);
+        sensor.setSensorName("Test Sensor");
+        sensor.setLocation("Room");
+        sensor.setRegisterDate(Date.valueOf(LocalDate.now()));
+        connector.addSensor(sensor);
+    }
 
     private MySQLConnector() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
+        em = emf.createEntityManager();
     }
 
     private void open(){
@@ -44,7 +57,10 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public void addSensor(Sensor newSensor) {
-
+        em.getTransaction().begin();
+        em.persist(newSensor);
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -74,6 +90,7 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public List<Sensor> getSensors() {
+       // List<Sensor> sensors = em.
         return null;
     }
 
@@ -160,5 +177,9 @@ public class MySQLConnector implements IDatabase {
     @Override
     public void addSensorData(SensorData newData) {
 
+    }
+
+    public static MySQLConnector getMySqlConnector() {
+        return MY_SQL_CONNECTOR;
     }
 }
