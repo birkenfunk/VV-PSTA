@@ -1,6 +1,6 @@
 package de.throsenheim.vvss21.application.interfaces;
 
-import de.throsenheim.vvss21.domain.Aktor;
+import de.throsenheim.vvss21.domain.Actor;
 import de.throsenheim.vvss21.domain.Rule;
 import de.throsenheim.vvss21.domain.Sensor;
 import de.throsenheim.vvss21.domain.SensorData;
@@ -20,24 +20,50 @@ public interface IDatabase {
      */
     void addSensor(Sensor newSensor);
 
+    /**
+     * Removes the Sensor with a special ID from the DB
+     * @param sensorID The SensorID that should be removed
+     */
     void removeSensor(int sensorID);
 
+    /**
+     * Updates a Sensor in the DB
+     * @param toUpdate New Data of the Sensor (ID has to be the same)
+     */
     void updateSensor(Sensor toUpdate);
 
+    /**
+     * Returns a list of all Sensors in the DB
+     * @return List of Sensors
+     */
     List<Sensor> getSensors();
 
+    /**
+     * Returns a list of all {@link Sensor} in the DB with matches the ids
+     * @param iDs Specialises the Sensors that should be returned
+     * @return List of sensors that match the ids
+     */
     List<Sensor> getSensors(int[] iDs);
 
     /**
-     * Adds a new {@link Aktor} to the Database
-     * @param newAktor the new Aktor that should added
-     * @throws IllegalArgumentException If AktorID already exists
+     * Adds a new {@link Actor} to the Database
+     * @param newActor the new Actor that should added
+     * @throws IllegalArgumentException If ActorID already exists
      */
-    void addAktor(Aktor newAktor);
+    void addActor(Actor newActor);
 
-    List<Aktor> getActors();
+    /**
+     * Returns a list of all {@link Actor} in the DB
+     * @return List of Actors
+     */
+    List<Actor> getActors();
 
-    List<Aktor> getActors(int[] iDs);
+    /**
+     * Returns a list of all {@link Actor} in the DB with matches the ids
+     * @param iDs Specialises the Actors that should be returned
+     * @return List of Actors that match the ids
+     */
+    List<Actor> getActors(int[] iDs);
 
     /**
      * Adds a new {@link Rule } to the Database
@@ -46,10 +72,23 @@ public interface IDatabase {
      */
     void addRule(Rule newRule);
 
+    /**
+     * Returns a list of all {@link Rule} in the DB
+     * @return List of Rules
+     */
     List<Rule> getRules();
 
+    /**
+     * Returns a list of all {@link Rule} in the DB with matches the ids
+     * @param iDs Specialises the Rules that should be returned
+     * @return List of Rules that match the ids
+     */
     List<Rule> getRules(int[] iDs);
 
+    /**
+     * Adds new Sensordata to the DB
+     * @param newData New data that should be added
+     */
     void addSensorData(SensorData newData);
 
 }
