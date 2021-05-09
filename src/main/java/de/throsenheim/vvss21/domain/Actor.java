@@ -1,4 +1,4 @@
 package de.throsenheim.vvss21.domain;
 
-public class Aktor {
+public class Actor {
 }
