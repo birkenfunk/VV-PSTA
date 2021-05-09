@@ -35,6 +35,7 @@ dependencies {
 
     compile 'mysql:mysql-connector-java:8.0.15'
 
+    compile 'org.hibernate:hibernate-core:5.4.31.Final'
 }
 
 jacoco{
