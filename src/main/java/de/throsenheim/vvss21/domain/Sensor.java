@@ -66,4 +66,14 @@ public class Sensor {
     public int hashCode() {
         return Objects.hash(sensorId, sensorName, registerDate, location);
     }
+
+    @Override
+    public String toString() {
+        return "Sensor{" +
+                "sensorId=" + sensorId +
+                ", sensorName='" + sensorName + '\'' +
+                ", registerDate=" + registerDate +
+                ", location='" + location + '\'' +
+                '}';
+    }
 }
