@@ -22,7 +22,7 @@ public class MySQLConnector implements IDatabase {
     private boolean running;
     private EntityManager em;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         MySQLConnector connector = MySQLConnector.getMySqlConnector();
         Sensor sensor = new Sensor();
         sensor.setSensorId(3);
@@ -30,23 +30,19 @@ public class MySQLConnector implements IDatabase {
         sensor.setLocation("Room");
         sensor.setRegisterDate(Date.valueOf(LocalDate.now()));
         connector.addSensor(sensor);
+        sensor.setSensorName("1234");
+        connector.updateSensor(sensor);
+        List<Sensor> sensors= connector.getSensors();
+        for (Sensor s:sensors) {
+            System.out.println(s.toString());
+        }
+        Thread.sleep(10000);
+        connector.removeSensor(sensor.getSensorId());
     }
 
     private MySQLConnector() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
         em = emf.createEntityManager();
-    }
-
-    private void open(){
-        try{
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://"+ Config.getdBURL() +"?useSSL=false&serverTimezone=UTC",Config.getdBUsername(),Config.getdBPassword());
-            stmt = con.createStatement();
-            running=true;
-        }catch (SQLException | ClassNotFoundException e){
-            running=false;
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -60,7 +56,6 @@ public class MySQLConnector implements IDatabase {
         em.getTransaction().begin();
         em.persist(newSensor);
         em.getTransaction().commit();
-        em.close();
     }
 
     /**
@@ -70,7 +65,10 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public void removeSensor(int sensorID) {
-
+        em.getTransaction().begin();
+        Sensor sensor = em.find(Sensor.class,sensorID);
+        em.remove(sensor);
+        em.getTransaction().commit();
     }
 
     /**
@@ -80,7 +78,10 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public void updateSensor(Sensor toUpdate) {
-
+        em.getTransaction().begin();
+        Sensor sensor = em.find(Sensor.class,toUpdate.getSensorId());
+        sensor = toUpdate;
+        em.getTransaction().commit();
     }
 
     /**
@@ -90,8 +91,7 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public List<Sensor> getSensors() {
-       // List<Sensor> sensors = em.
-        return null;
+        return em.createNativeQuery("SELECT * FROM Sensor", Sensor.class).getResultList();
     }
 
     /**
