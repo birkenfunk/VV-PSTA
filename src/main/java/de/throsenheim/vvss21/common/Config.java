@@ -6,6 +6,9 @@ public class Config {
     private static final String DBPASSWORD = readDBPassword();
     private static final String DBURL = readDBURL();
 
+    private Config() {
+    }
+
     private static String readDBPassword() {
         return System.getenv().getOrDefault("DBPassword","1234");
     }
