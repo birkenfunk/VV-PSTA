@@ -1,28 +1,28 @@
 package de.throsenheim.vvss21.persistence;
 
 import de.throsenheim.vvss21.application.interfaces.IDatabase;
-import de.throsenheim.vvss21.common.Config;
 import de.throsenheim.vvss21.domain.Actor;
 import de.throsenheim.vvss21.domain.Rule;
 import de.throsenheim.vvss21.domain.Sensor;
 import de.throsenheim.vvss21.domain.SensorData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MySQLConnector implements IDatabase {
 
     private static final MySQLConnector MY_SQL_CONNECTOR = new MySQLConnector();
-    private Connection con;
-    private Statement stmt;
-    private boolean running;
     private EntityManager em;
+    private static final Logger LOGGER = LogManager.getLogger(MySQLConnector.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args){
         MySQLConnector connector = MySQLConnector.getMySqlConnector();
         Sensor sensor = new Sensor();
         sensor.setSensorId(3);
@@ -32,11 +32,10 @@ public class MySQLConnector implements IDatabase {
         connector.addSensor(sensor);
         sensor.setSensorName("1234");
         connector.updateSensor(sensor);
-        List<Sensor> sensors= connector.getSensors();
+        List<Sensor> sensors= connector.getSensors(new int[]{1, 2,3, 5});
         for (Sensor s:sensors) {
-            System.out.println(s.toString());
+            LOGGER.info(s);
         }
-        Thread.sleep(10000);
         connector.removeSensor(sensor.getSensorId());
     }
 
@@ -79,8 +78,7 @@ public class MySQLConnector implements IDatabase {
     @Override
     public void updateSensor(Sensor toUpdate) {
         em.getTransaction().begin();
-        Sensor sensor = em.find(Sensor.class,toUpdate.getSensorId());
-        sensor = toUpdate;
+        em.find(Sensor.class,toUpdate.getSensorId());
         em.getTransaction().commit();
     }
 
@@ -102,7 +100,13 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public List<Sensor> getSensors(int[] iDs) {
-        return null;
+        List<Sensor> sensors = new ArrayList<>();
+        em.getTransaction().begin();
+        for (int id: iDs) {
+            sensors.add(em.find(Sensor.class,id));
+        }
+        em.getTransaction().commit();
+        return sensors;
     }
 
     /**
@@ -113,7 +117,9 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public void addActor(Actor newActor) {
-
+        em.getTransaction().begin();
+        em.persist(newActor);
+        em.getTransaction().commit();
     }
 
     /**
@@ -123,7 +129,7 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public List<Actor> getActors() {
-        return null;
+        return em.createNativeQuery("SELECT * FROM Actor",Actor.class).getResultList();
     }
 
     /**
@@ -134,7 +140,13 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public List<Actor> getActors(int[] iDs) {
-        return null;
+        List<Actor> actors = new ArrayList<>();
+        em.getTransaction().begin();
+        for (int id: iDs) {
+            actors.add(em.find(Actor.class,id));
+        }
+        em.getTransaction().commit();
+        return actors;
     }
 
     /**
@@ -145,7 +157,9 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public void addRule(Rule newRule) {
-
+        em.getTransaction().begin();
+        em.persist(newRule);
+        em.getTransaction().commit();
     }
 
     /**
@@ -155,7 +169,7 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public List<Rule> getRules() {
-        return null;
+        return em.createNativeQuery("SELECT * FROM Rule",Rule.class).getResultList();
     }
 
     /**
@@ -166,7 +180,13 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public List<Rule> getRules(int[] iDs) {
-        return null;
+        List<Rule> rules = new ArrayList<>();
+        em.getTransaction().begin();
+        for (int id: iDs) {
+            rules.add(em.find(Rule.class,id));
+        }
+        em.getTransaction().commit();
+        return rules;
     }
 
     /**
@@ -176,7 +196,9 @@ public class MySQLConnector implements IDatabase {
      */
     @Override
     public void addSensorData(SensorData newData) {
-
+        em.getTransaction().begin();
+        em.persist(newData);
+        em.getTransaction().commit();
     }
 
     public static MySQLConnector getMySqlConnector() {
