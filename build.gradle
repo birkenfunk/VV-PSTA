@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.0-RC1'
+    id 'org.springframework.boot' version '2.5.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id "org.sonarqube" version "3.0"
@@ -10,19 +10,8 @@ group 'de.throsenheim'
 version '1.0-SNAPSHOT'
 sourceCompatibility = '11'
 
-jar {
-    manifest {
-        attributes 'Main-Class' : 'de.throsenheim.de.throsenheim.vvss21.Main'
-    }
-
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
 repositories {
     mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencies {
