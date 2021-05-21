@@ -4,7 +4,9 @@ import de.throsenheim.vvss21.domain.Actor;
 import de.throsenheim.vvss21.domain.Rule;
 import de.throsenheim.vvss21.domain.Sensor;
 import de.throsenheim.vvss21.domain.SensorData;
+import de.throsenheim.vvss21.persistence.exeptions.EntityNotFoundException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 /**
@@ -23,8 +25,10 @@ public interface IDatabase {
     /**
      * Removes the Sensor with a special ID from the DB
      * @param sensorID The SensorID that should be removed
+     * @throws SQLIntegrityConstraintViolationException Violation of the Database integrity
+     * @throws EntityNotFoundException If Entity witch should be deleted wasn't found in the database
      */
-    void removeSensor(int sensorID);
+    void removeSensor(int sensorID) throws SQLIntegrityConstraintViolationException, EntityNotFoundException;
 
     /**
      * Updates a Sensor in the DB
@@ -44,6 +48,13 @@ public interface IDatabase {
      * @return List of sensors that match the ids
      */
     List<Sensor> getSensors(int[] iDs);
+
+    /**
+     * Returns a {@link Sensor} form the DB with matches the id
+     * @param id Specialises the Sensor that should be returned
+     * @return The Sensor with the special id
+     */
+    Sensor getSensor(int id);
 
     /**
      * Adds a new {@link Actor} to the Database
