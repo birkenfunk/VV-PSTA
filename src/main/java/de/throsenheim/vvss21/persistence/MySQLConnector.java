@@ -5,6 +5,7 @@ import de.throsenheim.vvss21.domain.Actor;
 import de.throsenheim.vvss21.domain.Rule;
 import de.throsenheim.vvss21.domain.Sensor;
 import de.throsenheim.vvss21.domain.SensorData;
+import de.throsenheim.vvss21.persistence.exeptions.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +23,7 @@ public class MySQLConnector implements IDatabase {
     private EntityManager em;
     private static final Logger LOGGER = LogManager.getLogger(MySQLConnector.class);
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws SQLIntegrityConstraintViolationException, EntityNotFoundException {
         MySQLConnector connector = MySQLConnector.getMySqlConnector();
         Sensor sensor = new Sensor();
         sensor.setSensorId(3);
@@ -53,21 +54,40 @@ public class MySQLConnector implements IDatabase {
     @Override
     public void addSensor(Sensor newSensor) {
         em.getTransaction().begin();
-        em.persist(newSensor);
-        em.getTransaction().commit();
+        em.flush();
+        try {
+            em.persist(newSensor);
+        }catch (Exception e){
+            throw new IllegalArgumentException();
+        }finally {
+            em.getTransaction().commit();
+        }
     }
 
     /**
      * Removes the Sensor with a special ID from the DB
      *
      * @param sensorID The SensorID that should be removed
+     * @throws SQLIntegrityConstraintViolationException Violation of the Database integrity
+     * @throws EntityNotFoundException If Entity witch should be deleted wasn't found in the database
      */
     @Override
-    public void removeSensor(int sensorID) {
+    public void removeSensor(int sensorID) throws SQLIntegrityConstraintViolationException, EntityNotFoundException {
         em.getTransaction().begin();
+        em.flush();
         Sensor sensor = em.find(Sensor.class,sensorID);
-        em.remove(sensor);
-        em.getTransaction().commit();
+        if(sensor == null) {//if Sensor not found Throws Not Found exception
+            em.getTransaction().commit();
+            throw new EntityNotFoundException();
+        }
+        try {
+            em.remove(sensor);
+        }catch (Exception e){
+            throw new SQLIntegrityConstraintViolationException();
+        }finally {
+            em.getTransaction().commit();
+        }
+
     }
 
     /**
@@ -107,6 +127,19 @@ public class MySQLConnector implements IDatabase {
         }
         em.getTransaction().commit();
         return sensors;
+    }
+
+    /**
+     * Returns a {@link Sensor} form the DB with matches the id
+     *
+     * @param id@return The Sensor with the special id
+     */
+    @Override
+    public Sensor getSensor(int id) {
+        em.getTransaction().begin();
+        Sensor sensor = em.find(Sensor.class, id);
+        em.getTransaction().commit();
+        return sensor;
     }
 
     /**
