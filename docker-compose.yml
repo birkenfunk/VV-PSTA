@@ -13,9 +13,3 @@ services:
       MYSQL_DATABASE: SmartHomeService
       MYSQL_USER: Alex
       MYSQL_PASSWORD: 1234
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
