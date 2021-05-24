@@ -14,11 +14,10 @@ public class SensorData {
     private int sensorDataId;
     private Sensor sensorBySensorId;
 
-    public SensorData(TemperaturUnit temperatureUnit, Timestamp timestamp, byte currentValue, int sensorDataId, Sensor sensorBySensorId) {
+    public SensorData(TemperaturUnit temperatureUnit, Timestamp timestamp, byte currentValue, Sensor sensorBySensorId) {
         this.temperatureUnit = temperatureUnit;
         this.timestamp = timestamp;
         this.currentValue = currentValue;
-        this.sensorDataId = sensorDataId;
         this.sensorBySensorId = sensorBySensorId;
     }
 
@@ -57,6 +56,7 @@ public class SensorData {
     }
 
     @Id
+    @GeneratedValue
     @Column(name = "SensorDataID", nullable = false)
     public int getSensorDataId() {
         return sensorDataId;

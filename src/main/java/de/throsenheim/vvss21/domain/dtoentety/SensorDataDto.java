@@ -6,7 +6,6 @@ public class SensorDataDto {
     private TemperaturUnit temperaturUnit;
     private Timestamp timestamp;
     private byte currentValue;
-    private int sensorDataId;
     private int sensorId;
 
     public Timestamp getTimestamp() {
@@ -23,14 +22,6 @@ public class SensorDataDto {
 
     public void setCurrentValue(byte currentValue) {
         this.currentValue = currentValue;
-    }
-
-    public int getSensorDataId() {
-        return sensorDataId;
-    }
-
-    public void setSensorDataId(int sensorDataId) {
-        this.sensorDataId = sensorDataId;
     }
 
     public int getSensorId() {
