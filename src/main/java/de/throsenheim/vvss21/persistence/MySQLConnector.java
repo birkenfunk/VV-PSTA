@@ -11,7 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import java.sql.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,19 +23,8 @@ public class MySQLConnector implements IDatabase {
 
     public static void main(String[] args) throws SQLIntegrityConstraintViolationException, EntityNotFoundException {
         MySQLConnector connector = MySQLConnector.getMySqlConnector();
-        Sensor sensor = new Sensor();
-        sensor.setSensorId(3);
-        sensor.setSensorName("Test Sensor");
-        sensor.setLocation("Room");
-        sensor.setRegisterDate(Date.valueOf(LocalDate.now()));
-        connector.addSensor(sensor);
-        sensor.setSensorName("1234");
-        connector.updateSensor(sensor);
-        List<Sensor> sensors= connector.getSensors(new int[]{1, 2,3, 5});
-        for (Sensor s:sensors) {
-            LOGGER.info(s);
-        }
-        connector.removeSensor(sensor.getSensorId());
+        SensorData s = new SensorData(TemperaturUnit.CELSIUS,Timestamp.valueOf(LocalDateTime.now()), (byte) 12,123,connector.getSensor(1));
+        connector.addSensorData(s);
     }
 
     private MySQLConnector() {
