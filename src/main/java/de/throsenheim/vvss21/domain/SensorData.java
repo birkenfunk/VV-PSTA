@@ -27,7 +27,7 @@ public class SensorData {
 
     @Basic
     @Column(name = "TemperatureUnit", nullable = false)
-    @Type(type = "de.throsenheim.vvss21.persistence.EnumTypeMySql")
+    @Enumerated(EnumType.STRING)
     public TemperaturUnit getTemperatureUnit() {
         return temperatureUnit;
     }
