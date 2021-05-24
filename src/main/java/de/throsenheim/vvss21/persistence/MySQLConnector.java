@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class MySQLConnector implements IDatabase {
     private MySQLConnector() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
         em = emf.createEntityManager();
+        createTables();
     }
 
     /**
@@ -231,6 +233,66 @@ public class MySQLConnector implements IDatabase {
     public void addSensorData(SensorData newData) {
         em.getTransaction().begin();
         em.persist(newData);
+        em.getTransaction().commit();
+    }
+
+    /**
+     * Creates the Tables in the DB so the Programm can work with them
+     * Only creates them if they are missing
+     */
+    private void createTables(){
+
+        em.getTransaction().begin();
+        Query q = em.createNativeQuery("SHOW TABLES;");
+        List<String> res = q.getResultList();
+        if(!res.contains("Actor")){
+            em.createNativeQuery("CREATE TABLE `Actor` (\n" +
+                    "  `AktorId` int NOT NULL,\n" +
+                    "  `AktorName` varchar(100) NOT NULL,\n" +
+                    "  `RegisterDate` date NOT NULL DEFAULT (curdate()),\n" +
+                    "  `Location` varchar(100) NOT NULL,\n" +
+                    "  `ServiceURL` varchar(100) NOT NULL,\n" +
+                    "  `Status` varchar(100) NOT NULL,\n" +
+                    "  PRIMARY KEY (`AktorId`)\n" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+        }
+        if(!res.contains("Sensor")){
+            em.createNativeQuery("CREATE TABLE `Sensor` (\n" +
+                    "  `SensorId` int NOT NULL,\n" +
+                    "  `SensorName` varchar(100) NOT NULL,\n" +
+                    "  `RegisterDate` date NOT NULL DEFAULT (curdate()),\n" +
+                    "  `Location` varchar(100) NOT NULL,\n" +
+                    "  PRIMARY KEY (`SensorId`)\n" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+        }
+        if(!res.contains("Rule")){
+            em.createNativeQuery("CREATE TABLE `Rule` (\n" +
+                    "  `RuleId` int NOT NULL AUTO_INCREMENT,\n" +
+                    "  `RuleName` varchar(100) NOT NULL,\n" +
+                    "  `SensorID` int DEFAULT NULL,\n" +
+                    "  `AktorID` int DEFAULT NULL,\n" +
+                    "  `Treshhold` tinyint DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`RuleId`),\n" +
+                    "  KEY `SensorID` (`SensorID`),\n" +
+                    "  KEY `AktorID` (`AktorID`),\n" +
+                    "  CONSTRAINT `Rule_ibfk_1` FOREIGN KEY (`SensorID`) REFERENCES `Sensor` (`SensorId`) ON UPDATE CASCADE,\n" +
+                    "  CONSTRAINT `Rule_ibfk_2` FOREIGN KEY (`AktorID`) REFERENCES `Actor` (`AktorId`) ON UPDATE CASCADE,\n" +
+                    "  CONSTRAINT `Rule_chk_1` CHECK ((`Treshhold` between 1 and 29))\n" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+        }
+        if (!res.contains("SensorData")) {
+            em.createNativeQuery("CREATE TABLE `SensorData` (\n" +
+                    "  `SensorID` int DEFAULT NULL,\n" +
+                    "  `TemperatureUnit` enum('Kelvin','Celsius','Fahrenheit') NOT NULL,\n" +
+                    "  `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
+                    "  `CurrentValue` tinyint NOT NULL,\n" +
+                    "  `SensorDataID` int NOT NULL AUTO_INCREMENT,\n" +
+                    "  PRIMARY KEY (`SensorDataID`),\n" +
+                    "  KEY `SensorID` (`SensorID`),\n" +
+                    "  CONSTRAINT `SensorData_ibfk_1` FOREIGN KEY (`SensorID`) REFERENCES `Sensor` (`SensorId`) ON DELETE SET NULL ON UPDATE CASCADE,\n" +
+                    "  CONSTRAINT `SensorData_chk_1` CHECK ((`CurrentValue` between 0 and 30))\n" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+        }
         em.getTransaction().commit();
     }
 
