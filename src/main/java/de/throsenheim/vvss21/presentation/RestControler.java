@@ -1,7 +1,14 @@
 package de.throsenheim.vvss21.presentation;
 
 import de.throsenheim.vvss21.application.interfaces.IDatabase;
-import de.throsenheim.vvss21.domain.*;
+import de.throsenheim.vvss21.domain.dtoentety.ActorDto;
+import de.throsenheim.vvss21.domain.dtoentety.RuleDto;
+import de.throsenheim.vvss21.domain.dtoentety.SensorDataDto;
+import de.throsenheim.vvss21.domain.dtoentety.SensorDto;
+import de.throsenheim.vvss21.domain.entety.Actor;
+import de.throsenheim.vvss21.domain.entety.Rule;
+import de.throsenheim.vvss21.domain.entety.Sensor;
+import de.throsenheim.vvss21.domain.entety.SensorData;
 import de.throsenheim.vvss21.persistence.MySQLConnector;
 import de.throsenheim.vvss21.persistence.exeptions.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -44,6 +51,16 @@ public class RestControler {
         return ResponseEntity.ok(sensor);
     }
 
+    @PostMapping("/sensors/{id}")
+    public ResponseEntity createSensor(@RequestBody SensorDataDto sensorData){
+        if(database.getSensor(sensorData.getSensorId())!=null){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+
+        database.addSensorData(sensorDataDtoSensorToData.apply(sensorData));
+        return ResponseEntity.ok(sensorData);
+    }
+
     @DeleteMapping("/sensors/{id}")
     public ResponseEntity deleteSensor(@PathVariable int id) {
         try {
@@ -55,6 +72,53 @@ public class RestControler {
             return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).build();
         }
     }
+
+    @GetMapping("/actors")
+    public ResponseEntity getAllActors(){
+        return ResponseEntity.ok(database.getActors());
+    }
+
+    @GetMapping("/actors/{id}")
+    public ResponseEntity getActor(@PathVariable int id){
+        Actor res = database.getActor(id);
+        if(res==null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/actors")
+    public ResponseEntity createActors(@RequestBody ActorDto actor){
+        if(database.getSensor(actor.getAktorId())!=null){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+
+        database.addActor(actorDtoToActor.apply(actor));
+        return ResponseEntity.ok(actor);
+    }
+
+    @GetMapping("/rules")
+    public ResponseEntity getAllRules(){
+        return ResponseEntity.ok(database.getRules());
+    }
+
+    @GetMapping("/rules/{id}")
+    public ResponseEntity getRule(@PathVariable int id){
+        Rule res = database.getRule(id);
+        if(res==null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/rules")
+    public ResponseEntity createRule(@RequestBody RuleDto rule){
+        if(database.getSensor(rule.getAktorId())!=null){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+
+        database.addRule(ruleDtoToRule.apply(rule));
+        return ResponseEntity.ok(rule);
+    }
+
 
     Function<SensorDto, Sensor> sensorDtoToSensor = sensorDto -> new Sensor(sensorDto.getSensorId(),
             sensorDto.getSensorName(),
@@ -78,6 +142,5 @@ public class RestControler {
     Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperaturUnit(),
             sensorDataDto.getTimestamp(),
             sensorDataDto.getCurrentValue(),
-            sensorDataDto.getSensorDataId(),
             database.getSensor(sensorDataDto.getSensorId()));
 }
