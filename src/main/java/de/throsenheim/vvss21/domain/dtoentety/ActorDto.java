@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.domain;
+package de.throsenheim.vvss21.domain.dtoentety;
 
 import java.sql.Date;
 

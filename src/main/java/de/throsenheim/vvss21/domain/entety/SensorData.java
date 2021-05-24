@@ -1,6 +1,6 @@
-package de.throsenheim.vvss21.domain;
+package de.throsenheim.vvss21.domain.entety;
 
-import org.hibernate.annotations.Type;
+import de.throsenheim.vvss21.domain.TemperaturUnit;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

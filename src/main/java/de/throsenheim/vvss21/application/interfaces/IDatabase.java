@@ -1,9 +1,9 @@
 package de.throsenheim.vvss21.application.interfaces;
 
-import de.throsenheim.vvss21.domain.Actor;
-import de.throsenheim.vvss21.domain.Rule;
-import de.throsenheim.vvss21.domain.Sensor;
-import de.throsenheim.vvss21.domain.SensorData;
+import de.throsenheim.vvss21.domain.entety.Actor;
+import de.throsenheim.vvss21.domain.entety.Rule;
+import de.throsenheim.vvss21.domain.entety.Sensor;
+import de.throsenheim.vvss21.domain.entety.SensorData;
 import de.throsenheim.vvss21.persistence.exeptions.EntityNotFoundException;
 
 import java.sql.SQLIntegrityConstraintViolationException;

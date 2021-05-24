@@ -1,4 +1,6 @@
-package de.throsenheim.vvss21.domain;
+package de.throsenheim.vvss21.domain.dtoentety;
+
+import de.throsenheim.vvss21.domain.TemperaturUnit;
 
 import java.sql.Timestamp;
 

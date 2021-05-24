@@ -2,6 +2,10 @@ package de.throsenheim.vvss21.persistence;
 
 import de.throsenheim.vvss21.application.interfaces.IDatabase;
 import de.throsenheim.vvss21.domain.*;
+import de.throsenheim.vvss21.domain.entety.Actor;
+import de.throsenheim.vvss21.domain.entety.Rule;
+import de.throsenheim.vvss21.domain.entety.Sensor;
+import de.throsenheim.vvss21.domain.entety.SensorData;
 import de.throsenheim.vvss21.persistence.exeptions.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +27,7 @@ public class MySQLConnector implements IDatabase {
 
     public static void main(String[] args) throws SQLIntegrityConstraintViolationException, EntityNotFoundException {
         MySQLConnector connector = MySQLConnector.getMySqlConnector();
-        SensorData s = new SensorData(TemperaturUnit.CELSIUS,Timestamp.valueOf(LocalDateTime.now()), (byte) 12,123,connector.getSensor(1));
+        SensorData s = new SensorData(TemperaturUnit.CELSIUS,Timestamp.valueOf(LocalDateTime.now()), (byte) 12,connector.getSensor(1));
         connector.addSensorData(s);
     }
 

@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.domain;
+package de.throsenheim.vvss21.domain.dtoentety;
 
 public class RuleDto {
     private int ruleId;
