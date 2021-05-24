@@ -16,8 +16,20 @@ public class Actor {
     private String serviceUrl;
     private String status;
 
+    public Actor(int aktorId, String aktorName, Date registerDate, String location, String serviceUrl, String status) {
+        this.aktorId = aktorId;
+        this.aktorName = aktorName;
+        this.registerDate = registerDate;
+        this.location = location;
+        this.serviceUrl = serviceUrl;
+        this.status = status;
+    }
+
+    public Actor() {
+    }
+
     @Id
-    @Column(name = "AktorId")
+    @Column(name = "AktorId", nullable = false)
     public int getAktorId() {
         return aktorId;
     }
@@ -27,7 +39,7 @@ public class Actor {
     }
 
     @Basic
-    @Column(name = "AktorName")
+    @Column(name = "AktorName", nullable = false, length = 100)
     public String getAktorName() {
         return aktorName;
     }
@@ -37,7 +49,7 @@ public class Actor {
     }
 
     @Basic
-    @Column(name = "RegisterDate")
+    @Column(name = "RegisterDate", nullable = false)
     public Date getRegisterDate() {
         return registerDate;
     }
@@ -47,7 +59,7 @@ public class Actor {
     }
 
     @Basic
-    @Column(name = "Location")
+    @Column(name = "Location", nullable = false, length = 100)
     public String getLocation() {
         return location;
     }
@@ -57,7 +69,7 @@ public class Actor {
     }
 
     @Basic
-    @Column(name = "ServiceURL")
+    @Column(name = "ServiceURL", nullable = false, length = 100)
     public String getServiceUrl() {
         return serviceUrl;
     }
@@ -67,7 +79,7 @@ public class Actor {
     }
 
     @Basic
-    @Column(name = "Status")
+    @Column(name = "Status", nullable = false, length = 100)
     public String getStatus() {
         return status;
     }

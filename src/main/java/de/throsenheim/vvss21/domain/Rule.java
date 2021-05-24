@@ -8,10 +8,22 @@ public class Rule {
     private int ruleId;
     private String ruleName;
     private Byte treshhold;
+    private Sensor sensorBySensorId;
     private Actor actorByAktorId;
 
+    public Rule(int ruleId, String ruleName, Byte treshhold, Sensor sensorBySensorId, Actor actorByAktorId) {
+        this.ruleId = ruleId;
+        this.ruleName = ruleName;
+        this.treshhold = treshhold;
+        this.sensorBySensorId = sensorBySensorId;
+        this.actorByAktorId = actorByAktorId;
+    }
+
+    public Rule() {
+    }
+
     @Id
-    @Column(name = "RuleId")
+    @Column(name = "RuleId", nullable = false)
     public int getRuleId() {
         return ruleId;
     }
@@ -21,7 +33,7 @@ public class Rule {
     }
 
     @Basic
-    @Column(name = "RuleName")
+    @Column(name = "RuleName", nullable = false, length = 100)
     public String getRuleName() {
         return ruleName;
     }
@@ -31,7 +43,7 @@ public class Rule {
     }
 
     @Basic
-    @Column(name = "Treshhold")
+    @Column(name = "Treshhold", nullable = true)
     public Byte getTreshhold() {
         return treshhold;
     }
@@ -51,6 +63,16 @@ public class Rule {
     @Override
     public int hashCode() {
         return Objects.hash(ruleId, ruleName, treshhold);
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "SensorID", referencedColumnName = "SensorId")
+    public Sensor getSensorBySensorId() {
+        return sensorBySensorId;
+    }
+
+    public void setSensorBySensorId(Sensor sensorBySensorId) {
+        this.sensorBySensorId = sensorBySensorId;
     }
 
     @ManyToOne

@@ -1,20 +1,43 @@
 package de.throsenheim.vvss21.domain;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 public class SensorData {
+    private TemperaturUnit temperatureUnit;
     private Timestamp timestamp;
     private byte currentValue;
     private int sensorDataId;
+    private Sensor sensorBySensorId;
+
+    public SensorData(TemperaturUnit temperatureUnit, Timestamp timestamp, byte currentValue, int sensorDataId, Sensor sensorBySensorId) {
+        this.temperatureUnit = temperatureUnit;
+        this.timestamp = timestamp;
+        this.currentValue = currentValue;
+        this.sensorDataId = sensorDataId;
+        this.sensorBySensorId = sensorBySensorId;
+    }
+
+    public SensorData() {
+    }
 
     @Basic
-    @Column(name = "Timestamp")
+    @Column(name = "TemperatureUnit", nullable = false)
+    @Type(type = "de.throsenheim.vvss21.persistence.EnumTypeMySql")
+    public TemperaturUnit getTemperatureUnit() {
+        return temperatureUnit;
+    }
+
+    public void setTemperatureUnit(TemperaturUnit temperatureUnit) {
+        this.temperatureUnit = temperatureUnit;
+    }
+
+    @Basic
+    @Column(name = "Timestamp", nullable = false)
     public Timestamp getTimestamp() {
         return timestamp;
     }
@@ -24,7 +47,7 @@ public class SensorData {
     }
 
     @Basic
-    @Column(name = "CurrentValue")
+    @Column(name = "CurrentValue", nullable = false)
     public byte getCurrentValue() {
         return currentValue;
     }
@@ -34,7 +57,7 @@ public class SensorData {
     }
 
     @Id
-    @Column(name = "SensorDataID")
+    @Column(name = "SensorDataID", nullable = false)
     public int getSensorDataId() {
         return sensorDataId;
     }
@@ -48,11 +71,21 @@ public class SensorData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SensorData that = (SensorData) o;
-        return currentValue == that.currentValue && sensorDataId == that.sensorDataId && Objects.equals(timestamp, that.timestamp);
+        return currentValue == that.currentValue && sensorDataId == that.sensorDataId && Objects.equals(temperatureUnit, that.temperatureUnit) && Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, currentValue, sensorDataId);
+        return Objects.hash(temperatureUnit, timestamp, currentValue, sensorDataId);
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "SensorID", referencedColumnName = "SensorId")
+    public Sensor getSensorBySensorId() {
+        return sensorBySensorId;
+    }
+
+    public void setSensorBySensorId(Sensor sensorBySensorId) {
+        this.sensorBySensorId = sensorBySensorId;
     }
 }

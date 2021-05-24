@@ -14,8 +14,18 @@ public class Sensor {
     private Date registerDate;
     private String location;
 
+    public Sensor(int sensorId, String sensorName, Date registerDate, String location) {
+        this.sensorId = sensorId;
+        this.sensorName = sensorName;
+        this.registerDate = registerDate;
+        this.location = location;
+    }
+
+    public Sensor() {
+    }
+
     @Id
-    @Column(name = "SensorId")
+    @Column(name = "SensorId", nullable = false)
     public int getSensorId() {
         return sensorId;
     }
@@ -25,7 +35,7 @@ public class Sensor {
     }
 
     @Basic
-    @Column(name = "SensorName")
+    @Column(name = "SensorName", nullable = false, length = 100)
     public String getSensorName() {
         return sensorName;
     }
@@ -35,7 +45,7 @@ public class Sensor {
     }
 
     @Basic
-    @Column(name = "RegisterDate")
+    @Column(name = "RegisterDate", nullable = false)
     public Date getRegisterDate() {
         return registerDate;
     }
@@ -45,7 +55,7 @@ public class Sensor {
     }
 
     @Basic
-    @Column(name = "Location")
+    @Column(name = "Location", nullable = false, length = 100)
     public String getLocation() {
         return location;
     }
@@ -65,15 +75,5 @@ public class Sensor {
     @Override
     public int hashCode() {
         return Objects.hash(sensorId, sensorName, registerDate, location);
-    }
-
-    @Override
-    public String toString() {
-        return "Sensor{" +
-                "sensorId=" + sensorId +
-                ", sensorName='" + sensorName + '\'' +
-                ", registerDate=" + registerDate +
-                ", location='" + location + '\'' +
-                '}';
     }
 }
