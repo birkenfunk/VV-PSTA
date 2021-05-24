@@ -1,10 +1,7 @@
 package de.throsenheim.vvss21.persistence;
 
 import de.throsenheim.vvss21.application.interfaces.IDatabase;
-import de.throsenheim.vvss21.domain.Actor;
-import de.throsenheim.vvss21.domain.Rule;
-import de.throsenheim.vvss21.domain.Sensor;
-import de.throsenheim.vvss21.domain.SensorData;
+import de.throsenheim.vvss21.domain.*;
 import de.throsenheim.vvss21.persistence.exeptions.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -311,7 +308,7 @@ public class MySQLConnector implements IDatabase {
         if (!res.contains("SensorData")) {
             em.createNativeQuery("CREATE TABLE `SensorData` (\n" +
                     "  `SensorID` int DEFAULT NULL,\n" +
-                    "  `TemperatureUnit` enum('Kelvin','Celsius','Fahrenheit') NOT NULL,\n" +
+                    "  `TemperatureUnit` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,\n" +
                     "  `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
                     "  `CurrentValue` tinyint NOT NULL,\n" +
                     "  `SensorDataID` int NOT NULL AUTO_INCREMENT,\n" +
@@ -319,7 +316,7 @@ public class MySQLConnector implements IDatabase {
                     "  KEY `SensorID` (`SensorID`),\n" +
                     "  CONSTRAINT `SensorData_ibfk_1` FOREIGN KEY (`SensorID`) REFERENCES `Sensor` (`SensorId`) ON DELETE SET NULL ON UPDATE CASCADE,\n" +
                     "  CONSTRAINT `SensorData_chk_1` CHECK ((`CurrentValue` between 0 and 30))\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+                    ") ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
         }
         em.getTransaction().commit();
     }
