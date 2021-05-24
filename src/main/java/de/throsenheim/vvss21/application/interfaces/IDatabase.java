@@ -77,6 +77,13 @@ public interface IDatabase {
     List<Actor> getActors(int[] iDs);
 
     /**
+     * Returns an {@link Actor} from the DB with matches the id
+     * @param iD Specialises the Actor that should be returned
+     * @return Actor that match the id
+     */
+    Actor getActor(int iD);
+
+    /**
      * Adds a new {@link Rule } to the Database
      * @param newRule the new Rule that should be added
      * @throws IllegalArgumentException If RuleID already exists
@@ -95,6 +102,13 @@ public interface IDatabase {
      * @return List of Rules that match the ids
      */
     List<Rule> getRules(int[] iDs);
+
+    /**
+     * Returns a {@link Rule} from the DB with matches the id
+     * @param iD Specialises the Rule that should be returned
+     * @return Rule that match the id
+     */
+    Rule getRule(int iD);
 
     /**
      * Adds new Sensordata to the DB

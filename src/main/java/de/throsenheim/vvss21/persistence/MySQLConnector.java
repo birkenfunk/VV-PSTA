@@ -185,6 +185,20 @@ public class MySQLConnector implements IDatabase {
     }
 
     /**
+     * Returns an {@link Actor} from the DB with matches the id
+     *
+     * @param iD Specialises the Actor that should be returned
+     * @return Actor that match the id
+     */
+    @Override
+    public Actor getActor(int iD) {
+        em.getTransaction().begin();
+        Actor res = em.find(Actor.class, iD);
+        em.getTransaction().commit();
+        return res;
+    }
+
+    /**
      * Adds a new {@link Rule } to the Database
      *
      * @param newRule the new Rule that should be added
@@ -225,6 +239,20 @@ public class MySQLConnector implements IDatabase {
     }
 
     /**
+     * Returns a {@link Rule} from the DB with matches the id
+     *
+     * @param iD Specialises the Rule that should be returned
+     * @return Rule that match the id
+     */
+    @Override
+    public Rule getRule(int iD) {
+        em.getTransaction().begin();
+        Rule res = em.find(Rule.class, iD);
+        em.getTransaction().commit();
+        return res;
+    }
+
+    /**
      * Adds new Sensordata to the DB
      *
      * @param newData New data that should be added
@@ -244,7 +272,7 @@ public class MySQLConnector implements IDatabase {
 
         em.getTransaction().begin();
         Query q = em.createNativeQuery("SHOW TABLES;");
-        List<String> res = q.getResultList();
+        List res = q.getResultList();
         if(!res.contains("Actor")){
             em.createNativeQuery("CREATE TABLE `Actor` (\n" +
                     "  `AktorId` int NOT NULL,\n" +
