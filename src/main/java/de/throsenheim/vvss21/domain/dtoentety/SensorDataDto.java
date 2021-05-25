@@ -8,16 +8,16 @@ public class SensorDataDto {
     private TemperaturUnit temperaturUnit;
     private Timestamp timestamp;
     private byte currentValue;
-    private int sensorId;
+    private SensorDto sensorBySensorID;
 
     public SensorDataDto() {
     }
 
-    public SensorDataDto(TemperaturUnit temperaturUnit, Timestamp timestamp, byte currentValue, int sensorId) {
+    public SensorDataDto(TemperaturUnit temperaturUnit, Timestamp timestamp, byte currentValue, SensorDto sensorDto) {
         this.temperaturUnit = temperaturUnit;
         this.timestamp = timestamp;
         this.currentValue = currentValue;
-        this.sensorId = sensorId;
+        this.sensorBySensorID = sensorDto;
     }
 
     public Timestamp getTimestamp() {
@@ -36,12 +36,12 @@ public class SensorDataDto {
         this.currentValue = currentValue;
     }
 
-    public int getSensorId() {
-        return sensorId;
+    public SensorDto getSensorBySensorID() {
+        return sensorBySensorID;
     }
 
-    public void setSensorId(int sensorId) {
-        this.sensorId = sensorId;
+    public void setSensorBySensorID(SensorDto sensorBySensorID) {
+        this.sensorBySensorID = sensorBySensorID;
     }
 
     public TemperaturUnit getTemperaturUnit() {

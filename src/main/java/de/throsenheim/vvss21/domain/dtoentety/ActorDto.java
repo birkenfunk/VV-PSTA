@@ -1,11 +1,8 @@
 package de.throsenheim.vvss21.domain.dtoentety;
 
-import java.sql.Date;
-
 public class ActorDto {
     private int aktorId;
     private String aktorName;
-    private Date registerDate;
     private String location;
     private String serviceUrl;
     private String status;
@@ -13,10 +10,9 @@ public class ActorDto {
     public ActorDto() {
     }
 
-    public ActorDto(int aktorId, String aktorName, Date registerDate, String location, String serviceUrl, String status) {
+    public ActorDto(int aktorId, String aktorName, String location, String serviceUrl, String status) {
         this.aktorId = aktorId;
         this.aktorName = aktorName;
-        this.registerDate = registerDate;
         this.location = location;
         this.serviceUrl = serviceUrl;
         this.status = status;
@@ -36,14 +32,6 @@ public class ActorDto {
 
     public void setAktorName(String aktorName) {
         this.aktorName = aktorName;
-    }
-
-    public Date getRegisterDate() {
-        return registerDate;
-    }
-
-    public void setRegisterDate(Date registerDate) {
-        this.registerDate = registerDate;
     }
 
     public String getLocation() {

@@ -1,18 +1,14 @@
 package de.throsenheim.vvss21.domain.dtoentety;
 
-import java.sql.Date;
-
 public class SensorDto {
 
     private int sensorId;
     private String sensorName;
-    private Date registerDate;
     private String location;
 
-    public SensorDto(int sensorId, String sensorName, Date registerDate, String location) {
+    public SensorDto(int sensorId, String sensorName, String location) {
         this.sensorId = sensorId;
         this.sensorName = sensorName;
-        this.registerDate = registerDate;
         this.location = location;
     }
 
@@ -33,14 +29,6 @@ public class SensorDto {
 
     public void setSensorName(String sensorName) {
         this.sensorName = sensorName;
-    }
-
-    public Date getRegisterDate() {
-        return registerDate;
-    }
-
-    public void setRegisterDate(Date registerDate) {
-        this.registerDate = registerDate;
     }
 
     public String getLocation() {

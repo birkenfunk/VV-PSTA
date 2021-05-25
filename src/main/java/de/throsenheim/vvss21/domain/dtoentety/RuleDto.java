@@ -1,7 +1,6 @@
 package de.throsenheim.vvss21.domain.dtoentety;
 
 public class RuleDto {
-    private int ruleId;
     private String ruleName;
     private Byte treshhold;
     private int aktorId;
@@ -10,20 +9,11 @@ public class RuleDto {
     public RuleDto() {
     }
 
-    public RuleDto(int ruleId, String ruleName, Byte treshhold, int aktorId, int sensorId) {
-        this.ruleId = ruleId;
+    public RuleDto(String ruleName, Byte treshhold, int aktorId, int sensorId) {
         this.ruleName = ruleName;
         this.treshhold = treshhold;
         this.aktorId = aktorId;
         this.sensorId = sensorId;
-    }
-
-    public int getRuleId() {
-        return ruleId;
-    }
-
-    public void setRuleId(int ruleId) {
-        this.ruleId = ruleId;
     }
 
     public String getRuleName() {
