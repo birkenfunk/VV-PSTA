@@ -1,5 +1,7 @@
 package de.throsenheim.vvss21.domain.entety;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,11 +15,11 @@ public class Sensor {
     private String sensorName;
     private Date registerDate;
     private String location;
+    private boolean deleted;
 
-    public Sensor(int sensorId, String sensorName, Date registerDate, String location) {
+    public Sensor(int sensorId, String sensorName, String location) {
         this.sensorId = sensorId;
         this.sensorName = sensorName;
-        this.registerDate = registerDate;
         this.location = location;
     }
 
@@ -25,7 +27,7 @@ public class Sensor {
     }
 
     @Id
-    @Column(name = "SensorId", nullable = false)
+    @Column(name = "SensorId", nullable = false, updatable = false)
     public int getSensorId() {
         return sensorId;
     }
@@ -45,7 +47,8 @@ public class Sensor {
     }
 
     @Basic
-    @Column(name = "RegisterDate", nullable = false)
+    @CreationTimestamp
+    @Column(name = "RegisterDate", updatable = false)
     public Date getRegisterDate() {
         return registerDate;
     }
@@ -63,6 +66,17 @@ public class Sensor {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    @Basic
+    @Column(name = "Deleted", columnDefinition = "boolean default false")
+    public boolean isDeleted(){
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted){
+        this.deleted=deleted;
+    }
+
 
     @Override
     public boolean equals(Object o) {

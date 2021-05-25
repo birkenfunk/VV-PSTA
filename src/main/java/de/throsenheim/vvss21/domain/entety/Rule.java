@@ -1,5 +1,7 @@
 package de.throsenheim.vvss21.domain.entety;
 
+import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -7,14 +9,13 @@ import java.util.Objects;
 public class Rule {
     private int ruleId;
     private String ruleName;
-    private Byte treshhold;
+    private Byte threshold;
     private Sensor sensorBySensorId;
     private Actor actorByAktorId;
 
-    public Rule(int ruleId, String ruleName, Byte treshhold, Sensor sensorBySensorId, Actor actorByAktorId) {
-        this.ruleId = ruleId;
+    public Rule(String ruleName, Byte threshold, Sensor sensorBySensorId, Actor actorByAktorId) {
         this.ruleName = ruleName;
-        this.treshhold = treshhold;
+        this.threshold = threshold;
         this.sensorBySensorId = sensorBySensorId;
         this.actorByAktorId = actorByAktorId;
     }
@@ -23,7 +24,8 @@ public class Rule {
     }
 
     @Id
-    @Column(name = "RuleId", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "RuleId", nullable = false, updatable = false)
     public int getRuleId() {
         return ruleId;
     }
@@ -33,7 +35,7 @@ public class Rule {
     }
 
     @Basic
-    @Column(name = "RuleName", nullable = false, length = 100)
+    @Column(name = "RuleName", nullable = false, length = 100, unique = true)
     public String getRuleName() {
         return ruleName;
     }
@@ -43,13 +45,14 @@ public class Rule {
     }
 
     @Basic
-    @Column(name = "Treshhold", nullable = true)
-    public Byte getTreshhold() {
-        return treshhold;
+    @Range(min = 1, max = 29)
+    @Column(name = "Threshold", nullable = false)
+    public Byte getThreshold() {
+        return threshold;
     }
 
-    public void setTreshhold(Byte treshhold) {
-        this.treshhold = treshhold;
+    public void setThreshold(Byte threshold) {
+        this.threshold = threshold;
     }
 
     @Override
@@ -57,12 +60,12 @@ public class Rule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Rule rule = (Rule) o;
-        return ruleId == rule.ruleId && Objects.equals(ruleName, rule.ruleName) && Objects.equals(treshhold, rule.treshhold);
+        return ruleId == rule.ruleId && Objects.equals(ruleName, rule.ruleName) && Objects.equals(threshold, rule.threshold);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ruleId, ruleName, treshhold);
+        return Objects.hash(ruleId, ruleName, threshold);
     }
 
     @ManyToOne

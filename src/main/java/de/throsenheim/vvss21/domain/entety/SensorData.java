@@ -1,6 +1,7 @@
 package de.throsenheim.vvss21.domain.entety;
 
 import de.throsenheim.vvss21.domain.TemperaturUnit;
+import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -25,7 +26,7 @@ public class SensorData {
     }
 
     @Basic
-    @Column(name = "TemperatureUnit", nullable = false)
+    @Column(name = "TemperatureUnit", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     public TemperaturUnit getTemperatureUnit() {
         return temperatureUnit;
@@ -36,7 +37,7 @@ public class SensorData {
     }
 
     @Basic
-    @Column(name = "Timestamp", nullable = false)
+    @Column(name = "Timestamp", nullable = false, updatable = false)
     public Timestamp getTimestamp() {
         return timestamp;
     }
@@ -46,7 +47,8 @@ public class SensorData {
     }
 
     @Basic
-    @Column(name = "CurrentValue", nullable = false)
+    @Range(min = 0, max = 30)
+    @Column(name = "CurrentValue", nullable = false, updatable = false)
     public byte getCurrentValue() {
         return currentValue;
     }
@@ -56,8 +58,8 @@ public class SensorData {
     }
 
     @Id
-    @GeneratedValue
-    @Column(name = "SensorDataID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "SensorDataID", nullable = false, updatable = false)
     public int getSensorDataId() {
         return sensorDataId;
     }

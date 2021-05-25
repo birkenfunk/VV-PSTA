@@ -1,5 +1,7 @@
 package de.throsenheim.vvss21.domain.entety;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,10 +18,9 @@ public class Actor {
     private String serviceUrl;
     private String status;
 
-    public Actor(int aktorId, String aktorName, Date registerDate, String location, String serviceUrl, String status) {
+    public Actor(int aktorId, String aktorName, String location, String serviceUrl, String status) {
         this.aktorId = aktorId;
         this.aktorName = aktorName;
-        this.registerDate = registerDate;
         this.location = location;
         this.serviceUrl = serviceUrl;
         this.status = status;
@@ -29,7 +30,7 @@ public class Actor {
     }
 
     @Id
-    @Column(name = "AktorId", nullable = false)
+    @Column(name = "AktorId", nullable = false, updatable = false)
     public int getAktorId() {
         return aktorId;
     }
@@ -49,7 +50,8 @@ public class Actor {
     }
 
     @Basic
-    @Column(name = "RegisterDate", nullable = false)
+    @CreationTimestamp
+    @Column(name = "RegisterDate", nullable = false, updatable = false)
     public Date getRegisterDate() {
         return registerDate;
     }
