@@ -84,4 +84,21 @@ public class Rule {
     public void setActorByAktorId(Actor actorByAktorId) {
         this.actorByAktorId = actorByAktorId;
     }
+
+    @Transient
+    public int getActorID(){
+        if(actorByAktorId!=null){
+            return actorByAktorId.getAktorId();
+        }
+        return Integer.MIN_VALUE;
+    }
+
+    @Transient
+    public int getSensorID(){
+        if(actorByAktorId!=null){
+            return sensorBySensorId.getSensorId();
+        }
+        return Integer.MIN_VALUE;
+    }
+
 }

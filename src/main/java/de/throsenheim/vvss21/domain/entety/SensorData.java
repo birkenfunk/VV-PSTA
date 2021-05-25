@@ -85,6 +85,14 @@ public class SensorData {
         return sensorBySensorId;
     }
 
+    @Transient
+    public int getSensorID(){
+        if(sensorBySensorId!=null) {
+            return sensorBySensorId.getSensorId();
+        }
+        return Integer.MIN_VALUE;
+    }
+
     public void setSensorBySensorId(Sensor sensorBySensorId) {
         this.sensorBySensorId = sensorBySensorId;
     }
