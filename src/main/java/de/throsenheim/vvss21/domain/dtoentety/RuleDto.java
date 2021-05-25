@@ -7,6 +7,17 @@ public class RuleDto {
     private int aktorId;
     private int sensorId;
 
+    public RuleDto() {
+    }
+
+    public RuleDto(int ruleId, String ruleName, Byte treshhold, int aktorId, int sensorId) {
+        this.ruleId = ruleId;
+        this.ruleName = ruleName;
+        this.treshhold = treshhold;
+        this.aktorId = aktorId;
+        this.sensorId = sensorId;
+    }
+
     public int getRuleId() {
         return ruleId;
     }

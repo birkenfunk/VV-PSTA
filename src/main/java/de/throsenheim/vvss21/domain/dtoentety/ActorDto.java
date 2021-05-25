@@ -10,6 +10,18 @@ public class ActorDto {
     private String serviceUrl;
     private String status;
 
+    public ActorDto() {
+    }
+
+    public ActorDto(int aktorId, String aktorName, Date registerDate, String location, String serviceUrl, String status) {
+        this.aktorId = aktorId;
+        this.aktorName = aktorName;
+        this.registerDate = registerDate;
+        this.location = location;
+        this.serviceUrl = serviceUrl;
+        this.status = status;
+    }
+
     public int getAktorId() {
         return aktorId;
     }

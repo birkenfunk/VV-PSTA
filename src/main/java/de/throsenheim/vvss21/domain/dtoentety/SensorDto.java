@@ -9,6 +9,16 @@ public class SensorDto {
     private Date registerDate;
     private String location;
 
+    public SensorDto(int sensorId, String sensorName, Date registerDate, String location) {
+        this.sensorId = sensorId;
+        this.sensorName = sensorName;
+        this.registerDate = registerDate;
+        this.location = location;
+    }
+
+    public SensorDto() {
+    }
+
     public int getSensorId() {
         return sensorId;
     }

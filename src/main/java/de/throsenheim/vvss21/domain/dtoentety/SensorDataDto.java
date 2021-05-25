@@ -10,6 +10,16 @@ public class SensorDataDto {
     private byte currentValue;
     private int sensorId;
 
+    public SensorDataDto() {
+    }
+
+    public SensorDataDto(TemperaturUnit temperaturUnit, Timestamp timestamp, byte currentValue, int sensorId) {
+        this.temperaturUnit = temperaturUnit;
+        this.timestamp = timestamp;
+        this.currentValue = currentValue;
+        this.sensorId = sensorId;
+    }
+
     public Timestamp getTimestamp() {
         return timestamp;
     }
