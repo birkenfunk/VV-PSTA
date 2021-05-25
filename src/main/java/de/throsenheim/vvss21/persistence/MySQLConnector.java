@@ -15,20 +15,18 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MySQLConnector implements IDatabase {
 
     private static final MySQLConnector MY_SQL_CONNECTOR = new MySQLConnector();
-    private EntityManager em;
+    private final EntityManager em;
     private static final Logger LOGGER = LogManager.getLogger(MySQLConnector.class);
 
-    public static void main(String[] args) throws SQLIntegrityConstraintViolationException, EntityNotFoundException {
-        MySQLConnector connector = MySQLConnector.getMySqlConnector();
-        SensorData s = new SensorData(TemperaturUnit.CELSIUS,Timestamp.valueOf(LocalDateTime.now()), (byte) 12,connector.getSensor(1));
-        connector.addSensorData(s);
+    public static void main(String[] args){
+        LOGGER.info("MySQL Main started");
     }
 
     private MySQLConnector() {
@@ -262,7 +260,7 @@ public class MySQLConnector implements IDatabase {
 
         em.getTransaction().begin();
         Query q = em.createNativeQuery("SHOW TABLES;");
-        List res = q.getResultList();
+        List<Object> res = new ArrayList<>(Arrays.asList(q.getResultList().toArray()));
         if(!res.contains("Actor")){
             em.createNativeQuery("CREATE TABLE `Actor` (\n" +
                     "  `AktorId` int NOT NULL,\n" +
@@ -272,7 +270,7 @@ public class MySQLConnector implements IDatabase {
                     "  `ServiceURL` varchar(100) NOT NULL,\n" +
                     "  `Status` varchar(100) NOT NULL,\n" +
                     "  PRIMARY KEY (`AktorId`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+                    ")").executeUpdate();
         }
         if(!res.contains("Sensor")){
             em.createNativeQuery("CREATE TABLE `Sensor` (\n" +
@@ -281,7 +279,7 @@ public class MySQLConnector implements IDatabase {
                     "  `RegisterDate` date NOT NULL DEFAULT (curdate()),\n" +
                     "  `Location` varchar(100) NOT NULL,\n" +
                     "  PRIMARY KEY (`SensorId`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+                    ")").executeUpdate();
         }
         if(!res.contains("Rule")){
             em.createNativeQuery("CREATE TABLE `Rule` (\n" +
@@ -296,7 +294,7 @@ public class MySQLConnector implements IDatabase {
                     "  CONSTRAINT `Rule_ibfk_1` FOREIGN KEY (`SensorID`) REFERENCES `Sensor` (`SensorId`) ON UPDATE CASCADE,\n" +
                     "  CONSTRAINT `Rule_ibfk_2` FOREIGN KEY (`AktorID`) REFERENCES `Actor` (`AktorId`) ON UPDATE CASCADE,\n" +
                     "  CONSTRAINT `Rule_chk_1` CHECK ((`Treshhold` between 1 and 29))\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+                    ")").executeUpdate();
         }
         if (!res.contains("SensorData")) {
             em.createNativeQuery("CREATE TABLE `SensorData` (\n" +
@@ -309,7 +307,7 @@ public class MySQLConnector implements IDatabase {
                     "  KEY `SensorID` (`SensorID`),\n" +
                     "  CONSTRAINT `SensorData_ibfk_1` FOREIGN KEY (`SensorID`) REFERENCES `Sensor` (`SensorId`) ON DELETE SET NULL ON UPDATE CASCADE,\n" +
                     "  CONSTRAINT `SensorData_chk_1` CHECK ((`CurrentValue` between 0 and 30))\n" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci").executeUpdate();
+                    ")").executeUpdate();
         }
         em.getTransaction().commit();
     }
