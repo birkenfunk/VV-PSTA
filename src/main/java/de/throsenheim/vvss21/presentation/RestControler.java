@@ -1,29 +1,35 @@
 package de.throsenheim.vvss21.presentation;
 
-import de.throsenheim.vvss21.application.interfaces.IDatabase;
-import de.throsenheim.vvss21.domain.dtoentety.ActorDto;
-import de.throsenheim.vvss21.domain.dtoentety.RuleDto;
-import de.throsenheim.vvss21.domain.dtoentety.SensorDataDto;
-import de.throsenheim.vvss21.domain.dtoentety.SensorDto;
-import de.throsenheim.vvss21.domain.entety.Actor;
-import de.throsenheim.vvss21.domain.entety.Rule;
-import de.throsenheim.vvss21.domain.entety.Sensor;
-import de.throsenheim.vvss21.domain.entety.SensorData;
-import de.throsenheim.vvss21.persistence.MySQLConnector;
-import de.throsenheim.vvss21.persistence.exeptions.EntityNotFoundException;
+import de.throsenheim.vvss21.domain.dtoentety.*;
+import de.throsenheim.vvss21.domain.entety.*;
+import de.throsenheim.vvss21.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Configuration
+@ComponentScan("de.throsenheim.vvss21.persistence")
 @RestController
 public class RestControler {
 
-    IDatabase database = MySQLConnector.getMySqlConnector();
+    @Autowired
+    SensorRepo sensorRepo;
+    @Autowired
+    SensorDataRepo sensorDataRepo;
+    @Autowired
+    RuleRepo ruleRepo;
+    @Autowired
+    ActorRepo actorRepo;
 
     @GetMapping("/hello")
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
@@ -32,145 +38,178 @@ public class RestControler {
 
     @GetMapping("/sensors")
     public ResponseEntity<List<SensorDto>> getAllSensors(){
-        return ResponseEntity.ok(database.getSensors().stream().
+        return ResponseEntity.ok(sensorRepo.findAll().stream().
                 map(sensorToSensorDto).
                 collect(Collectors.<SensorDto> toList()));
     }
 
     @GetMapping("/sensors/{id}")
     public ResponseEntity<SensorDto> getSensor(@PathVariable int id){
-        Sensor res = database.getSensor(id);
-        if(res==null)
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(sensorToSensorDto.apply(res));
+        Optional<Sensor> res = sensorRepo.findById(id);
+        if(res.isPresent())
+            return ResponseEntity.ok(sensorToSensorDto.apply(res.get()));
+        return ResponseEntity.notFound().build();
+
     }
 
     @PostMapping("/sensors")
     public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
-        if(database.getSensor(sensor.getSensorId())!=null){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        Sensor add = sensorDtoToSensor.apply(sensor);
+        if(sensorRepo.findById(add.getSensorId()).isPresent()){
+            return ResponseEntity.badRequest().build();
         }
-        Sensor data = sensorDtoToSensor.apply(sensor);
-        database.addSensor(data);
-        return ResponseEntity.ok(sensorToSensorDto.apply(data));
+        sensorRepo.save(add);
+        try {
+            return ResponseEntity.created(new URI("http://localhost:8080/sensors/" + add.getSensorId())).build();
+        } catch (URISyntaxException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/sensors/{id}")
-    public ResponseEntity<SensorDataDto> addSensorData(@RequestBody SensorDataDto sensorData){
-        if(database.getSensor(sensorData.getSensorId())!=null){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
-        }
+    public ResponseEntity<SensorDataDto> addSensorData(@PathVariable("id") int id, @RequestBody SensorDataDto sensorData){
+        Optional<Sensor> sensor = sensorRepo.findById(id);
+        if(!sensor.isPresent())
+            return ResponseEntity.badRequest().build();
+        sensorData.setSensorBySensorID(sensorToSensorDto.apply(sensor.get()));
         SensorData data = sensorDataDtoSensorToData.apply(sensorData);
-        database.addSensorData(data);
-        return ResponseEntity.ok(sensorDataToSensorDataDto.apply(data));
+        sensorDataRepo.save(data);
+        try {
+            return ResponseEntity.created(new URI("http://localhost:8080/sensordata/" + data.getSensorDataId())).build();
+        } catch (URISyntaxException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DeleteMapping("/sensors/{id}")
     public ResponseEntity<SensorDto> deleteSensor(@PathVariable int id) {
-        try {
-            database.removeSensor(id);
-            return ResponseEntity.noContent().build();
-        }catch (EntityNotFoundException e){
+        Optional<Sensor> toDelete = sensorRepo.findById(id);
+        if(!toDelete.isPresent()){
             return ResponseEntity.notFound().build();
-        }catch (SQLIntegrityConstraintViolationException e){
-            return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).build();
         }
+        toDelete.get().setDeleted(true);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/sensors/{id}")
+    public ResponseEntity<SensorDto> updateSensor(@PathVariable("id") int id, @RequestBody SensorDto toUpdate){
+        Optional<Sensor> sensor = sensorRepo.findById(id);
+        if(!sensor.isPresent())
+            return ResponseEntity.notFound().build();
+        sensor.get().setSensorName(toUpdate.getSensorName());
+        sensor.get().setLocation(toUpdate.getLocation());
+        sensorRepo.save(sensor.get());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/actors")
     public ResponseEntity<List<ActorDto>> getAllActors(){
-        return ResponseEntity.ok(database.getActors().stream().map(actorToActorDto).collect(Collectors.<ActorDto>toList()));
+        return ResponseEntity.ok(actorRepo.findAll().stream().map(actorToActorDto).collect(Collectors.<ActorDto>toList()));
     }
 
     @GetMapping("/actors/{id}")
     public ResponseEntity<ActorDto> getActor(@PathVariable int id){
-        Actor res = database.getActor(id);
-        if(res==null)
+        Optional<Actor> actor = actorRepo.findById(id);
+        if(!actor.isPresent())
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(actorToActorDto.apply(res));
+        return ResponseEntity.ok(actorToActorDto.apply(actor.get()));
     }
 
     @PostMapping("/actors")
     public ResponseEntity<ActorDto> createActors(@RequestBody ActorDto actor){
-        if(database.getSensor(actor.getAktorId())!=null){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        if(actorRepo.findById(actor.getAktorId()).isPresent()){
+            return ResponseEntity.badRequest().build();
         }
-        Actor data = actorDtoToActor.apply(actor);
-        database.addActor(data);
-        return ResponseEntity.ok(actorToActorDto.apply(data));
+        Actor add = actorDtoToActor.apply(actor);
+        actorRepo.save(add);
+        try {
+            return ResponseEntity.created(new URI("http://localhost:8080/actors/" + add.getAktorId())).build();
+        } catch (URISyntaxException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/rules")
     public ResponseEntity<List<RuleDto>> getAllRules(){
-        return ResponseEntity.ok(database.getRules().
-                stream().map(ruleToRuleDto).
-                collect(Collectors.<RuleDto>toList()));
+        return ResponseEntity.ok(ruleRepo.findAll().stream().map(ruleToRuleDto).collect(Collectors.<RuleDto>toList()));
     }
 
     @GetMapping("/rules/{id}")
     public ResponseEntity<RuleDto> getRule(@PathVariable int id){
-        Rule res = database.getRule(id);
-        if(res==null)
+        Optional<Rule> rule = ruleRepo.findById(id);
+        if(!rule.isPresent())
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(ruleToRuleDto.apply(res));
+        return ResponseEntity.ok(ruleToRuleDto.apply(rule.get()));
     }
 
     @PostMapping("/rules")
     public ResponseEntity<RuleDto> createRule(@RequestBody RuleDto rule){
-        if(database.getSensor(rule.getAktorId())!=null){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        if(ruleRepo.findById(rule.getAktorId()).isPresent()){
+            return ResponseEntity.badRequest().build();
         }
-        Rule data = ruleDtoToRule.apply(rule);
-        database.addRule(data);
-        return ResponseEntity.ok(ruleToRuleDto.apply(data));
+        Rule add = ruleDtoToRule.apply(rule);
+        ruleRepo.save(add);
+        try {
+            return ResponseEntity.created(new URI("http://localhost:8080/actors/" + add.getRuleId())).build();
+        } catch (URISyntaxException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
+    @GetMapping("/sensordata")
+    public ResponseEntity<List<SensorDataDto>> getAllSensordata(){
+        return ResponseEntity.ok(sensorDataRepo.findAll().stream().map(sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList()));
+    }
+
+    @GetMapping("/sensordata/{id}")
+    public ResponseEntity<SensorDataDto> getAllSensordata(@PathVariable int id){
+        Optional<SensorData> sensorData= sensorDataRepo.findById(id);
+        if(!sensorData.isPresent())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(sensorDataToSensorDataDto.apply(sensorData.get()));
+    }
 
     Function<SensorDto, Sensor> sensorDtoToSensor = sensorDto -> new Sensor(sensorDto.getSensorId(),
             sensorDto.getSensorName(),
-            sensorDto.getRegisterDate(),
             sensorDto.getLocation()
     );
 
     Function<ActorDto, Actor> actorDtoToActor = actorDto -> new Actor(actorDto.getAktorId(),
             actorDto.getAktorName(),
-            actorDto.getRegisterDate(),
             actorDto.getLocation(),
             actorDto.getServiceUrl(),
             actorDto.getStatus());
 
-    Function<RuleDto, Rule> ruleDtoToRule = ruleDto -> new Rule(ruleDto.getRuleId(),
+    Function<RuleDto, Rule> ruleDtoToRule = ruleDto -> new Rule(
             ruleDto.getRuleName(),
             ruleDto.getTreshhold(),
-            database.getSensor(ruleDto.getSensorId()),
-            database.getActor(ruleDto.getAktorId()));
+            sensorRepo.getById(ruleDto.getSensorId()),
+            actorRepo.getById(ruleDto.getAktorId()));
 
     Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperaturUnit(),
             sensorDataDto.getTimestamp(),
             sensorDataDto.getCurrentValue(),
-            database.getSensor(sensorDataDto.getSensorId()));
+            sensorDtoToSensor.apply(sensorDataDto.getSensorBySensorID()));
 
     Function<Sensor, SensorDto> sensorToSensorDto = sensor -> new SensorDto(sensor.getSensorId(),
             sensor.getSensorName(),
-            sensor.getRegisterDate(),
             sensor.getLocation()
     );
 
     Function<Actor, ActorDto> actorToActorDto = actor -> new ActorDto(actor.getAktorId(),
             actor.getAktorName(),
-            actor.getRegisterDate(),
             actor.getLocation(),
             actor.getServiceUrl(),
             actor.getStatus());
 
-    Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(rule.getRuleId(),
+    Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(
             rule.getRuleName(),
-            rule.getTreshhold(),
+            rule.getThreshold(),
             rule.getSensorID(),
             rule.getActorID());
 
     Function<SensorData, SensorDataDto> sensorDataToSensorDataDto = sensorData -> new SensorDataDto(sensorData.getTemperatureUnit(),
             sensorData.getTimestamp(),
             sensorData.getCurrentValue(),
-            sensorData.getSensorID());
+            sensorToSensorDto.apply(sensorData.getSensorBySensorId()));
 }
