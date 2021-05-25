@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 public class RestControler {
@@ -29,40 +31,42 @@ public class RestControler {
     }
 
     @GetMapping("/sensors")
-    public ResponseEntity getAllSensors(){
-        return ResponseEntity.ok(database.getSensors());
+    public ResponseEntity<List<SensorDto>> getAllSensors(){
+        return ResponseEntity.ok(database.getSensors().stream().
+                map(sensorToSensorDto).
+                collect(Collectors.<SensorDto> toList()));
     }
 
     @GetMapping("/sensors/{id}")
-    public ResponseEntity getSensor(@PathVariable int id){
-        Sensor s = database.getSensor(id);
-        if(s==null)
+    public ResponseEntity<SensorDto> getSensor(@PathVariable int id){
+        Sensor res = database.getSensor(id);
+        if(res==null)
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(s);
+        return ResponseEntity.ok(sensorToSensorDto.apply(res));
     }
 
     @PostMapping("/sensors")
-    public ResponseEntity createSensor(@RequestBody SensorDto sensor){
+    public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
         if(database.getSensor(sensor.getSensorId())!=null){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
-
-        database.addSensor(sensorDtoToSensor.apply(sensor));
-        return ResponseEntity.ok(sensor);
+        Sensor data = sensorDtoToSensor.apply(sensor);
+        database.addSensor(data);
+        return ResponseEntity.ok(sensorToSensorDto.apply(data));
     }
 
     @PostMapping("/sensors/{id}")
-    public ResponseEntity createSensor(@RequestBody SensorDataDto sensorData){
+    public ResponseEntity<SensorDataDto> addSensorData(@RequestBody SensorDataDto sensorData){
         if(database.getSensor(sensorData.getSensorId())!=null){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
-
-        database.addSensorData(sensorDataDtoSensorToData.apply(sensorData));
-        return ResponseEntity.ok(sensorData);
+        SensorData data = sensorDataDtoSensorToData.apply(sensorData);
+        database.addSensorData(data);
+        return ResponseEntity.ok(sensorDataToSensorDataDto.apply(data));
     }
 
     @DeleteMapping("/sensors/{id}")
-    public ResponseEntity deleteSensor(@PathVariable int id) {
+    public ResponseEntity<SensorDto> deleteSensor(@PathVariable int id) {
         try {
             database.removeSensor(id);
             return ResponseEntity.noContent().build();
@@ -74,49 +78,51 @@ public class RestControler {
     }
 
     @GetMapping("/actors")
-    public ResponseEntity getAllActors(){
-        return ResponseEntity.ok(database.getActors());
+    public ResponseEntity<List<ActorDto>> getAllActors(){
+        return ResponseEntity.ok(database.getActors().stream().map(actorToActorDto).collect(Collectors.<ActorDto>toList()));
     }
 
     @GetMapping("/actors/{id}")
-    public ResponseEntity getActor(@PathVariable int id){
+    public ResponseEntity<ActorDto> getActor(@PathVariable int id){
         Actor res = database.getActor(id);
         if(res==null)
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(actorToActorDto.apply(res));
     }
 
     @PostMapping("/actors")
-    public ResponseEntity createActors(@RequestBody ActorDto actor){
+    public ResponseEntity<ActorDto> createActors(@RequestBody ActorDto actor){
         if(database.getSensor(actor.getAktorId())!=null){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
-
-        database.addActor(actorDtoToActor.apply(actor));
-        return ResponseEntity.ok(actor);
+        Actor data = actorDtoToActor.apply(actor);
+        database.addActor(data);
+        return ResponseEntity.ok(actorToActorDto.apply(data));
     }
 
     @GetMapping("/rules")
-    public ResponseEntity getAllRules(){
-        return ResponseEntity.ok(database.getRules());
+    public ResponseEntity<List<RuleDto>> getAllRules(){
+        return ResponseEntity.ok(database.getRules().
+                stream().map(ruleToRuleDto).
+                collect(Collectors.<RuleDto>toList()));
     }
 
     @GetMapping("/rules/{id}")
-    public ResponseEntity getRule(@PathVariable int id){
+    public ResponseEntity<RuleDto> getRule(@PathVariable int id){
         Rule res = database.getRule(id);
         if(res==null)
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(ruleToRuleDto.apply(res));
     }
 
     @PostMapping("/rules")
-    public ResponseEntity createRule(@RequestBody RuleDto rule){
+    public ResponseEntity<RuleDto> createRule(@RequestBody RuleDto rule){
         if(database.getSensor(rule.getAktorId())!=null){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
-
-        database.addRule(ruleDtoToRule.apply(rule));
-        return ResponseEntity.ok(rule);
+        Rule data = ruleDtoToRule.apply(rule);
+        database.addRule(data);
+        return ResponseEntity.ok(ruleToRuleDto.apply(data));
     }
 
 
@@ -143,4 +149,28 @@ public class RestControler {
             sensorDataDto.getTimestamp(),
             sensorDataDto.getCurrentValue(),
             database.getSensor(sensorDataDto.getSensorId()));
+
+    Function<Sensor, SensorDto> sensorToSensorDto = sensor -> new SensorDto(sensor.getSensorId(),
+            sensor.getSensorName(),
+            sensor.getRegisterDate(),
+            sensor.getLocation()
+    );
+
+    Function<Actor, ActorDto> actorToActorDto = actor -> new ActorDto(actor.getAktorId(),
+            actor.getAktorName(),
+            actor.getRegisterDate(),
+            actor.getLocation(),
+            actor.getServiceUrl(),
+            actor.getStatus());
+
+    Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(rule.getRuleId(),
+            rule.getRuleName(),
+            rule.getTreshhold(),
+            rule.getSensorID(),
+            rule.getActorID());
+
+    Function<SensorData, SensorDataDto> sensorDataToSensorDataDto = sensorData -> new SensorDataDto(sensorData.getTemperatureUnit(),
+            sensorData.getTimestamp(),
+            sensorData.getCurrentValue(),
+            sensorData.getSensorID());
 }
