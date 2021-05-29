@@ -1,10 +1,24 @@
 package de.throsenheim.vvss21.domain.dtoentety;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import javax.validation.constraints.NotBlank;
+
 public class ActorDto {
+    @NotBlank
+    @Schema(description = "Identification number of the Actor", example = "10")
     private int aktorId;
+    @NotBlank
+    @Schema(description = "Name of the Actor", example = "ActorXY")
     private String aktorName;
+    @NotBlank
+    @Schema(description = "Name of the Location of the Actor", example = "Kitchen")
     private String location;
+    @NotBlank
+    @Schema(description = "Service URL of the Actor", example = "http://192.168.178.14/")
     private String serviceUrl;
+    @NotBlank
+    @Schema(description = "Status of the Actor", example = "Open")
     private String status;
 
     public ActorDto() {
