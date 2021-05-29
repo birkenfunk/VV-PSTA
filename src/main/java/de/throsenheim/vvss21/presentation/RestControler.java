@@ -3,10 +3,16 @@ package de.throsenheim.vvss21.presentation;
 import de.throsenheim.vvss21.domain.dtoentety.*;
 import de.throsenheim.vvss21.domain.entety.*;
 import de.throsenheim.vvss21.persistence.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,7 +113,20 @@ public class RestControler {
         return ResponseEntity.ok(actorRepo.findAll().stream().map(actorToActorDto).collect(Collectors.<ActorDto>toList()));
     }
 
-    @GetMapping("/actors/{id}")
+    @GetMapping(value = "/actors/{id}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return an Actor with a specific ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                        @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ActorDto.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<ActorDto> getActor(@PathVariable int id){
         Optional<Actor> actor = actorRepo.findById(id);
         if(!actor.isPresent())
