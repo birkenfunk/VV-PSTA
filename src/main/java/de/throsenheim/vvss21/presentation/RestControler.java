@@ -49,7 +49,20 @@ public class RestControler {
                 collect(Collectors.<SensorDto> toList()));
     }
 
-    @GetMapping("/sensors/{id}")
+    @GetMapping(value = "/sensors/{id}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return an Sensor with a specific ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ActorDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<SensorDto> getSensor(@PathVariable int id){
         Optional<Sensor> res = sensorRepo.findById(id);
         if(res.isPresent())
