@@ -42,24 +42,37 @@ public class RestControler {
         return String.format("Hello %s!", name);
     }
 
-    @GetMapping("/sensors")
+    @GetMapping(value = "/v1/sensors", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return all Sensors from the DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = SensorDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<List<SensorDto>> getAllSensors(){
         return ResponseEntity.ok(sensorRepo.findAll().stream().
                 map(sensorToSensorDto).
                 collect(Collectors.<SensorDto> toList()));
     }
 
-    @GetMapping(value = "/sensors/{id}", produces = {
+    @GetMapping(value = "/v1/sensors/{id}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
     })
-    @Operation(description = "Return an Sensor with a specific ID")
+    @Operation(description = "Return a Sensor with a specific ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Project was found",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ActorDto.class))
+                                    schema = @Schema(implementation = SensorDto.class))
                     }),
             @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
@@ -71,7 +84,7 @@ public class RestControler {
 
     }
 
-    @PostMapping("/sensors")
+    @PostMapping("/v1/sensors")
     public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
         Sensor add = sensorDtoToSensor.apply(sensor);
         if(sensorRepo.findById(add.getSensorId()).isPresent()){
@@ -85,7 +98,7 @@ public class RestControler {
         }
     }
 
-    @PostMapping("/sensors/{id}")
+    @PostMapping("/v1/sensors/{id}")
     public ResponseEntity<SensorDataDto> addSensorData(@PathVariable("id") int id, @RequestBody SensorDataDto sensorData){
         Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
@@ -100,7 +113,7 @@ public class RestControler {
         }
     }
 
-    @DeleteMapping("/sensors/{id}")
+    @DeleteMapping("/v1/sensors/{id}")
     public ResponseEntity<SensorDto> deleteSensor(@PathVariable int id) {
         Optional<Sensor> toDelete = sensorRepo.findById(id);
         if(!toDelete.isPresent()){
@@ -110,7 +123,7 @@ public class RestControler {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/sensors/{id}")
+    @PutMapping("/v1/sensors/{id}")
     public ResponseEntity<SensorDto> updateSensor(@PathVariable("id") int id, @RequestBody SensorDto toUpdate){
         Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
@@ -121,12 +134,25 @@ public class RestControler {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/actors")
+    @GetMapping(value = "/v1/actors", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return all Actors from the DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ActorDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<List<ActorDto>> getAllActors(){
         return ResponseEntity.ok(actorRepo.findAll().stream().map(actorToActorDto).collect(Collectors.<ActorDto>toList()));
     }
 
-    @GetMapping(value = "/actors/{id}", produces = {
+    @GetMapping(value = "/v1/actors/{id}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
     })
@@ -147,7 +173,7 @@ public class RestControler {
         return ResponseEntity.ok(actorToActorDto.apply(actor.get()));
     }
 
-    @PostMapping("/actors")
+    @PostMapping("/v1/actors")
     public ResponseEntity<ActorDto> createActors(@RequestBody ActorDto actor){
         if(actorRepo.findById(actor.getAktorId()).isPresent()){
             return ResponseEntity.badRequest().build();
@@ -161,12 +187,38 @@ public class RestControler {
         }
     }
 
-    @GetMapping("/rules")
+    @GetMapping(value = "/v1/rules" , produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return all Rules from the DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = RuleDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<List<RuleDto>> getAllRules(){
         return ResponseEntity.ok(ruleRepo.findAll().stream().map(ruleToRuleDto).collect(Collectors.<RuleDto>toList()));
     }
 
-    @GetMapping("/rules/{id}")
+    @GetMapping( value = "/v1/rules/{id}" , produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return a Rule with a specific ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = RuleDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<RuleDto> getRule(@PathVariable int id){
         Optional<Rule> rule = ruleRepo.findById(id);
         if(!rule.isPresent())
@@ -174,7 +226,7 @@ public class RestControler {
         return ResponseEntity.ok(ruleToRuleDto.apply(rule.get()));
     }
 
-    @PostMapping("/rules")
+    @PostMapping("/v1/rules")
     public ResponseEntity<RuleDto> createRule(@RequestBody RuleDto rule){
         if(ruleRepo.findById(rule.getAktorId()).isPresent()){
             return ResponseEntity.badRequest().build();
@@ -188,12 +240,38 @@ public class RestControler {
         }
     }
 
-    @GetMapping("/sensordata")
+    @GetMapping(value = "/v1/sensordata" , produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return all Senor Data form the DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = SensorDataDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<List<SensorDataDto>> getAllSensordata(){
         return ResponseEntity.ok(sensorDataRepo.findAll().stream().map(sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList()));
     }
 
-    @GetMapping("/sensordata/{id}")
+    @GetMapping(value = "/v1/sensordata/{id}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+    })
+    @Operation(description = "Return a Sensor Data with a specific ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Project was found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = SensorDataDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+    })
     public ResponseEntity<SensorDataDto> getAllSensordata(@PathVariable int id){
         Optional<SensorData> sensorData= sensorDataRepo.findById(id);
         if(!sensorData.isPresent())
