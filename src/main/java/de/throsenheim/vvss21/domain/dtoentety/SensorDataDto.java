@@ -1,13 +1,23 @@
 package de.throsenheim.vvss21.domain.dtoentety;
 
 import de.throsenheim.vvss21.domain.TemperaturUnit;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 
 public class SensorDataDto {
+    @NotBlank
+    @Schema(description = "Unit of the Temperature")
     private TemperaturUnit temperaturUnit;
+    @Schema(description = "When the SensorData was measured")
     private Timestamp timestamp;
+    @NotBlank
+    @Size(min = 0, max = 30)
+    @Schema(description = "The measured temp", example = "10")
     private byte currentValue;
+    @Schema(description = "The sensor that has measured the data")
     private SensorDto sensorBySensorID;
 
     public SensorDataDto() {

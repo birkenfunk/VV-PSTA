@@ -1,9 +1,23 @@
 package de.throsenheim.vvss21.domain.dtoentety;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class RuleDto {
+    @NotBlank
+    @Schema(description = "Name of the rule", example = "Close window")
     private String ruleName;
+    @NotBlank
+    @Size(min = 1, max = 29)
+    @Schema(description = "When the rule should do something", example = "10")
     private Byte treshhold;
+    @NotBlank
+    @Schema(description = "Identification number of the Actor", example = "10")
     private int aktorId;
+    @NotBlank
+    @Schema(description = "Identification number of the Sensor", example = "10")
     private int sensorId;
 
     public RuleDto() {
