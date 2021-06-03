@@ -258,15 +258,16 @@ public class RestControler {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Actor was created", content = @Content,
                     headers = {@Header(name = "Location", description = "Link to the Rule")}),
-            @ApiResponse(responseCode = "400", description = "Sensor or Actor wasn't found", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Name of sensor already exists or Sensor or Actor wasn't found", content = @Content)
     })
     public ResponseEntity<RuleDto> createRule(@RequestBody RuleDto rule){
-        if(actorRepo.findById(rule.getAktorId()).isEmpty()){
+        if(actorRepo.findById(rule.getAktorId()).isEmpty() || sensorRepo.findById(rule.getSensorId()).isEmpty()){
             return ResponseEntity.badRequest().build();
         }
-        if(sensorRepo.findById(rule.getSensorId()).isEmpty())
-            return ResponseEntity.badRequest().build();
         Rule add = ruleDtoToRule.apply(rule);
+        if(ruleRepo.findAll().contains(add)){
+            return ResponseEntity.badRequest().build();
+        }
         ruleRepo.save(add);
         try {
             return ResponseEntity.created(new URI("http://localhost:8080/actors/" + add.getRuleId())).build();
