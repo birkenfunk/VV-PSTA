@@ -60,7 +60,7 @@ public class Rule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Rule rule = (Rule) o;
-        return ruleId == rule.ruleId && Objects.equals(ruleName, rule.ruleName) && Objects.equals(threshold, rule.threshold);
+        return ruleId == rule.ruleId || Objects.equals(ruleName, rule.ruleName);
     }
 
     @Override
