@@ -4,6 +4,7 @@ import de.throsenheim.vvss21.domain.dtoentety.*;
 import de.throsenheim.vvss21.domain.entety.*;
 import de.throsenheim.vvss21.persistence.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -49,12 +52,11 @@ public class RestControler {
     @Operation(description = "Return all Sensors from the DB")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "Project was found",
+                    description = "Sensors found",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = SensorDto.class))
                     }),
-            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
     public ResponseEntity<List<SensorDto>> getAllSensors(){
         return ResponseEntity.ok(sensorRepo.findAll().stream().
@@ -69,7 +71,7 @@ public class RestControler {
     @Operation(description = "Return a Sensor with a specific ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "Project was found",
+                    description = "Sensor was found",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = SensorDto.class))
@@ -84,7 +86,12 @@ public class RestControler {
 
     }
 
-    @PostMapping("/v1/sensors")
+    @PostMapping(value = "/v1/sensors", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sensor was created", content =  @Content,
+                    headers = {@Header(name = "Location", description = "Link to the Sensor")}),
+            @ApiResponse(responseCode = "400", description = "Sensor already exists", content = @Content)
+    })
     public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
         Sensor add = sensorDtoToSensor.apply(sensor);
         if(sensorRepo.findById(add.getSensorId()).isPresent()){
@@ -98,7 +105,12 @@ public class RestControler {
         }
     }
 
-    @PostMapping("/v1/sensors/{id}")
+    @PostMapping(value = "/v1/sensors/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sensordata was created", content =  @Content,
+                    headers = {@Header(name = "Location", description = "Link to the Sensordata")}),
+            @ApiResponse(responseCode = "400", description = "Sensor with the SensorId wasn't found", content = @Content)
+    })
     public ResponseEntity<SensorDataDto> addSensorData(@PathVariable("id") int id, @RequestBody SensorDataDto sensorData){
         Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
@@ -113,7 +125,11 @@ public class RestControler {
         }
     }
 
-    @DeleteMapping("/v1/sensors/{id}")
+    @DeleteMapping(value = "/v1/sensors/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sensor was deleted", content =  @Content),
+            @ApiResponse(responseCode = "404", description = "Sensor wasn't found", content = @Content)
+    })
     public ResponseEntity<SensorDto> deleteSensor(@PathVariable int id) {
         Optional<Sensor> toDelete = sensorRepo.findById(id);
         if(!toDelete.isPresent()){
@@ -123,7 +139,11 @@ public class RestControler {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/v1/sensors/{id}")
+    @PutMapping(value = "/v1/sensors/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sensor was updatet", content =  @Content),
+            @ApiResponse(responseCode = "404", description = "Sensor wasn't found", content = @Content)
+    })
     public ResponseEntity<SensorDto> updateSensor(@PathVariable("id") int id, @RequestBody SensorDto toUpdate){
         Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
@@ -173,7 +193,12 @@ public class RestControler {
         return ResponseEntity.ok(actorToActorDto.apply(actor.get()));
     }
 
-    @PostMapping("/v1/actors")
+    @PostMapping(value = "/v1/actors", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Actor was created", content =  @Content,
+                    headers = {@Header(name = "Location", description = "Link to the Actor")}),
+            @ApiResponse(responseCode = "400", description = "Actor already exists", content = @Content)
+    })
     public ResponseEntity<ActorDto> createActors(@RequestBody ActorDto actor){
         if(actorRepo.findById(actor.getAktorId()).isPresent()){
             return ResponseEntity.badRequest().build();
@@ -226,7 +251,12 @@ public class RestControler {
         return ResponseEntity.ok(ruleToRuleDto.apply(rule.get()));
     }
 
-    @PostMapping("/v1/rules")
+    @PostMapping(value = "/v1/rules", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Actor was created", content = @Content,
+                    headers = {@Header(name = "Location", description = "Link to the Rule")}),
+            @ApiResponse(responseCode = "400", description = "Sensor or Actor wasn't found", content = @Content)
+    })
     public ResponseEntity<RuleDto> createRule(@RequestBody RuleDto rule){
         if(ruleRepo.findById(rule.getAktorId()).isPresent()){
             return ResponseEntity.badRequest().build();
