@@ -48,7 +48,7 @@ public class Sensor {
 
     @Basic
     @CreationTimestamp
-    @Column(name = "RegisterDate", updatable = false)
+    @Column(name = "RegisterDate")
     public Date getRegisterDate() {
         return registerDate;
     }
