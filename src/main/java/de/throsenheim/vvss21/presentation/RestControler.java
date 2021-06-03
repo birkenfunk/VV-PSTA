@@ -94,7 +94,9 @@ public class RestControler {
     })
     public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
         Sensor add = sensorDtoToSensor.apply(sensor);
-        if(sensorRepo.findById(add.getSensorId()).isPresent()){
+        add.setRegisterDate(Date.valueOf(LocalDate.now()));
+        Optional<Sensor> temp = sensorRepo.findById(add.getSensorId());
+        if(temp.isPresent() && !temp.get().isDeleted()){
             return ResponseEntity.badRequest().build();
         }
         sensorRepo.save(add);
@@ -136,6 +138,7 @@ public class RestControler {
             return ResponseEntity.notFound().build();
         }
         toDelete.get().setDeleted(true);
+        sensorRepo.save(toDelete.get());
         return ResponseEntity.noContent().build();
     }
 
@@ -258,9 +261,11 @@ public class RestControler {
             @ApiResponse(responseCode = "400", description = "Sensor or Actor wasn't found", content = @Content)
     })
     public ResponseEntity<RuleDto> createRule(@RequestBody RuleDto rule){
-        if(ruleRepo.findById(rule.getAktorId()).isPresent()){
+        if(actorRepo.findById(rule.getAktorId()).isEmpty()){
             return ResponseEntity.badRequest().build();
         }
+        if(sensorRepo.findById(rule.getSensorId()).isEmpty())
+            return ResponseEntity.badRequest().build();
         Rule add = ruleDtoToRule.apply(rule);
         ruleRepo.save(add);
         try {
