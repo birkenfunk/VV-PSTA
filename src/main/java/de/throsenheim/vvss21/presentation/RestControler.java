@@ -45,6 +45,10 @@ public class RestControler {
         return String.format("Hello %s!", name);
     }
 
+    /**
+     * Rest get request for all Sensors
+     * @return List of {@link SensorDto} objects
+     */
     @GetMapping(value = "/v1/sensors", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -64,6 +68,11 @@ public class RestControler {
                 collect(Collectors.<SensorDto> toList()));
     }
 
+    /**
+     * Rest get request for a specific Sensor
+     * @param id Id of the Sensor
+     * @return A {@link SensorDto} objects
+     */
     @GetMapping(value = "/v1/sensors/{id}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -86,6 +95,11 @@ public class RestControler {
 
     }
 
+    /**
+     * Rest post request for adding a Sensor to the System
+     * @param sensor Sensor that should be added
+     * @return 201 Http code for success or a 400 if sensor already exists
+     */
     @PostMapping(value = "/v1/sensors", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sensor was created", content =  @Content,
@@ -107,6 +121,12 @@ public class RestControler {
         }
     }
 
+    /**
+     * Rest post request for adding a SensorData to the System
+     * @param sensorData SensorData that should be added
+     * @param id Id of the Sensor
+     * @return 201 Http code for success or a 400 if sensor for the SensorData wasn't found
+     */
     @PostMapping(value = "/v1/sensors/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sensordata was created", content =  @Content,
@@ -127,6 +147,12 @@ public class RestControler {
         }
     }
 
+    /**
+     * Rest delete request for deleting a Sensor from the System
+     * <p>Will only set deleted to true on the Sensor will not remove the Sensor completely from the DB</p>
+     * @param id the id of the Sensor
+     * @return 204 Http code for success or a 404 if the sensor wasn't found
+     */
     @DeleteMapping(value = "/v1/sensors/{id}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Sensor was deleted", content =  @Content),
@@ -142,6 +168,12 @@ public class RestControler {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Rest put request for updating a Sensor from the System
+     * @param id the id of the Sensor
+     * @param toUpdate the new data of the sensor
+     * @return 204 Http code for success or a 404 if the sensor wasn't found
+     */
     @PutMapping(value = "/v1/sensors/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Sensor was updatet", content =  @Content),
@@ -157,6 +189,10 @@ public class RestControler {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Rest get request for all Actors
+     * @return List of {@link ActorDto} objects
+     */
     @GetMapping(value = "/v1/actors", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -175,6 +211,11 @@ public class RestControler {
         return ResponseEntity.ok(actorRepo.findAll().stream().map(actorToActorDto).collect(Collectors.<ActorDto>toList()));
     }
 
+    /**
+     * Rest get request for a specific Actor
+     * @param id Id of the actor
+     * @return An {@link ActorDto} object
+     */
     @GetMapping(value = "/v1/actors/{id}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -196,6 +237,11 @@ public class RestControler {
         return ResponseEntity.ok(actorToActorDto.apply(actor.get()));
     }
 
+    /**
+     * Rest post request for adding an Actor to the System
+     * @param actor Actor that should be added
+     * @return 201 Http code for success or a 400 if actor already exists
+     */
     @PostMapping(value = "/v1/actors", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Actor was created", content =  @Content,
@@ -215,6 +261,10 @@ public class RestControler {
         }
     }
 
+    /**
+     * Rest get request for all Rules
+     * @return List of {@link RuleDto} objects
+     */
     @GetMapping(value = "/v1/rules" , produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -233,6 +283,11 @@ public class RestControler {
         return ResponseEntity.ok(ruleRepo.findAll().stream().map(ruleToRuleDto).collect(Collectors.<RuleDto>toList()));
     }
 
+    /**
+     * Rest get request for a specific Rule
+     * @param id Id of the rule
+     * @return An {@link RuleDto} object
+     */
     @GetMapping( value = "/v1/rules/{id}" , produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -254,6 +309,11 @@ public class RestControler {
         return ResponseEntity.ok(ruleToRuleDto.apply(rule.get()));
     }
 
+    /**
+     * Rest post request for adding a Rule to the System
+     * @param rule Rule that should be added
+     * @return 201 Http code for success or a 400 if rule already exists
+     */
     @PostMapping(value = "/v1/rules", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Actor was created", content = @Content,
@@ -276,6 +336,10 @@ public class RestControler {
         }
     }
 
+    /**
+     * Rest get request for all SensorData
+     * @return List of {@link SensorDataDto} objects
+     */
     @GetMapping(value = "/v1/sensordata" , produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -287,13 +351,17 @@ public class RestControler {
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = SensorDataDto.class))
-                    }),
-            @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
+                    })
     })
     public ResponseEntity<List<SensorDataDto>> getAllSensordata(){
         return ResponseEntity.ok(sensorDataRepo.findAll().stream().map(sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList()));
     }
 
+    /**
+     * Rest get request for a specific SensorData
+     * @param id Id of the SensorData
+     * @return An {@link SensorDataDto} object
+     */
     @GetMapping(value = "/v1/sensordata/{id}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -315,47 +383,75 @@ public class RestControler {
         return ResponseEntity.ok(sensorDataToSensorDataDto.apply(sensorData.get()));
     }
 
+    /**
+     * Function for transforming a {@link SensorDto} Object to a {@link Sensor} object
+     */
     Function<SensorDto, Sensor> sensorDtoToSensor = sensorDto -> new Sensor(sensorDto.getSensorId(),
             sensorDto.getSensorName(),
             sensorDto.getLocation()
     );
 
+    /**
+     * Function for transforming a {@link Sensor} Object to a {@link SensorDto} object
+     */
+    Function<Sensor, SensorDto> sensorToSensorDto = sensor -> new SensorDto(sensor.getSensorId(),
+            sensor.getSensorName(),
+            sensor.getLocation()
+    );
+
+    /**
+     * Function for transforming a {@link SensorDataDto} Object to a {@link SensorData} object
+     */
+    Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperaturUnit(),
+            sensorDataDto.getTimestamp(),
+            sensorDataDto.getCurrentValue(),
+            sensorDtoToSensor.apply(sensorDataDto.getSensorBySensorID()));
+
+    /**
+     * Function for transforming a {@link SensorData} Object to a {@link SensorDataDto} object
+     */
+    Function<SensorData, SensorDataDto> sensorDataToSensorDataDto = sensorData -> new SensorDataDto(sensorData.getTemperatureUnit(),
+            sensorData.getTimestamp(),
+            sensorData.getCurrentValue(),
+            sensorToSensorDto.apply(sensorData.getSensorBySensorId())
+    );
+
+    /**
+     * Function for transforming an {@link ActorDto} Object to a {@link Actor} object
+     */
     Function<ActorDto, Actor> actorDtoToActor = actorDto -> new Actor(actorDto.getAktorId(),
             actorDto.getAktorName(),
             actorDto.getLocation(),
             actorDto.getServiceUrl(),
             actorDto.getStatus());
 
-    Function<RuleDto, Rule> ruleDtoToRule = ruleDto -> new Rule(
-            ruleDto.getRuleName(),
-            ruleDto.getTreshhold(),
-            sensorRepo.getById(ruleDto.getSensorId()),
-            actorRepo.getById(ruleDto.getAktorId()));
-
-    Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperaturUnit(),
-            sensorDataDto.getTimestamp(),
-            sensorDataDto.getCurrentValue(),
-            sensorDtoToSensor.apply(sensorDataDto.getSensorBySensorID()));
-
-    Function<Sensor, SensorDto> sensorToSensorDto = sensor -> new SensorDto(sensor.getSensorId(),
-            sensor.getSensorName(),
-            sensor.getLocation()
-    );
-
+    /**
+     * Function for transforming an {@link ActorDto} Object to an {@link Actor} object
+     */
     Function<Actor, ActorDto> actorToActorDto = actor -> new ActorDto(actor.getAktorId(),
             actor.getAktorName(),
             actor.getLocation(),
             actor.getServiceUrl(),
-            actor.getStatus());
+            actor.getStatus()
+    );
 
+    /**
+     * Function for transforming a {@link RuleDto} Object to a {@link Rule} object
+     */
+    Function<RuleDto, Rule> ruleDtoToRule = ruleDto -> new Rule(
+            ruleDto.getRuleName(),
+            ruleDto.getTreshhold(),
+            sensorRepo.getById(ruleDto.getSensorId()),
+            actorRepo.getById(ruleDto.getAktorId())
+    );
+
+    /**
+     * Function for transforming a {@link Rule} Object to a {@link RuleDto} object
+     */
     Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(
             rule.getRuleName(),
             rule.getThreshold(),
             rule.getSensorID(),
-            rule.getActorID());
-
-    Function<SensorData, SensorDataDto> sensorDataToSensorDataDto = sensorData -> new SensorDataDto(sensorData.getTemperatureUnit(),
-            sensorData.getTimestamp(),
-            sensorData.getCurrentValue(),
-            sensorToSensorDto.apply(sensorData.getSensorBySensorId()));
+            rule.getActorID()
+    );
 }
