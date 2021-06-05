@@ -13,3 +13,24 @@ services:
       MYSQL_DATABASE: SmartHomeService
       MYSQL_USER: Alex
       MYSQL_PASSWORD: 1234
+    networks:
+      - mysqlconnector
+    healthcheck:
+      test: [ "CMD-SHELL", 'mysqladmin ping' ]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+
+  service:
+    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SqlUrl=db
+    ports:
+      - 9000:9000
+    networks:
+      - mysqlconnector
+networks:
+  mysqlconnector:
