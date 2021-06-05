@@ -10,3 +10,11 @@
     "sensorName": "Test",
     "location": "Raum"
 }
+
+{
+        "ruleName": "Test1",
+        "treshhold": 2,
+        "aktorId": 1,
+        "sensorId": 1
+}
+
