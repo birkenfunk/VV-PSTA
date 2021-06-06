@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.domain.dtoentety;
+package de.throsenheim.vvss21.domain.dtoentity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

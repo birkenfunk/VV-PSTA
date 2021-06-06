@@ -1,6 +1,6 @@
 package de.throsenheim.vvss21.presentation;
 
-import de.throsenheim.vvss21.domain.dtoentety.*;
+import de.throsenheim.vvss21.domain.dtoentity.*;
 import de.throsenheim.vvss21.domain.entety.*;
 import de.throsenheim.vvss21.persistence.*;
 import io.swagger.v3.oas.annotations.Operation;
