@@ -26,8 +26,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Configuration
-@ComponentScan("de.throsenheim.vvss21.persistence")
 @RestController
 public class RestControler {
 

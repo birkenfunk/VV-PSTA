@@ -9,12 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ComponentScan("de.throsenheim.vvss21.presentation")
-@SpringBootApplication
+
+@SpringBootApplication(scanBasePackages = {"de.throsenheim.vvss21"})
 public class Main {
 
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
