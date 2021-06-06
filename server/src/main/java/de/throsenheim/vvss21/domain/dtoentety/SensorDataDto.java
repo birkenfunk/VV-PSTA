@@ -7,6 +7,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 
+/**
+ * DTO entity for the sensorData
+ */
 public class SensorDataDto {
     @NotBlank
     @Schema(description = "Unit of the Temperature")

@@ -5,6 +5,9 @@ import org.hibernate.validator.constraints.Range;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * DB entity for the rule
+ */
 @Entity
 public class Rule {
     private int ruleId;

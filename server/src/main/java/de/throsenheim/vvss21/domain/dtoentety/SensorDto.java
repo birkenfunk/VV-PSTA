@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * DTO entity for the senor
+ */
 public class SensorDto {
 
     @NotBlank

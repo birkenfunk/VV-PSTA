@@ -9,6 +9,9 @@ import javax.persistence.Id;
 import java.sql.Date;
 import java.util.Objects;
 
+/**
+ * DB entity for the sensor
+ */
 @Entity
 public class Sensor {
     private int sensorId;

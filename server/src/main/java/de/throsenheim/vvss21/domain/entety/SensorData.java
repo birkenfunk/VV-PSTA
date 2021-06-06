@@ -7,6 +7,9 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+/**
+ * DB entity for the sensorData
+ */
 @Entity
 public class SensorData {
     private TemperaturUnit temperatureUnit;

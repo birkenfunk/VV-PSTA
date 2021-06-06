@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+/**
+ * DTO entity for the rule
+ */
 public class RuleDto {
     @NotBlank
     @Schema(description = "Name of the rule", example = "Close window")
