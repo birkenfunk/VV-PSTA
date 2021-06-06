@@ -447,7 +447,7 @@ public class RestControllerImplementation {
     Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(
             rule.getRuleName(),
             rule.getThreshold(),
-            rule.getSensorID(),
-            rule.getActorID()
+            actorToActorDto.apply(rule.getActorByAktorId()),
+            sensorToSensorDto.apply(rule.getSensorBySensorId())
     );
 }

@@ -19,18 +19,22 @@ public class RuleDto {
     @NotBlank
     @Schema(description = "Identification number of the Actor", example = "10")
     private int aktorId;
+    @Schema(description = "Actor for this rule")
+    private ActorDto actorByActorID;
     @NotBlank
     @Schema(description = "Identification number of the Sensor", example = "10")
     private int sensorId;
+    @Schema(description = "Sensor for this rule")
+    private SensorDto sensorBySensorID;
 
     public RuleDto() {
     }
 
-    public RuleDto(String ruleName, Byte treshhold, int aktorId, int sensorId) {
+    public RuleDto(String ruleName, Byte treshhold, ActorDto actorDto, SensorDto sensorDto) {
         this.ruleName = ruleName;
         this.treshhold = treshhold;
-        this.aktorId = aktorId;
-        this.sensorId = sensorId;
+        this.actorByActorID = actorDto;
+        this.sensorBySensorID = sensorDto;
     }
 
     public String getRuleName() {
@@ -62,5 +66,21 @@ public class RuleDto {
 
     public void setSensorId(int sensorId) {
         this.sensorId = sensorId;
+    }
+
+    public ActorDto getActorByActorID() {
+        return actorByActorID;
+    }
+
+    public void setActorByActorID(ActorDto actorByActorID) {
+        this.actorByActorID = actorByActorID;
+    }
+
+    public SensorDto getSensorBySensorID() {
+        return sensorBySensorID;
+    }
+
+    public void setSensorBySensorID(SensorDto sensorBySensorID) {
+        this.sensorBySensorID = sensorBySensorID;
     }
 }
