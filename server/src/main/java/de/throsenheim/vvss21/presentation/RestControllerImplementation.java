@@ -25,16 +25,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
-public class RestControler {
+public class RestControllerImplementation {
 
     @Autowired
-    SensorRepo sensorRepo;
+    private SensorRepo sensorRepo;
     @Autowired
-    SensorDataRepo sensorDataRepo;
+    private SensorDataRepo sensorDataRepo;
     @Autowired
-    RuleRepo ruleRepo;
+    private RuleRepo ruleRepo;
     @Autowired
-    ActorRepo actorRepo;
+    private ActorRepo actorRepo;
 
     @GetMapping("/hello")
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
