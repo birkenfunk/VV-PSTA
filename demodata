@@ -1,5 +1,5 @@
 {
-    "temperaturUnit":"celsius",
+    "temperatureUnit":"celsius",
     "timestamp":"2021-05-25T18:07:15.984+00:00",
     "currentValue":21,
     "sensorId":1
