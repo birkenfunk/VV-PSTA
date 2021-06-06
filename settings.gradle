@@ -1,3 +1,4 @@
 rootProject.name = 'alexanderasbeck'
 include 'server'
+include 'sensor'
 
