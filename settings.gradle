@@ -1,1 +1,3 @@
 rootProject.name = 'alexanderasbeck'
+include 'server'
+
