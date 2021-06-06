@@ -1,6 +1,6 @@
 package de.throsenheim.vvss21.presentation;
 
-import de.throsenheim.vvss21.domain.dtoentety.*;
+import de.throsenheim.vvss21.domain.dtoentity.*;
 import de.throsenheim.vvss21.domain.entety.*;
 import de.throsenheim.vvss21.persistence.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,16 +25,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
-public class RestControler {
+public class RestControllerImplementation {
 
     @Autowired
-    SensorRepo sensorRepo;
+    private SensorRepo sensorRepo;
     @Autowired
-    SensorDataRepo sensorDataRepo;
+    private SensorDataRepo sensorDataRepo;
     @Autowired
-    RuleRepo ruleRepo;
+    private RuleRepo ruleRepo;
     @Autowired
-    ActorRepo actorRepo;
+    private ActorRepo actorRepo;
 
     @GetMapping("/hello")
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
@@ -447,7 +447,7 @@ public class RestControler {
     Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(
             rule.getRuleName(),
             rule.getThreshold(),
-            rule.getSensorID(),
-            rule.getActorID()
+            actorToActorDto.apply(rule.getActorByAktorId()),
+            sensorToSensorDto.apply(rule.getSensorBySensorId())
     );
 }

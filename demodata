@@ -1,5 +1,5 @@
 {
-    "temperaturUnit":"celsius",
+    "temperatureUnit":"celsius",
     "timestamp":"2021-05-25T18:07:15.984+00:00",
     "currentValue":21,
     "sensorId":1
@@ -12,9 +12,22 @@
 }
 
 {
-        "ruleName": "Test1",
-        "treshhold": 2,
-        "aktorId": 1,
-        "sensorId": 1
+    "ruleName": "Test1",
+    "treshhold": 2,
+    "aktorId": 1,
+    "sensorId": 1
 }
 
+{
+    "aktorId": 1,
+    "aktorName": "Test",
+    "location": "Test",
+    "serviceUrl": "test",
+    "status": "open"
+}
+
+{
+    "sensorId": 1,
+    "sensorName": "Test",
+    "location": "Raum"
+}

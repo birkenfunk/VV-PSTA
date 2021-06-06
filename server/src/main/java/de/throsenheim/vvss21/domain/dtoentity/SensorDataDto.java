@@ -1,6 +1,6 @@
-package de.throsenheim.vvss21.domain.dtoentety;
+package de.throsenheim.vvss21.domain.dtoentity;
 
-import de.throsenheim.vvss21.domain.TemperaturUnit;
+import de.throsenheim.vvss21.domain.TemperatureUnit;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 public class SensorDataDto {
     @NotBlank
     @Schema(description = "Unit of the Temperature")
-    private TemperaturUnit temperaturUnit;
+    private TemperatureUnit temperatureUnit;
     @Schema(description = "When the SensorData was measured")
     private Timestamp timestamp;
     @NotBlank
@@ -26,8 +26,8 @@ public class SensorDataDto {
     public SensorDataDto() {
     }
 
-    public SensorDataDto(TemperaturUnit temperaturUnit, Timestamp timestamp, byte currentValue, SensorDto sensorDto) {
-        this.temperaturUnit = temperaturUnit;
+    public SensorDataDto(TemperatureUnit temperatureUnit, Timestamp timestamp, byte currentValue, SensorDto sensorDto) {
+        this.temperatureUnit = temperatureUnit;
         this.timestamp = timestamp;
         this.currentValue = currentValue;
         this.sensorBySensorID = sensorDto;
@@ -57,11 +57,11 @@ public class SensorDataDto {
         this.sensorBySensorID = sensorBySensorID;
     }
 
-    public TemperaturUnit getTemperaturUnit() {
-        return temperaturUnit;
+    public TemperatureUnit getTemperaturUnit() {
+        return temperatureUnit;
     }
 
-    public void setTemperaturUnit(TemperaturUnit temperaturUnit) {
-        this.temperaturUnit = temperaturUnit;
+    public void setTemperaturUnit(TemperatureUnit temperatureUnit) {
+        this.temperatureUnit = temperatureUnit;
     }
 }
