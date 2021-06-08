@@ -48,7 +48,8 @@ build-docker:
   tags:
     - sonar
   script:
-    - ./gradlew build
+    - ./gradlew server:build
+    - cd ./server
     - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander .
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander
