@@ -28,7 +28,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=info
       - SqlUrl=db
     ports:
       - 9000:9000
