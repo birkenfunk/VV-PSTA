@@ -23,6 +23,7 @@ services:
 
   service:
     image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server:latest
+    restart: always
     depends_on:
       db:
         condition: service_healthy
