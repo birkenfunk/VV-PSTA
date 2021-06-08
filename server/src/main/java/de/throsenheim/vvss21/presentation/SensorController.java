@@ -35,7 +35,7 @@ public class SensorController {
     private SensorRepo sensorRepo;
 
     @Autowired
-    private static SensorDataRepo sensorDataRepo;
+    private SensorDataRepo sensorDataRepo;
 
     /**
      * Rest get request for all Sensors
