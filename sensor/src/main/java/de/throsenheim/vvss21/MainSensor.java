@@ -45,7 +45,7 @@ public class MainSensor {
             public void run() {
                 sendData(generateSenorData());
             }
-        }, 0,3000);
+        }, 0,60000);
     }
 
     private void registerSensor(){
