@@ -22,7 +22,7 @@ services:
       retries: 10
 
   service:
-    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander:latest
+    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server:latest
     depends_on:
       db:
         condition: service_healthy
