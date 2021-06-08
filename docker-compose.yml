@@ -33,5 +33,22 @@ services:
       - 9000:9000
     networks:
       - mysqlconnector
+
+  sensor1:
+    image: ss21vvexercise02/demosensor:latest
+    restart: always
+    depends_on:
+      - service
+    ports:
+      - 9211:80
+      - 4501:443
+    environment:
+      - SensorId=1
+      - SmartHomeServiceRegistrationURL=http://service:9000/v1/sensors
+      - SmartHomeServicePublishURL=http://service:9000/v1/sensors
+    networks:
+      - mysqlconnector
+
+
 networks:
   mysqlconnector:
