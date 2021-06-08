@@ -13,7 +13,7 @@ build:
   tags:
     - sonar
   script:
-    - ./gradlew assemble
+    - ./gradlew bootJar
   artifacts:
     paths:
       - ./build/libs/*.jar
@@ -55,3 +55,4 @@ build-docker:
   only:
     refs:
       - master
+      - developement
