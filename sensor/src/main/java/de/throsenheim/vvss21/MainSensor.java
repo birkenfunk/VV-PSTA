@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 public class MainSensor {
 
@@ -13,11 +14,22 @@ public class MainSensor {
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .build();
+    private String serverRegistrationURL;
+    private String posDataUrl;
+    private int SensorID;
+
 
     public static void main(String[] args) throws IOException, InterruptedException {
         MainSensor mainSensor = new MainSensor();
         mainSensor.sendGetRequest();
         mainSensor.sendPostRequest();
+        mainSensor.sendDeleteRequest();
+    }
+
+    public MainSensor() {
+        Map<String, String> env = System.getenv();
+        this.serverRegistrationURL = env.getOrDefault("ServerRegistrationURL", "http://localhost:9000/v1/sensors");
+        this.SensorID = Integer.valueOf(env.getOrDefault("SensorId", "2"));
     }
 
     public void sendGetRequest() throws IOException, InterruptedException {
@@ -36,6 +48,15 @@ public class MainSensor {
                 header("Content-Type", "application/json").
                 POST(HttpRequest.BodyPublishers.ofString(s)).
                 build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        LOGGER.info(response.headers().map().toString());
+        LOGGER.info(response.statusCode());
+    }
+
+    public void sendDeleteRequest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder().
+                uri(URI.create("http://localhost:9000/v1/sensors/2")).
+                DELETE().build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         LOGGER.info(response.headers().map().toString());
         LOGGER.info(response.statusCode());
