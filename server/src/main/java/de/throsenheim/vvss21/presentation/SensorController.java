@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,6 +40,8 @@ public class SensorController {
 
     @Autowired
     private SensorDataRepo sensorDataRepo;
+
+    private static Logger LOGGER = LogManager.getLogger(SensorController.class);
 
     /**
      * Rest get request for all Sensors
@@ -99,6 +105,8 @@ public class SensorController {
             @ApiResponse(responseCode = "400", description = "Sensor already exists", content = @Content)
     })
     public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
+        String debugmsg = "Trying to add: " + sensor.toString();
+        LOGGER.debug(debugmsg);
         Sensor add = DefaultRestController.sensorDtoToSensor.apply(sensor);
         add.setRegisterDate(Date.valueOf(LocalDate.now()));
         Optional<Sensor> temp = sensorRepo.findById(add.getSensorId());
@@ -126,11 +134,15 @@ public class SensorController {
             @ApiResponse(responseCode = "400", description = "Sensor with the SensorId wasn't found", content = @Content)
     })
     public ResponseEntity<SensorDataDto> addSensorData(@PathVariable("id") int id, @RequestBody SensorDataDto sensorData){
+        String debugmsg = "Trying to add: " + sensorData.toString() + " to Sensor "+ id;
+        LOGGER.debug(debugmsg);
         Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
             return ResponseEntity.badRequest().build();
         sensorData.setSensorBySensorID(DefaultRestController.sensorToSensorDto.apply(sensor.get()));
         SensorData data = DefaultRestController.sensorDataDtoSensorToData.apply(sensorData);
+        if(data.getTimestamp() == null)
+            data.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
         sensorDataRepo.save(data);
         try {
             return ResponseEntity.created(new URI("http://localhost:8080/sensordata/" + data.getSensorDataId())).build();
@@ -151,6 +163,8 @@ public class SensorController {
             @ApiResponse(responseCode = "404", description = "Sensor wasn't found", content = @Content)
     })
     public ResponseEntity<SensorDto> deleteSensor(@PathVariable int id) {
+        String debugmsg = "Trying to delete: " + id;
+        LOGGER.debug(debugmsg);
         Optional<Sensor> toDelete = sensorRepo.findById(id);
         if(!toDelete.isPresent()){
             return ResponseEntity.notFound().build();
@@ -172,6 +186,8 @@ public class SensorController {
             @ApiResponse(responseCode = "404", description = "Sensor wasn't found", content = @Content)
     })
     public ResponseEntity<SensorDto> updateSensor(@PathVariable("id") int id, @RequestBody SensorDto toUpdate){
+        String debugmsg = "Trying to update Sensor: " + id+ " to " + toUpdate;
+        LOGGER.debug(debugmsg);
         Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
             return ResponseEntity.notFound().build();
