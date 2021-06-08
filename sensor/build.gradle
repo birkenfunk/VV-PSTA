@@ -2,6 +2,8 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.0.0"
     id 'application'
     id 'java'
+    id "org.sonarqube" version "3.0"
+    id 'jacoco'
 }
 
 group 'de.throsenheim'
@@ -29,6 +31,19 @@ dependencies {
 
 }
 
+jacoco{
+    toolVersion = "0.8.6"
+}
+
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = true
+    }
 }
