@@ -37,7 +37,7 @@ public class MainSensor {
         Map<String, String> env = System.getenv();
         this.serverRegistrationURL = env.getOrDefault("ServerRegistrationURL", "http://localhost:9000/v1/sensors");
         this.sensorID = Integer.parseInt(env.getOrDefault("SensorId", "2"));
-        this.serverPublishURL = env.getOrDefault("ServerPublishURL", "http://localhost:9000/v1/sensors/" + sensorID);
+        this.serverPublishURL = env.getOrDefault("ServerPublishURL", "http://localhost:9000/v1/sensors/")+ "/" + sensorID;
         registerSensor();
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -64,9 +64,10 @@ public class MainSensor {
             System.exit(-1);
         }
         if(response.statusCode() == 201)
-            LOGGER.info("Server registered");
+            LOGGER.info("Sensor registered");
         if(response.statusCode() == 400) {
             LOGGER.info("Sensor already exists please use other ID");
+            LOGGER.debug(serverPublishURL);
             System.exit(0);
         }
     }
@@ -87,10 +88,13 @@ public class MainSensor {
         }
         if(response.statusCode() == 201){
             LOGGER.info("SensorData was send successful");
+            return;
         }
         if(response.statusCode() == 400){
             LOGGER.info("Sensor wasn't registered");
+            return;
         }
+        LOGGER.info(serverPublishURL);
     }
 
     private String generateSenorData(){
