@@ -50,7 +50,7 @@ public class DefaultRestController {
     /**
      * Function for transforming a {@link SensorDataDto} Object to a {@link SensorData} object
      */
-    static Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperaturUnit(),
+    static Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperatureUnit(),
             sensorDataDto.getTimestamp(),
             sensorDataDto.getCurrentValue(),
             sensorDtoToSensor.apply(sensorDataDto.getSensorBySensorID()));
