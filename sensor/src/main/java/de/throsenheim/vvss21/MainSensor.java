@@ -1,3 +1,5 @@
+package de.throsenheim.vvss21;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -6,7 +8,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class MainSensor {
 
@@ -14,51 +17,98 @@ public class MainSensor {
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .build();
-    private String serverRegistrationURL;
-    private String posDataUrl;
-    private int SensorID;
+    private final String serverRegistrationURL;
+    private String serverPublishURL;
+    private final int sensorID;
 
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        MainSensor mainSensor = new MainSensor();
-        mainSensor.sendGetRequest();
-        mainSensor.sendPostRequest();
-        mainSensor.sendDeleteRequest();
+    public static void main(String[] args) {
+        MainSensor sensor = new MainSensor();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                sensor.sendDeleteRequest();
+            } catch (IOException | InterruptedException e) {
+                LOGGER.error(e);
+                Thread.currentThread().interrupt();
+            }
+        }));
     }
 
     public MainSensor() {
         Map<String, String> env = System.getenv();
         this.serverRegistrationURL = env.getOrDefault("ServerRegistrationURL", "http://localhost:9000/v1/sensors");
-        this.SensorID = Integer.valueOf(env.getOrDefault("SensorId", "2"));
+        this.sensorID = Integer.parseInt(env.getOrDefault("SensorId", "2"));
+        this.serverPublishURL = env.getOrDefault("ServerPublishURL", "http://localhost:9000/v1/sensors/" + sensorID);
+        registerSensor();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sendData(generateSenorData());
+            }
+        }, 0,3000);
     }
 
-    public void sendGetRequest() throws IOException, InterruptedException {
+    private void registerSensor(){
+        String sensor = "{\"sensorId\":"+sensorID+",\"sensorName\":\"SensorSchlafzimmer\",\"location\":\"Schlafzimmer\"}";
         HttpRequest request = HttpRequest.newBuilder().
-                GET().
-                uri(URI.create("http://localhost:9000/v1/sensors")).build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        LOGGER.info(response.body());
-    }
-
-    public void sendPostRequest() throws IOException, InterruptedException {
-        SensorDto sensorDto = new SensorDto(2,"Test2","Kueche");
-        String s = Json.stringify(Json.toJson(sensorDto));
-        HttpRequest request = HttpRequest.newBuilder().
-                uri(URI.create("http://localhost:9000/v1/sensors")).
+                uri(URI.create(serverRegistrationURL)).
                 header("Content-Type", "application/json").
-                POST(HttpRequest.BodyPublishers.ofString(s)).
+                POST(HttpRequest.BodyPublishers.ofString(sensor)).
                 build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        LOGGER.info(response.headers().map().toString());
-        LOGGER.info(response.statusCode());
+        HttpResponse<String> response = null;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error(e);
+            Thread.currentThread().interrupt();
+            System.exit(-1);
+        }
+        if(response.statusCode() == 201)
+            LOGGER.info("Server registered");
+        if(response.statusCode() == 400) {
+            LOGGER.info("Sensor already exists please use other ID");
+            System.exit(0);
+        }
+    }
+
+    private void sendData(String sensorData){
+        HttpRequest request = HttpRequest.newBuilder().
+                uri(URI.create(serverPublishURL)).
+                header("Content-Type", "application/json").
+                POST(HttpRequest.BodyPublishers.ofString(sensorData)).
+                build();
+        HttpResponse<String> response = null;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error(e);
+            Thread.currentThread().interrupt();
+            System.exit(-1);
+        }
+        if(response.statusCode() == 201){
+            LOGGER.info("SensorData was send successful");
+        }
+        if(response.statusCode() == 400){
+            LOGGER.info("Sensor wasn't registered");
+        }
+    }
+
+    private String generateSenorData(){
+        return "{\n" +
+                "    \"temperatureUnit\":\"celsius\",\n" +
+                "    \"timestamp\":\""+ LocalDateTime.now() +"\",\n" +
+                "    \"currentValue\":"+ new Random().nextInt(30) + "\n" +
+                "}";
     }
 
     public void sendDeleteRequest() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder().
-                uri(URI.create("http://localhost:9000/v1/sensors/2")).
+                uri(URI.create(serverPublishURL)).
                 DELETE().build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        LOGGER.info(response.headers().map().toString());
-        LOGGER.info(response.statusCode());
+        if(response.statusCode() == 204)
+            LOGGER.info("Successfully deleted Sensor");
+        if(response.statusCode() == 404)
+            LOGGER.info("Sensor was already deleted");
     }
 }
