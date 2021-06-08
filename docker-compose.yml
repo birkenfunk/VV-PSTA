@@ -28,6 +28,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      - LOG_LEVEL=debug
       - SqlUrl=db
     ports:
       - 9000:9000
@@ -39,9 +40,6 @@ services:
     restart: always
     depends_on:
       - service
-    ports:
-      - 9211:80
-      - 4501:443
     environment:
       - SensorId=1
       - SmartHomeServiceRegistrationURL=http://service:9000/v1/sensors
@@ -49,6 +47,17 @@ services:
     networks:
       - mysqlconnector
 
+  sensor2:
+    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/sensor:latest
+    restart: always
+    depends_on:
+      - service
+    environment:
+      - SensorId=2
+      - ServerRegistrationURL=http://service:9000/v1/sensors
+      - ServerPublishURL=http://service:9000/v1/sensors
+    networks:
+      - mysqlconnector
 
 networks:
   mysqlconnector:
