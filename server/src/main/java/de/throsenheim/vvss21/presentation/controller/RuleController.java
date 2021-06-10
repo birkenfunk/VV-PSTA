@@ -1,10 +1,11 @@
-package de.throsenheim.vvss21.presentation;
+package de.throsenheim.vvss21.presentation.controller;
 
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.entety.Rule;
 import de.throsenheim.vvss21.persistence.ActorRepo;
 import de.throsenheim.vvss21.persistence.RuleRepo;
 import de.throsenheim.vvss21.persistence.SensorRepo;
+import de.throsenheim.vvss21.presentation.DTOMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -55,7 +56,7 @@ public class RuleController {
             @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
     public ResponseEntity<List<RuleDto>> getAllRules(){
-        return ResponseEntity.ok(ruleRepo.findAll().stream().map(DefaultRestController.ruleToRuleDto).collect(Collectors.<RuleDto>toList()));
+        return ResponseEntity.ok(ruleRepo.findAll().stream().map(DTOMapper.ruleToRuleDto).collect(Collectors.<RuleDto>toList()));
     }
 
     /**
@@ -81,7 +82,7 @@ public class RuleController {
         Optional<Rule> rule = ruleRepo.findById(id);
         if(!rule.isPresent())
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(DefaultRestController.ruleToRuleDto.apply(rule.get()));
+        return ResponseEntity.ok(DTOMapper.ruleToRuleDto.apply(rule.get()));
     }
 
     /**
@@ -99,7 +100,7 @@ public class RuleController {
         if(actorRepo.findById(rule.getAktorId()).isEmpty() || sensorRepo.findById(rule.getSensorId()).isEmpty()){
             return ResponseEntity.badRequest().build();
         }
-        Rule add = DefaultRestController.ruleDtoToRule.apply(rule);
+        Rule add = DTOMapper.ruleDtoToRule.apply(rule);
         if(ruleRepo.findAll().contains(add)){
             return ResponseEntity.badRequest().build();
         }
