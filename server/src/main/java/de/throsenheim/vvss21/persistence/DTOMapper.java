@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.presentation;
 
+import de.throsenheim.vvss21.application.IDBConnector;
 import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
@@ -18,10 +19,7 @@ import java.util.function.Function;
 @Component
 public class DTOMapper {
 
-    @Autowired
-    private static SensorRepo sensorRepo;
-    @Autowired
-    private static ActorRepo actorRepo;
+    IDBConnector connector = 
 
 
     /**
