@@ -52,7 +52,7 @@ public class RuleEngine extends TimerTask {
 
     private void scanForNewStatus(SensorDataDto data, List<RuleDto> rules) {
         for (RuleDto rule: rules) {
-            if(rule.getTreshhold()> data.getCurrentValue()
+            if(rule.getThreshold()> data.getCurrentValue()
                     && !rule.getActorByActorID().getStatus().equals("CLOSE")){
                 //Benachrichtigen
                 try {
@@ -62,7 +62,7 @@ public class RuleEngine extends TimerTask {
                 }
                 continue;
             }
-            if(rule.getTreshhold()< data.getCurrentValue()
+            if(rule.getThreshold()< data.getCurrentValue()
                     && !rule.getActorByActorID().getStatus().equals("OPEN")){
                 //Benachrichtigen
                 try {

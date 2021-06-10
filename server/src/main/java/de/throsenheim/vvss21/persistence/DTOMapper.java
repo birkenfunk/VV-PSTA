@@ -79,7 +79,7 @@ public class DTOMapper {
      */
     public final Function<RuleDto, Rule> ruleDtoToRule = ruleDto ->  new Rule(
                     ruleDto.getRuleName(),
-                    ruleDto.getTreshhold(),
+                    ruleDto.getThreshold(),
                     sensorDtoToSensor.apply(connector.getSensor(ruleDto.getSensorId())),
                     actorDtoToActor.apply(connector.getActor(ruleDto.getActorId()))
     );

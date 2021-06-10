@@ -13,7 +13,7 @@
 
 {
     "ruleName": "Test1",
-    "treshhold": 10,
+    "threshold": 10,
     "aktorId": 1,
     "sensorId": 1
 }
