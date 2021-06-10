@@ -18,7 +18,7 @@ public class RuleDto {
     private Byte treshhold;
     @NotBlank
     @Schema(description = "Identification number of the Actor", example = "10")
-    private int aktorId;
+    private int actorId;
     @Schema(description = "Actor for this rule", hidden = true)
     private ActorDto actorByActorID;
     @NotBlank
@@ -34,7 +34,9 @@ public class RuleDto {
         this.ruleName = ruleName;
         this.treshhold = treshhold;
         this.actorByActorID = actorDto;
+        this.actorId = actorDto.getAktorId();
         this.sensorBySensorID = sensorDto;
+        this.sensorId = sensorDto.getSensorId();
     }
 
     public String getRuleName() {
@@ -52,12 +54,12 @@ public class RuleDto {
     public void setTreshhold(Byte treshhold) {
         this.treshhold = treshhold;
     }
-    public int getAktorId() {
-        return aktorId;
+    public int getActorId() {
+        return actorId;
     }
 
-    public void setAktorId(int aktorId) {
-        this.aktorId = aktorId;
+    public void setActorId(int actorId) {
+        this.actorId = actorId;
     }
 
     public int getSensorId() {
