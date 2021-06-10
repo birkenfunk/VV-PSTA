@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.presentation;
+package de.throsenheim.vvss21.presentation.controller;
 
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDto;
@@ -6,6 +6,7 @@ import de.throsenheim.vvss21.domain.entety.Sensor;
 import de.throsenheim.vvss21.domain.entety.SensorData;
 import de.throsenheim.vvss21.persistence.SensorDataRepo;
 import de.throsenheim.vvss21.persistence.SensorRepo;
+import de.throsenheim.vvss21.presentation.DTOMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -62,7 +63,7 @@ public class SensorController {
     })
     public ResponseEntity<List<SensorDto>> getAllSensors(){
         return ResponseEntity.ok(sensorRepo.findAll().stream().
-                map(DefaultRestController.sensorToSensorDto).
+                map(DTOMapper.sensorToSensorDto).
                 collect(Collectors.<SensorDto> toList()));
     }
 
@@ -88,7 +89,7 @@ public class SensorController {
     public ResponseEntity<SensorDto> getSensor(@PathVariable int id){
         Optional<Sensor> res = sensorRepo.findById(id);
         if(res.isPresent())
-            return ResponseEntity.ok(DefaultRestController.sensorToSensorDto.apply(res.get()));
+            return ResponseEntity.ok(DTOMapper.sensorToSensorDto.apply(res.get()));
         return ResponseEntity.notFound().build();
 
     }
@@ -107,7 +108,7 @@ public class SensorController {
     public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
         String debugmsg = "Trying to add: " + sensor.toString();
         LOGGER.debug(debugmsg);
-        Sensor add = DefaultRestController.sensorDtoToSensor.apply(sensor);
+        Sensor add = DTOMapper.sensorDtoToSensor.apply(sensor);
         add.setRegisterDate(Date.valueOf(LocalDate.now()));
         Optional<Sensor> temp = sensorRepo.findById(add.getSensorId());
         if(temp.isPresent() && !temp.get().isDeleted()){
@@ -139,8 +140,8 @@ public class SensorController {
         Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
             return ResponseEntity.badRequest().build();
-        sensorData.setSensorBySensorID(DefaultRestController.sensorToSensorDto.apply(sensor.get()));
-        SensorData data = DefaultRestController.sensorDataDtoSensorToData.apply(sensorData);
+        sensorData.setSensorBySensorID(DTOMapper.sensorToSensorDto.apply(sensor.get()));
+        SensorData data = DTOMapper.sensorDataDtoSensorToData.apply(sensorData);
         if(data.getTimestamp() == null)
             data.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
         sensorDataRepo.save(data);

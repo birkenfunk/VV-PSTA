@@ -1,8 +1,9 @@
-package de.throsenheim.vvss21.presentation;
+package de.throsenheim.vvss21.presentation.controller;
 
 import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
 import de.throsenheim.vvss21.domain.entety.Actor;
 import de.throsenheim.vvss21.persistence.ActorRepo;
+import de.throsenheim.vvss21.presentation.DTOMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,7 +49,7 @@ public class ActorController {
             @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
     public ResponseEntity<List<ActorDto>> getAllActors(){
-        return ResponseEntity.ok(actorRepo.findAll().stream().map(DefaultRestController.actorToActorDto).collect(Collectors.<ActorDto>toList()));
+        return ResponseEntity.ok(actorRepo.findAll().stream().map(DTOMapper.actorToActorDto).collect(Collectors.<ActorDto>toList()));
     }
 
     /**
@@ -74,7 +75,7 @@ public class ActorController {
         Optional<Actor> actor = actorRepo.findById(id);
         if(!actor.isPresent())
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(DefaultRestController.actorToActorDto.apply(actor.get()));
+        return ResponseEntity.ok(DTOMapper.actorToActorDto.apply(actor.get()));
     }
 
     /**
@@ -92,7 +93,7 @@ public class ActorController {
         if(actorRepo.findById(actor.getAktorId()).isPresent()){
             return ResponseEntity.badRequest().build();
         }
-        Actor add = DefaultRestController.actorDtoToActor.apply(actor);
+        Actor add = DTOMapper.actorDtoToActor.apply(actor);
         actorRepo.save(add);
         try {
             return ResponseEntity.created(new URI("http://localhost:8080/actors/" + add.getAktorId())).build();
