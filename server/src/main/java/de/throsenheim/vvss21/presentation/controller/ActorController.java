@@ -1,16 +1,17 @@
 package de.throsenheim.vvss21.presentation.controller;
 
+import de.throsenheim.vvss21.application.IDBConnector;
 import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
-import de.throsenheim.vvss21.domain.entety.Actor;
-import de.throsenheim.vvss21.persistence.ActorRepo;
-import de.throsenheim.vvss21.presentation.DTOMapper;
+import de.throsenheim.vvss21.domain.exception.AlreadyInDataBaseException;
+import de.throsenheim.vvss21.presentation.DatabaseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +21,13 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/v1/actors")
 public class ActorController {
 
-    @Autowired
-    private ActorRepo actorRepo;
+    private final IDBConnector connector = DatabaseMapper.getMySQLDatabase();
+    private static final Logger LOGGER = LogManager.getLogger(ActorController.class);
 
     /**
      * Rest get request for all Actors
@@ -49,7 +48,7 @@ public class ActorController {
             @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
     public ResponseEntity<List<ActorDto>> getAllActors(){
-        return ResponseEntity.ok(actorRepo.findAll().stream().map(DTOMapper.actorToActorDto).collect(Collectors.<ActorDto>toList()));
+        return ResponseEntity.ok(connector.getActors());
     }
 
     /**
@@ -72,10 +71,10 @@ public class ActorController {
             @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
     public ResponseEntity<ActorDto> getActor(@PathVariable int id){
-        Optional<Actor> actor = actorRepo.findById(id);
-        if(!actor.isPresent())
+        ActorDto actor = connector.getActor(id);
+        if(actor == null)
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(DTOMapper.actorToActorDto.apply(actor.get()));
+        return ResponseEntity.ok(actor);
     }
 
     /**
@@ -90,13 +89,14 @@ public class ActorController {
             @ApiResponse(responseCode = "400", description = "Actor already exists", content = @Content)
     })
     public ResponseEntity<ActorDto> createActors(@RequestBody ActorDto actor){
-        if(actorRepo.findById(actor.getAktorId()).isPresent()){
+        try {
+            connector.addActor(actor);
+        } catch (AlreadyInDataBaseException e) {
+            LOGGER.error(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
-        Actor add = DTOMapper.actorDtoToActor.apply(actor);
-        actorRepo.save(add);
         try {
-            return ResponseEntity.created(new URI("http://localhost:8080/actors/" + add.getAktorId())).build();
+            return ResponseEntity.created(new URI("http://localhost:8080/actors/" + actor.getAktorId())).build();
         } catch (URISyntaxException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
