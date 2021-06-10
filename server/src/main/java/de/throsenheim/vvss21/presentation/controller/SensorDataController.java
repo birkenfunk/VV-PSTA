@@ -2,12 +2,12 @@ package de.throsenheim.vvss21.presentation.controller;
 
 import de.throsenheim.vvss21.application.IDBConnector;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
-import de.throsenheim.vvss21.presentation.DatabaseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,7 +21,8 @@ import java.util.List;
 @RequestMapping("/v1/sensordata")
 public class SensorDataController {
 
-    private IDBConnector connector = DatabaseMapper.getMySQLDatabase();
+    @Autowired
+    private IDBConnector connector;
 
     /**
      * Rest get request for all SensorData

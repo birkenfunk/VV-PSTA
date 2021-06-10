@@ -5,7 +5,6 @@ import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDto;
 import de.throsenheim.vvss21.domain.exception.AlreadyInDataBaseException;
 import de.throsenheim.vvss21.domain.exception.SensorNotFoundException;
-import de.throsenheim.vvss21.presentation.DatabaseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,8 @@ import java.util.List;
 @RequestMapping("/v1/sensors")
 public class SensorController {
 
-    private final IDBConnector connector = DatabaseMapper.getMySQLDatabase();
+    @Autowired
+    private IDBConnector connector;
     private static final Logger LOGGER = LogManager.getLogger(SensorController.class);
 
     /**

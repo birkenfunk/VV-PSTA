@@ -9,14 +9,20 @@ import de.throsenheim.vvss21.persistence.entety.Actor;
 import de.throsenheim.vvss21.persistence.entety.Rule;
 import de.throsenheim.vvss21.persistence.entety.Sensor;
 import de.throsenheim.vvss21.persistence.entety.SensorData;
-import de.throsenheim.vvss21.presentation.DatabaseMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 
+@Service
 public class DTOMapper {
 
-    private static final IDBConnector connector = DatabaseMapper.getMySQLDatabase();
+    @Autowired
+    private static IDBConnector connector;
 
+    private DTOMapper(){
+
+    }
 
     /**
      * Function for transforming a {@link SensorDto} Object to a {@link Sensor} object
