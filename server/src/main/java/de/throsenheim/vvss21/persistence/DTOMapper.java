@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.presentation;
+package de.throsenheim.vvss21.persistence;
 
 import de.throsenheim.vvss21.application.IDBConnector;
 import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
@@ -9,17 +9,13 @@ import de.throsenheim.vvss21.domain.entety.Actor;
 import de.throsenheim.vvss21.domain.entety.Rule;
 import de.throsenheim.vvss21.domain.entety.Sensor;
 import de.throsenheim.vvss21.domain.entety.SensorData;
-import de.throsenheim.vvss21.persistence.ActorRepo;
-import de.throsenheim.vvss21.persistence.SensorRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import de.throsenheim.vvss21.presentation.DatabaseMapper;
 
 import java.util.function.Function;
 
-@Component
 public class DTOMapper {
 
-    IDBConnector connector = 
+    private static final IDBConnector connector = DatabaseMapper.getMySQLDatabase();
 
 
     /**
@@ -35,7 +31,8 @@ public class DTOMapper {
      */
     public static final Function<Sensor, SensorDto> sensorToSensorDto = sensor -> new SensorDto(sensor.getSensorId(),
             sensor.getSensorName(),
-            sensor.getLocation()
+            sensor.getLocation(),
+            sensor.isDeleted()
     );
 
     /**
@@ -80,8 +77,8 @@ public class DTOMapper {
     public static final Function<RuleDto, Rule> ruleDtoToRule = ruleDto -> new Rule(
             ruleDto.getRuleName(),
             ruleDto.getTreshhold(),
-            sensorRepo.getById(ruleDto.getSensorId()),
-            actorRepo.getById(ruleDto.getAktorId())
+            sensorDtoToSensor.apply(connector.getSensor(ruleDto.getSensorId())),
+            actorDtoToActor.apply(connector.getActor(ruleDto.getAktorId()))
     );
 
     /**
