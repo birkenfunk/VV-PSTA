@@ -2,6 +2,11 @@ package de.throsenheim.vvss21.application;
 
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
+import de.throsenheim.vvss21.domain.exception.ActorNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.TimerTask;
@@ -12,11 +17,13 @@ import java.util.concurrent.TimeUnit;
 /**
  *
  */
+@Service
 public class RuleEngine extends TimerTask {
 
-    private static final RuleEngine RULE_ENGINE = new RuleEngine();
-    private BlockingQueue<SensorDataDto> sensorDataDtos = new LinkedBlockingQueue<>();
+    private static BlockingQueue<SensorDataDto> sensorDataDtos = new LinkedBlockingQueue<>();
+    @Autowired
     private IDBConnector connector;
+    private static final Logger LOGGER = LogManager.getLogger(RuleEngine.class);
 
     private RuleEngine(){
 
@@ -36,17 +43,39 @@ public class RuleEngine extends TimerTask {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
-            //List<RuleDto> rules = connector.getRulesForSensor(data.getSensorBySensorID().getSensorId());
-            //TODO Logic
+            if(data==null)
+                continue;
+            List<RuleDto> rules = connector.getRulesForSensor(data.getSensorBySensorID().getSensorId());
+            scanForNewStatus(data, rules);
+        }
+    }
+
+    private void scanForNewStatus(SensorDataDto data, List<RuleDto> rules) {
+        for (RuleDto rule: rules) {
+            if(rule.getTreshhold()> data.getCurrentValue()
+                    && !rule.getActorByActorID().getStatus().equals("CLOSE")){
+                //Benachrichtigen
+                try {
+                    connector.setActorStatus(rule.getActorId(),"CLOSE");
+                } catch (ActorNotFoundException e) {
+                    LOGGER.error(e.getMessage());
+                }
+                continue;
+            }
+            if(rule.getTreshhold()< data.getCurrentValue()
+                    && !rule.getActorByActorID().getStatus().equals("OPEN")){
+                //Benachrichtigen
+                try {
+                    connector.setActorStatus(rule.getActorId(),"OPEN");
+                } catch (ActorNotFoundException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
         }
     }
 
     public boolean addSensorData(SensorDataDto sensorDataDto){
         sensorDataDtos.remove(sensorDataDto);
         return sensorDataDtos.offer(sensorDataDto);
-    }
-
-    public static RuleEngine getRuleEngine() {
-        return RULE_ENGINE;
     }
 }
