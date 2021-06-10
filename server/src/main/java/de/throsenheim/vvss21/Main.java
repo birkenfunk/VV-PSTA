@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21;
 
+import de.throsenheim.vvss21.application.RuleEngine;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -10,6 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Timer;
+
 
 @SpringBootApplication(scanBasePackages = {"de.throsenheim.vvss21"})
 public class Main {
@@ -18,6 +21,8 @@ public class Main {
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
+        Timer ruleTimer = new Timer();
+        ruleTimer.scheduleAtFixedRate(RuleEngine.getRuleEngine(),0, 30000);
         LOGGER.info("Hello World");
     }
 
