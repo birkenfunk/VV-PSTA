@@ -6,10 +6,7 @@ import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDto;
-import de.throsenheim.vvss21.persistence.entety.Actor;
-import de.throsenheim.vvss21.persistence.entety.Rule;
-import de.throsenheim.vvss21.persistence.entety.Sensor;
-import de.throsenheim.vvss21.persistence.entety.SensorData;
+import de.throsenheim.vvss21.persistence.entety.*;
 import de.throsenheim.vvss21.domain.exception.ActorNotFoundException;
 import de.throsenheim.vvss21.domain.exception.AlreadyInDataBaseException;
 import de.throsenheim.vvss21.domain.exception.SensorNotFoundException;
@@ -24,8 +21,10 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +38,10 @@ public class MySQLConnector implements IDBConnector {
     private SensorDataRepo sensorDataRepo;
     @Autowired
     private RuleRepo ruleRepo;
+    @Autowired
+    private DTOMapper dtoMapper;
+    @Autowired
+    private RuleEngine ruleEngine;
 
 
     /**
@@ -51,7 +54,7 @@ public class MySQLConnector implements IDBConnector {
     public SensorDto getSensor(int id) {
         Optional<Sensor> res = sensorRepo.findById(id);
         if(res.isPresent())
-            return DTOMapper.sensorToSensorDto.apply(res.get());
+            return dtoMapper.sensorToSensorDto.apply(res.get());
         return null;
     }
 
@@ -63,7 +66,7 @@ public class MySQLConnector implements IDBConnector {
     @Override
     public List<SensorDto> getSensors() {
         return sensorRepo.findAll().stream().
-                map(DTOMapper.sensorToSensorDto).
+                map(dtoMapper.sensorToSensorDto).
                 collect(Collectors.<SensorDto> toList());
     }
 
@@ -79,7 +82,7 @@ public class MySQLConnector implements IDBConnector {
         if(temp.isPresent() && !temp.get().isDeleted()){
             throw new AlreadyInDataBaseException("Sensor already registered in DB");
         }
-        Sensor add = DTOMapper.sensorDtoToSensor.apply(toAdd);
+        Sensor add = dtoMapper.sensorDtoToSensor.apply(toAdd);
         add.setDeleted(false);
         add.setRegisterDate(Date.valueOf(LocalDate.now()));
         sensorRepo.save(add);
@@ -127,7 +130,7 @@ public class MySQLConnector implements IDBConnector {
         Optional<Actor> actor = actorRepo.findById(id);
         if(!actor.isPresent())
             return null;
-        return DTOMapper.actorToActorDto.apply(actor.get());
+        return dtoMapper.actorToActorDto.apply(actor.get());
     }
 
     /**
@@ -139,7 +142,7 @@ public class MySQLConnector implements IDBConnector {
     public List<ActorDto> getActors() {
         return actorRepo.findAll()
                 .stream()
-                .map(DTOMapper.actorToActorDto)
+                .map(dtoMapper.actorToActorDto)
                 .collect(Collectors.<ActorDto>toList());
     }
 
@@ -154,8 +157,23 @@ public class MySQLConnector implements IDBConnector {
         if(actorRepo.findById(toAdd.getAktorId()).isPresent()){
             throw new AlreadyInDataBaseException("Actor already registered in DB");
         }
-        Actor add = DTOMapper.actorDtoToActor.apply(toAdd);
+        Actor add = dtoMapper.actorDtoToActor.apply(toAdd);
         actorRepo.save(add);
+    }
+
+    /**
+     * Sets a new status to an actor
+     *
+     * @param id     Id of the actor
+     * @param status New status of the Actor
+     */
+    @Override
+    public void setActorStatus(int id, String status) throws ActorNotFoundException {
+        Optional<Actor> actor = actorRepo.findById(id);
+        if(actor.isEmpty())
+            throw new ActorNotFoundException("Actor not in BD");
+        actor.get().setStatus(status);
+        actorRepo.save(actor.get());
     }
 
     /**
@@ -169,7 +187,7 @@ public class MySQLConnector implements IDBConnector {
         Optional<Rule> rule = ruleRepo.findById(id);
         if(!rule.isPresent())
             return null;
-        return DTOMapper.ruleToRuleDto.apply(rule.get());
+        return dtoMapper.ruleToRuleDto.apply(rule.get());
     }
 
     /**
@@ -181,7 +199,7 @@ public class MySQLConnector implements IDBConnector {
     public List<RuleDto> getRules() {
         return ruleRepo.findAll()
                 .stream()
-                .map(DTOMapper.ruleToRuleDto)
+                .map(dtoMapper.ruleToRuleDto)
                 .collect(Collectors.<RuleDto>toList());
     }
 
@@ -194,12 +212,12 @@ public class MySQLConnector implements IDBConnector {
      */
     @Override
     public int addRule(RuleDto toAdd) throws AlreadyInDataBaseException, ActorNotFoundException, SensorNotFoundException {
-        if(actorRepo.findById(toAdd.getAktorId()).isEmpty()){
+        if(actorRepo.findById(toAdd.getActorId()).isEmpty()){
             throw new ActorNotFoundException("Actor wasn't found");
         }
         if(sensorRepo.findById(toAdd.getSensorId()).isEmpty())
             throw new SensorNotFoundException("Sensor wasn't found");
-        Rule add = DTOMapper.ruleDtoToRule.apply(toAdd);
+        Rule add = dtoMapper.ruleDtoToRule.apply(toAdd);
         if(ruleRepo.findAll().contains(add)){
             throw new AlreadyInDataBaseException("Rule Name is already registered in DB");
         }
@@ -218,7 +236,7 @@ public class MySQLConnector implements IDBConnector {
         Optional<SensorData> sensorData= sensorDataRepo.findById(id);
         if(!sensorData.isPresent())
             return null;
-        return DTOMapper.sensorDataToSensorDataDto.apply(sensorData.get());
+        return dtoMapper.sensorDataToSensorDataDto.apply(sensorData.get());
     }
 
     /**
@@ -228,7 +246,7 @@ public class MySQLConnector implements IDBConnector {
      */
     @Override
     public List<SensorDataDto> getSensorData() {
-        return sensorDataRepo.findAll().stream().map(DTOMapper.sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList());
+        return sensorDataRepo.findAll().stream().map(dtoMapper.sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList());
     }
 
     /**
@@ -244,9 +262,9 @@ public class MySQLConnector implements IDBConnector {
         SensorDto sensor = getSensor(sensorID);
         if(sensor == null || sensor.isDeleted())
             throw new SensorNotFoundException("Sensor wasn't found");
-        RuleEngine.getRuleEngine().addSensorData(toAdd);
+        ruleEngine.addSensorData(toAdd);
         toAdd.setSensorBySensorID(sensor);
-        SensorData data = DTOMapper.sensorDataDtoSensorToData.apply(toAdd);
+        SensorData data = dtoMapper.sensorDataDtoSensorToData.apply(toAdd);
         if(data.getTimestamp() == null)
             data.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
         sensorDataRepo.save(data);
@@ -255,7 +273,13 @@ public class MySQLConnector implements IDBConnector {
 
     @Override
     public List<RuleDto> getRulesForSensor(int id) {
-        return null;
+        List <RuleDto> rules = getRules();
+        List<RuleDto> result = new LinkedList<>();
+        for (RuleDto rule: rules) {
+            if(rule.getSensorId() == id)
+                result.add(rule);
+        }
+        return rules;
     }
 
 }

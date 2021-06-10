@@ -70,6 +70,13 @@ public interface IDBConnector {
     void addActor(ActorDto toAdd) throws AlreadyInDataBaseException;
 
     /**
+     * Sets a new status to an actor
+     * @param id Id of the actor
+     * @param status New status of the Actor
+     */
+    void setActorStatus(int id, String status) throws ActorNotFoundException;
+
+    /**
      * Returns a rule for a specific id
      * @param id id of the rule
      * @return  Rule for a special id
