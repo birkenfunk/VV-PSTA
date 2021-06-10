@@ -54,7 +54,7 @@ public class RuleDto {
     public void setThreshold(Byte threshold) {
         this.threshold = threshold;
     }
-    
+
     public int getActorId() {
         return actorId;
     }

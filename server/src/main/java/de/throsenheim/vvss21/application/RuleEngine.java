@@ -3,6 +3,7 @@ package de.throsenheim.vvss21.application;
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.exception.ActorNotFoundException;
+import de.throsenheim.vvss21.presentation.ContactActor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class RuleEngine extends TimerTask {
     private static BlockingQueue<SensorDataDto> sensorDataDtos = new LinkedBlockingQueue<>();
     @Autowired
     private IDBConnector connector;
+    @Autowired
+    private ContactActor contactActor;
     private static final Logger LOGGER = LogManager.getLogger(RuleEngine.class);
 
     private RuleEngine(){
@@ -54,7 +57,7 @@ public class RuleEngine extends TimerTask {
         for (RuleDto rule: rules) {
             if(rule.getThreshold()> data.getCurrentValue()
                     && !rule.getActorByActorID().getStatus().equals("CLOSE")){
-                //Benachrichtigen
+                contactActor.sendData(rule.getActorByActorID().getServiceUrl(), "CLOSE");
                 try {
                     connector.setActorStatus(rule.getActorId(),"CLOSE");
                 } catch (ActorNotFoundException e) {
@@ -64,7 +67,7 @@ public class RuleEngine extends TimerTask {
             }
             if(rule.getThreshold()< data.getCurrentValue()
                     && !rule.getActorByActorID().getStatus().equals("OPEN")){
-                //Benachrichtigen
+                contactActor.sendData(rule.getActorByActorID().getServiceUrl(), "OPEN");
                 try {
                     connector.setActorStatus(rule.getActorId(),"OPEN");
                 } catch (ActorNotFoundException e) {
