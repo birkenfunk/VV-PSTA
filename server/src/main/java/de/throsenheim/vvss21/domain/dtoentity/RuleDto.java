@@ -19,12 +19,12 @@ public class RuleDto {
     @NotBlank
     @Schema(description = "Identification number of the Actor", example = "10")
     private int aktorId;
-    @Schema(description = "Actor for this rule")
+    @Schema(description = "Actor for this rule", hidden = true)
     private ActorDto actorByActorID;
     @NotBlank
     @Schema(description = "Identification number of the Sensor", example = "10")
     private int sensorId;
-    @Schema(description = "Sensor for this rule")
+    @Schema(description = "Sensor for this rule", hidden = true)
     private SensorDto sensorBySensorID;
 
     public RuleDto() {

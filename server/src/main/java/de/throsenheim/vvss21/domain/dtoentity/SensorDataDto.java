@@ -21,7 +21,7 @@ public class SensorDataDto {
     @Size(min = 0, max = 30)
     @Schema(description = "The measured temp", example = "10")
     private byte currentValue;
-    @Schema(description = "The sensor that has measured the data")
+    @Schema(description = "The sensor that has measured the data", hidden = true)
     private SensorDto sensorBySensorID;
 
     public SensorDataDto() {
