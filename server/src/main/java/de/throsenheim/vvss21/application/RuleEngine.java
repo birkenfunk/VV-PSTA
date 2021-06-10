@@ -27,7 +27,7 @@ public class RuleEngine extends TimerTask {
      */
     @Override
     public void run() {
-        int size = sensorDataDtos.remainingCapacity();
+        int size = sensorDataDtos.size();
         for (int i = 0 ; i<size; i++){
             SensorDataDto data = null;
             try {
@@ -36,7 +36,7 @@ public class RuleEngine extends TimerTask {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
-            List<RuleDto> rules = connector.getRulesForSensor(data.getSensorBySensorID().getSensorId());
+            //List<RuleDto> rules = connector.getRulesForSensor(data.getSensorBySensorID().getSensorId());
             //TODO Logic
         }
     }
