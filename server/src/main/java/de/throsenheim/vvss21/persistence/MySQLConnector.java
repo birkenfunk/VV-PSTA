@@ -6,6 +6,7 @@ import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDto;
+import de.throsenheim.vvss21.persistence.DTOMapper;
 import de.throsenheim.vvss21.persistence.entety.Actor;
 import de.throsenheim.vvss21.persistence.entety.Rule;
 import de.throsenheim.vvss21.persistence.entety.Sensor;
@@ -13,8 +14,12 @@ import de.throsenheim.vvss21.persistence.entety.SensorData;
 import de.throsenheim.vvss21.domain.exception.ActorNotFoundException;
 import de.throsenheim.vvss21.domain.exception.AlreadyInDataBaseException;
 import de.throsenheim.vvss21.domain.exception.SensorNotFoundException;
+import de.throsenheim.vvss21.persistence.repos.ActorRepo;
+import de.throsenheim.vvss21.persistence.repos.RuleRepo;
+import de.throsenheim.vvss21.persistence.repos.SensorDataRepo;
+import de.throsenheim.vvss21.persistence.repos.SensorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.*;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -24,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class MySQLConnector implements IDBConnector {
 
     @Autowired
@@ -35,6 +40,7 @@ public class MySQLConnector implements IDBConnector {
     private SensorDataRepo sensorDataRepo;
     @Autowired
     private RuleRepo ruleRepo;
+
 
     /**
      * Returns a sensor for a specific ID
@@ -75,6 +81,7 @@ public class MySQLConnector implements IDBConnector {
             throw new AlreadyInDataBaseException("Sensor already registered in DB");
         }
         Sensor add = DTOMapper.sensorDtoToSensor.apply(toAdd);
+        add.setDeleted(false);
         add.setRegisterDate(Date.valueOf(LocalDate.now()));
         sensorRepo.save(add);
     }
@@ -251,4 +258,5 @@ public class MySQLConnector implements IDBConnector {
     public List<RuleDto> getRulesForSensor(int ID) {
         return null;
     }
+
 }
