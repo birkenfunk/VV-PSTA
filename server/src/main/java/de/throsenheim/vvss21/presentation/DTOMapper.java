@@ -11,30 +11,23 @@ import de.throsenheim.vvss21.domain.entety.SensorData;
 import de.throsenheim.vvss21.persistence.ActorRepo;
 import de.throsenheim.vvss21.persistence.SensorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 
-@RestController
-public class DefaultRestController {
+@Component
+public class DTOMapper {
 
     @Autowired
     private static SensorRepo sensorRepo;
     @Autowired
     private static ActorRepo actorRepo;
 
-    @GetMapping("/hello")
-    public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return String.format("Hello %s!", name);
-    }
 
     /**
      * Function for transforming a {@link SensorDto} Object to a {@link Sensor} object
      */
-    static Function<SensorDto, Sensor> sensorDtoToSensor = sensorDto -> new Sensor(sensorDto.getSensorId(),
+    public static final Function<SensorDto, Sensor> sensorDtoToSensor = sensorDto -> new Sensor(sensorDto.getSensorId(),
             sensorDto.getSensorName(),
             sensorDto.getLocation()
     );
@@ -42,7 +35,7 @@ public class DefaultRestController {
     /**
      * Function for transforming a {@link Sensor} Object to a {@link SensorDto} object
      */
-    static Function<Sensor, SensorDto> sensorToSensorDto = sensor -> new SensorDto(sensor.getSensorId(),
+    public static final Function<Sensor, SensorDto> sensorToSensorDto = sensor -> new SensorDto(sensor.getSensorId(),
             sensor.getSensorName(),
             sensor.getLocation()
     );
@@ -50,7 +43,7 @@ public class DefaultRestController {
     /**
      * Function for transforming a {@link SensorDataDto} Object to a {@link SensorData} object
      */
-    static Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperatureUnit(),
+    public static final Function<SensorDataDto, SensorData> sensorDataDtoSensorToData = sensorDataDto -> new SensorData(sensorDataDto.getTemperatureUnit(),
             sensorDataDto.getTimestamp(),
             sensorDataDto.getCurrentValue(),
             sensorDtoToSensor.apply(sensorDataDto.getSensorBySensorID()));
@@ -58,7 +51,7 @@ public class DefaultRestController {
     /**
      * Function for transforming a {@link SensorData} Object to a {@link SensorDataDto} object
      */
-    static Function<SensorData, SensorDataDto> sensorDataToSensorDataDto = sensorData -> new SensorDataDto(sensorData.getTemperatureUnit(),
+    public static final Function<SensorData, SensorDataDto> sensorDataToSensorDataDto = sensorData -> new SensorDataDto(sensorData.getTemperatureUnit(),
             sensorData.getTimestamp(),
             sensorData.getCurrentValue(),
             sensorToSensorDto.apply(sensorData.getSensorBySensorId())
@@ -67,7 +60,7 @@ public class DefaultRestController {
     /**
      * Function for transforming an {@link ActorDto} Object to a {@link Actor} object
      */
-    static Function<ActorDto, Actor> actorDtoToActor = actorDto -> new Actor(actorDto.getAktorId(),
+    public static final Function<ActorDto, Actor> actorDtoToActor = actorDto -> new Actor(actorDto.getAktorId(),
             actorDto.getAktorName(),
             actorDto.getLocation(),
             actorDto.getServiceUrl(),
@@ -76,7 +69,7 @@ public class DefaultRestController {
     /**
      * Function for transforming an {@link ActorDto} Object to an {@link Actor} object
      */
-    static Function<Actor, ActorDto> actorToActorDto = actor -> new ActorDto(actor.getAktorId(),
+    public static final Function<Actor, ActorDto> actorToActorDto = actor -> new ActorDto(actor.getAktorId(),
             actor.getAktorName(),
             actor.getLocation(),
             actor.getServiceUrl(),
@@ -86,7 +79,7 @@ public class DefaultRestController {
     /**
      * Function for transforming a {@link RuleDto} Object to a {@link Rule} object
      */
-    static Function<RuleDto, Rule> ruleDtoToRule = ruleDto -> new Rule(
+    public static final Function<RuleDto, Rule> ruleDtoToRule = ruleDto -> new Rule(
             ruleDto.getRuleName(),
             ruleDto.getTreshhold(),
             sensorRepo.getById(ruleDto.getSensorId()),
@@ -96,7 +89,7 @@ public class DefaultRestController {
     /**
      * Function for transforming a {@link Rule} Object to a {@link RuleDto} object
      */
-    static Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(
+    public static final Function<Rule, RuleDto> ruleToRuleDto = rule -> new RuleDto(
             rule.getRuleName(),
             rule.getThreshold(),
             actorToActorDto.apply(rule.getActorByAktorId()),
