@@ -16,11 +16,11 @@ import java.util.List;
 public interface IDBConnector {
 
     /**
-     * Returns a sensor for a specific ID
-     * @param ID ID of the sensor
-     * @return  Sensor for a special ID
+     * Returns a sensor for a specific id
+     * @param id id of the sensor
+     * @return  Sensor for a special id
      */
-    SensorDto getSensor(int ID);
+    SensorDto getSensor(int id);
 
     /**
      * Returns a list of all Sensors
@@ -37,24 +37,24 @@ public interface IDBConnector {
 
     /**
      * Sensor that should be removed form the DB
-     * @param ID ID of the Sensor
+     * @param id id of the Sensor
      * @return True if the Sensor id deleted false if the sensor wasn't found
      */
-    boolean removeSensor(int ID);
+    boolean removeSensor(int id);
 
     /**
      * Sensor that should be updated
-     * @param ID ID of the Sensor
+     * @param id id of the Sensor
      * @return True if the Sensor id updated false if the sensor wasn't found
      */
-    boolean updateSensor(int ID, SensorDto toUpdate);
+    boolean updateSensor(int id, SensorDto toUpdate);
 
     /**
-     * Returns an actor for a specific ID
-     * @param ID ID of the actor
-     * @return  Actor for a special ID
+     * Returns an actor for a specific id
+     * @param id id of the actor
+     * @return  Actor for a special id
      */
-    ActorDto getActor(int ID);
+    ActorDto getActor(int id);
 
     /**
      * Returns a list of all actors
@@ -70,11 +70,11 @@ public interface IDBConnector {
     void addActor(ActorDto toAdd) throws AlreadyInDataBaseException;
 
     /**
-     * Returns a rule for a specific ID
-     * @param ID ID of the rule
-     * @return  Rule for a special ID
+     * Returns a rule for a specific id
+     * @param id id of the rule
+     * @return  Rule for a special id
      */
-    RuleDto getRule(int ID);
+    RuleDto getRule(int id);
 
     /**
      * Returns a list of all rules
@@ -91,11 +91,11 @@ public interface IDBConnector {
     int addRule(RuleDto toAdd) throws AlreadyInDataBaseException, ActorNotFoundException, SensorNotFoundException;
 
     /**
-     * Returns a sensorData for a specific ID
-     * @param ID ID of the sensorData
-     * @return  SensorData for a special ID
+     * Returns a sensorData for a specific id
+     * @param id id of the sensorData
+     * @return  SensorData for a special id
      */
-    SensorDataDto getSensorData(int ID);
+    SensorDataDto getSensorData(int id);
 
     /**
      * Returns a list of all sensorData
@@ -112,5 +112,5 @@ public interface IDBConnector {
      */
     int addSensorData(SensorDataDto toAdd, int sensorID) throws SensorNotFoundException;
 
-    List<RuleDto> getRulesForSensor(int ID);
+    List<RuleDto> getRulesForSensor(int id);
 }

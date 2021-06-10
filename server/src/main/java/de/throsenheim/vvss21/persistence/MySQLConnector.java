@@ -6,7 +6,6 @@ import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDto;
-import de.throsenheim.vvss21.persistence.DTOMapper;
 import de.throsenheim.vvss21.persistence.entety.Actor;
 import de.throsenheim.vvss21.persistence.entety.Rule;
 import de.throsenheim.vvss21.persistence.entety.Sensor;
@@ -45,12 +44,12 @@ public class MySQLConnector implements IDBConnector {
     /**
      * Returns a sensor for a specific ID
      *
-     * @param ID ID of the sensor
+     * @param id ID of the sensor
      * @return Sensor for a special ID
      */
     @Override
-    public SensorDto getSensor(int ID) {
-        Optional<Sensor> res = sensorRepo.findById(ID);
+    public SensorDto getSensor(int id) {
+        Optional<Sensor> res = sensorRepo.findById(id);
         if(res.isPresent())
             return DTOMapper.sensorToSensorDto.apply(res.get());
         return null;
@@ -88,12 +87,12 @@ public class MySQLConnector implements IDBConnector {
 
     /**
      * Sensor that should be removed form the DB
-     * @param ID ID of the Sensor
+     * @param id ID of the Sensor
      * @return True if the Sensor id deleted false if the sensor wasn't found
      */
     @Override
-    public boolean removeSensor(int ID) {
-        Optional<Sensor> toDelete = sensorRepo.findById(ID);
+    public boolean removeSensor(int id) {
+        Optional<Sensor> toDelete = sensorRepo.findById(id);
         if(!toDelete.isPresent())
             return false;
         toDelete.get().setDeleted(true);
@@ -103,12 +102,12 @@ public class MySQLConnector implements IDBConnector {
 
     /**
      * Sensor that should be updated
-     * @param ID ID of the Sensor
+     * @param id ID of the Sensor
      * @return True if the Sensor id updated false if the sensor wasn't found
      */
     @Override
-    public boolean updateSensor(int ID, SensorDto toUpdate) {
-        Optional<Sensor> sensor = sensorRepo.findById(ID);
+    public boolean updateSensor(int id, SensorDto toUpdate) {
+        Optional<Sensor> sensor = sensorRepo.findById(id);
         if(!sensor.isPresent())
             return false;
         sensor.get().setSensorName(toUpdate.getSensorName());
@@ -120,12 +119,12 @@ public class MySQLConnector implements IDBConnector {
     /**
      * Returns an actor for a specific ID
      *
-     * @param ID ID of the actor
+     * @param id ID of the actor
      * @return Actor for a special ID
      */
     @Override
-    public ActorDto getActor(int ID) {
-        Optional<Actor> actor = actorRepo.findById(ID);
+    public ActorDto getActor(int id) {
+        Optional<Actor> actor = actorRepo.findById(id);
         if(!actor.isPresent())
             return null;
         return DTOMapper.actorToActorDto.apply(actor.get());
@@ -162,12 +161,12 @@ public class MySQLConnector implements IDBConnector {
     /**
      * Returns a rule for a specific ID
      *
-     * @param ID ID of the rule
+     * @param id ID of the rule
      * @return Rule for a special ID
      */
     @Override
-    public RuleDto getRule(int ID) {
-        Optional<Rule> rule = ruleRepo.findById(ID);
+    public RuleDto getRule(int id) {
+        Optional<Rule> rule = ruleRepo.findById(id);
         if(!rule.isPresent())
             return null;
         return DTOMapper.ruleToRuleDto.apply(rule.get());
@@ -255,7 +254,7 @@ public class MySQLConnector implements IDBConnector {
     }
 
     @Override
-    public List<RuleDto> getRulesForSensor(int ID) {
+    public List<RuleDto> getRulesForSensor(int id) {
         return null;
     }
 
