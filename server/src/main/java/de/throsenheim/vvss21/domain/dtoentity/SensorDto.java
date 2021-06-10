@@ -1,5 +1,6 @@
 package de.throsenheim.vvss21.domain.dtoentity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
@@ -18,11 +19,15 @@ public class SensorDto {
     @NotBlank
     @Schema(description = "Location of the Sensor", example = "garden")
     private String location;
+    @Schema(hidden = true)
+    @JsonIgnore
+    private boolean deleted;
 
-    public SensorDto(int sensorId, String sensorName, String location) {
+    public SensorDto(int sensorId, String sensorName, String location, boolean deleted) {
         this.sensorId = sensorId;
         this.sensorName = sensorName;
         this.location = location;
+        this.deleted = deleted;
     }
 
     public SensorDto() {
@@ -50,5 +55,13 @@ public class SensorDto {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }
