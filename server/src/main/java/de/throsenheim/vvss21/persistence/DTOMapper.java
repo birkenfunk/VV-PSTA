@@ -10,7 +10,6 @@ import de.throsenheim.vvss21.persistence.entety.Rule;
 import de.throsenheim.vvss21.persistence.entety.Sensor;
 import de.throsenheim.vvss21.persistence.entety.SensorData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
