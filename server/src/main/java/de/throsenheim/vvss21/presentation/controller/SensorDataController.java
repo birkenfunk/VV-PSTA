@@ -1,8 +1,9 @@
-package de.throsenheim.vvss21.presentation;
+package de.throsenheim.vvss21.presentation.controller;
 
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.entety.SensorData;
 import de.throsenheim.vvss21.persistence.SensorDataRepo;
+import de.throsenheim.vvss21.presentation.DTOMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +46,7 @@ public class SensorDataController {
                     })
     })
     public ResponseEntity<List<SensorDataDto>> getAllSensordata(){
-        return ResponseEntity.ok(sensorDataRepo.findAll().stream().map(DefaultRestController.sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList()));
+        return ResponseEntity.ok(sensorDataRepo.findAll().stream().map(DTOMapper.sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList()));
     }
 
     /**
@@ -71,7 +72,7 @@ public class SensorDataController {
         Optional<SensorData> sensorData= sensorDataRepo.findById(id);
         if(!sensorData.isPresent())
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(DefaultRestController.sensorDataToSensorDataDto.apply(sensorData.get()));
+        return ResponseEntity.ok(DTOMapper.sensorDataToSensorDataDto.apply(sensorData.get()));
     }
 
 }

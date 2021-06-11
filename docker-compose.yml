@@ -22,15 +22,42 @@ services:
       retries: 10
 
   service:
-    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander:latest
+    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server:latest
+    restart: always
     depends_on:
       db:
         condition: service_healthy
     environment:
+      - LOG_LEVEL=info
       - SqlUrl=db
     ports:
       - 9000:9000
     networks:
       - mysqlconnector
+
+  sensor1:
+    image: ss21vvexercise02/demosensor:latest
+    restart: always
+    depends_on:
+      - service
+    environment:
+      - SensorId=1
+      - SmartHomeServiceRegistrationURL=http://service:9000/v1/sensors
+      - SmartHomeServicePublishURL=http://service:9000/v1/sensors
+    networks:
+      - mysqlconnector
+
+  sensor2:
+    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/sensor:latest
+    restart: always
+    depends_on:
+      - service
+    environment:
+      - SensorId=2
+      - ServerRegistrationURL=http://service:9000/v1/sensors
+      - ServerPublishURL=http://service:9000/v1/sensors
+    networks:
+      - mysqlconnector
+
 networks:
   mysqlconnector:

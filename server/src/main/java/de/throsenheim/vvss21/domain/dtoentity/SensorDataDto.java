@@ -57,11 +57,11 @@ public class SensorDataDto {
         this.sensorBySensorID = sensorBySensorID;
     }
 
-    public TemperatureUnit getTemperaturUnit() {
+    public TemperatureUnit getTemperatureUnit() {
         return temperatureUnit;
     }
 
-    public void setTemperaturUnit(TemperatureUnit temperatureUnit) {
+    public void setTemperatureUnit(TemperatureUnit temperatureUnit) {
         this.temperatureUnit = temperatureUnit;
     }
 }
