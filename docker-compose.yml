@@ -59,5 +59,17 @@ services:
     networks:
       - mysqlconnector
 
+  demoaktor:
+    image:  ss21vvexercise02/demoaktor:latest
+    container_name: vvss21-demoaktor-livingRoom
+    restart: always
+    ports:
+      - 9212:80
+      - 4502:443
+    environment:
+      - AktorId=1
+      - SmartHomeServiceRegistrationURL=http://service:9000/v1/aktors
+    networks:
+      - mysqlconnector
 networks:
   mysqlconnector:
