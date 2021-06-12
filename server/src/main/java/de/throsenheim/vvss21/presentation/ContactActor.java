@@ -1,26 +1,31 @@
 package de.throsenheim.vvss21.presentation;
 
-import de.throsenheim.vvss21.application.RuleEngine;
+import de.throsenheim.vvss21.application.IContactActor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 @Service
-public class ContactActor {
+public class ContactActor implements IContactActor {
 
     private static final Logger LOGGER = LogManager.getLogger(ContactActor.class);
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .build();
 
-    public void sendData(String publishURL, String status){
-        String post = publishURL+ "?status="+status;
+
+    /**
+     * Contacts an Actor to change it's status
+     *
+     * @param url    URL of the actor
+     * @param status New status of the actor
+     */
+    @Override
+    public void contact(String url, String status) {
+        LOGGER.info("Posting Status {} to {}",status, url);
+        /*String post = publishURL+ "?status="+status;
         HttpRequest request = HttpRequest.newBuilder().
                 uri(URI.create(post)).
                 GET().
@@ -37,7 +42,6 @@ public class ContactActor {
             LOGGER.debug("Successfully sent data");
             return;
         }
-        LOGGER.error("Something went wrong");
+        LOGGER.error("Something went wrong");*/
     }
-
 }

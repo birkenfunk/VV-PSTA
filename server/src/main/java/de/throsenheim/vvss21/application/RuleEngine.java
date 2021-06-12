@@ -25,7 +25,7 @@ public class RuleEngine extends TimerTask {
     @Autowired
     private IDBConnector connector;
     @Autowired
-    private ContactActor contactActor;
+    private IContactActor contactActor;
     private static final Logger LOGGER = LogManager.getLogger(RuleEngine.class);
 
     private RuleEngine(){
@@ -57,7 +57,7 @@ public class RuleEngine extends TimerTask {
         for (RuleDto rule: rules) {
             if(rule.getThreshold()> data.getCurrentValue()
                     && !rule.getActorByActorID().getStatus().equals("CLOSE")){
-                contactActor.sendData(rule.getActorByActorID().getServiceUrl(), "CLOSE");
+                contactActor.contact(rule.getActorByActorID().getServiceUrl(), "CLOSE");
                 try {
                     connector.setActorStatus(rule.getActorId(),"CLOSE");
                 } catch (ActorNotFoundException e) {
@@ -67,7 +67,7 @@ public class RuleEngine extends TimerTask {
             }
             if(rule.getThreshold()< data.getCurrentValue()
                     && !rule.getActorByActorID().getStatus().equals("OPEN")){
-                contactActor.sendData(rule.getActorByActorID().getServiceUrl(), "OPEN");
+                contactActor.contact(rule.getActorByActorID().getServiceUrl(), "OPEN");
                 try {
                     connector.setActorStatus(rule.getActorId(),"OPEN");
                 } catch (ActorNotFoundException e) {
