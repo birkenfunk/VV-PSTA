@@ -13,22 +13,22 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class RegisterAtServer {
+public class ServerConnector {
 
-    private static final Logger LOGGER = LogManager.getLogger(RegisterAtServer.class);
+    private static final Logger LOGGER = LogManager.getLogger(ServerConnector.class);
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .build();
     private final String serverRegistrationURL;
     private final int actorID;
 
-    public RegisterAtServer() {
+    public ServerConnector() {
         Map<String, String> env = System.getenv();
         this.serverRegistrationURL = env.getOrDefault("ServerRegistrationURL", "http://localhost:9000/v1/actors");
         this.actorID = Integer.parseInt(env.getOrDefault("ActorID", "2"));
     }
 
-    public void sendData(){
+    public void register(){
         HttpRequest request = HttpRequest.newBuilder().
                 uri(URI.create(serverRegistrationURL)).
                 header("Content-Type", "application/json").
@@ -61,7 +61,7 @@ public class RegisterAtServer {
             LOGGER.error(e.getMessage());
             Thread.currentThread().interrupt();
         }
-        sendData();
+        register();
     }
 
     private String actorJsonString(){
