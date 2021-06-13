@@ -71,5 +71,17 @@ services:
       - SmartHomeServiceRegistrationURL=http://service:9000/v1/aktors
     networks:
       - mysqlconnector
+
+  actor:
+    image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/actor:latest
+    restart: always
+    depends_on:
+      - service
+    environment:
+      - ActorId=2
+      - ServerRegistrationURL=http://service:9000/v1/actors
+    networks:
+      - mysqlconnector
+
 networks:
   mysqlconnector:
