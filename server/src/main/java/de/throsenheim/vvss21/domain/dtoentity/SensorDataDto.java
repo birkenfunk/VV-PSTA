@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * DTO entity for the sensorData
@@ -20,7 +21,7 @@ public class SensorDataDto {
     @Size(min = 0, max = 30)
     @Schema(description = "The measured temp", example = "10")
     private byte currentValue;
-    @Schema(description = "The sensor that has measured the data")
+    @Schema(description = "The sensor that has measured the data", hidden = true)
     private SensorDto sensorBySensorID;
 
     public SensorDataDto() {
@@ -63,5 +64,18 @@ public class SensorDataDto {
 
     public void setTemperatureUnit(TemperatureUnit temperatureUnit) {
         this.temperatureUnit = temperatureUnit;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SensorDataDto that = (SensorDataDto) o;
+        return Objects.equals(sensorBySensorID, that.sensorBySensorID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sensorBySensorID);
     }
 }

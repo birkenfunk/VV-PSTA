@@ -15,26 +15,28 @@ public class RuleDto {
     @NotBlank
     @Size(min = 1, max = 29)
     @Schema(description = "When the rule should do something", example = "10")
-    private Byte treshhold;
+    private Byte threshold;
     @NotBlank
     @Schema(description = "Identification number of the Actor", example = "10")
-    private int aktorId;
-    @Schema(description = "Actor for this rule")
+    private int actorId;
+    @Schema(description = "Actor for this rule", hidden = true)
     private ActorDto actorByActorID;
     @NotBlank
     @Schema(description = "Identification number of the Sensor", example = "10")
     private int sensorId;
-    @Schema(description = "Sensor for this rule")
+    @Schema(description = "Sensor for this rule", hidden = true)
     private SensorDto sensorBySensorID;
 
     public RuleDto() {
     }
 
-    public RuleDto(String ruleName, Byte treshhold, ActorDto actorDto, SensorDto sensorDto) {
+    public RuleDto(String ruleName, Byte threshold, ActorDto actorDto, SensorDto sensorDto) {
         this.ruleName = ruleName;
-        this.treshhold = treshhold;
+        this.threshold = threshold;
         this.actorByActorID = actorDto;
+        this.actorId = actorDto.getAktorId();
         this.sensorBySensorID = sensorDto;
+        this.sensorId = sensorDto.getSensorId();
     }
 
     public String getRuleName() {
@@ -45,19 +47,20 @@ public class RuleDto {
         this.ruleName = ruleName;
     }
 
-    public Byte getTreshhold() {
-        return treshhold;
+    public Byte getThreshold() {
+        return threshold;
     }
 
-    public void setTreshhold(Byte treshhold) {
-        this.treshhold = treshhold;
-    }
-    public int getAktorId() {
-        return aktorId;
+    public void setThreshold(Byte threshold) {
+        this.threshold = threshold;
     }
 
-    public void setAktorId(int aktorId) {
-        this.aktorId = aktorId;
+    public int getActorId() {
+        return actorId;
+    }
+
+    public void setActorId(int actorId) {
+        this.actorId = actorId;
     }
 
     public int getSensorId() {

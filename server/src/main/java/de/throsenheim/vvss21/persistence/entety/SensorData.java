@@ -1,4 +1,4 @@
-package de.throsenheim.vvss21.domain.entety;
+package de.throsenheim.vvss21.persistence.entety;
 
 import de.throsenheim.vvss21.domain.TemperatureUnit;
 import org.hibernate.validator.constraints.Range;

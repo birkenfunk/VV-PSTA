@@ -1,9 +1,7 @@
 package de.throsenheim.vvss21.presentation.controller;
 
+import de.throsenheim.vvss21.application.IDBConnector;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
-import de.throsenheim.vvss21.domain.entety.SensorData;
-import de.throsenheim.vvss21.persistence.SensorDataRepo;
-import de.throsenheim.vvss21.presentation.DTOMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,15 +16,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/v1/sensordata")
 public class SensorDataController {
 
     @Autowired
-    private SensorDataRepo sensorDataRepo;
+    private IDBConnector connector;
 
     /**
      * Rest get request for all SensorData
@@ -46,7 +42,7 @@ public class SensorDataController {
                     })
     })
     public ResponseEntity<List<SensorDataDto>> getAllSensordata(){
-        return ResponseEntity.ok(sensorDataRepo.findAll().stream().map(DTOMapper.sensorDataToSensorDataDto).collect(Collectors.<SensorDataDto>toList()));
+        return ResponseEntity.ok(connector.getSensorData());
     }
 
     /**
@@ -69,10 +65,10 @@ public class SensorDataController {
             @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
     public ResponseEntity<SensorDataDto> getAllSensordata(@PathVariable int id){
-        Optional<SensorData> sensorData= sensorDataRepo.findById(id);
-        if(!sensorData.isPresent())
+        SensorDataDto sensorData = connector.getSensorData(id);
+        if(sensorData == null)
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(DTOMapper.sensorDataToSensorDataDto.apply(sensorData.get()));
+        return ResponseEntity.ok(sensorData);
     }
 
 }

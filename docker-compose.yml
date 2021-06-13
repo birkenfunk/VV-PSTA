@@ -21,7 +21,7 @@ services:
       timeout: 2s
       retries: 10
 
-  service:
+  SmartHomeService:
     image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server:latest
     restart: always
     depends_on:
@@ -42,8 +42,8 @@ services:
       - service
     environment:
       - SensorId=1
-      - SmartHomeServiceRegistrationURL=http://service:9000/v1/sensors
-      - SmartHomeServicePublishURL=http://service:9000/v1/sensors
+      - SmartHomeServiceRegistrationURL=http://SmartHomeService:9000/v1/sensors
+      - SmartHomeServicePublishURL=http://SmartHomeService:9000/v1/sensors
     networks:
       - mysqlconnector
 
@@ -54,10 +54,22 @@ services:
       - service
     environment:
       - SensorId=2
-      - ServerRegistrationURL=http://service:9000/v1/sensors
-      - ServerPublishURL=http://service:9000/v1/sensors
+      - ServerRegistrationURL=http://SmartHomeService:9000/v1/sensors
+      - ServerPublishURL=http://SmartHomeService:9000/v1/sensors
     networks:
       - mysqlconnector
 
+  demoaktor:
+    image:  ss21vvexercise02/demoaktor:latest
+    container_name: vvss21-demoaktor-livingRoom
+    restart: always
+    ports:
+      - 9212:80
+      - 4502:443
+    environment:
+      - AktorId=1
+      - SmartHomeServiceRegistrationURL=http://SmartHomeService:9000/v1/aktors
+    networks:
+      - mysqlconnector
 networks:
   mysqlconnector:

@@ -1,12 +1,10 @@
 package de.throsenheim.vvss21.presentation.controller;
 
+import de.throsenheim.vvss21.application.IDBConnector;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDto;
-import de.throsenheim.vvss21.domain.entety.Sensor;
-import de.throsenheim.vvss21.domain.entety.SensorData;
-import de.throsenheim.vvss21.persistence.SensorDataRepo;
-import de.throsenheim.vvss21.persistence.SensorRepo;
-import de.throsenheim.vvss21.presentation.DTOMapper;
+import de.throsenheim.vvss21.domain.exception.AlreadyInDataBaseException;
+import de.throsenheim.vvss21.domain.exception.SensorNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,25 +22,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/v1/sensors")
 public class SensorController {
 
     @Autowired
-    private SensorRepo sensorRepo;
-
-    @Autowired
-    private SensorDataRepo sensorDataRepo;
-
-    private static Logger LOGGER = LogManager.getLogger(SensorController.class);
+    private IDBConnector connector;
+    private static final Logger LOGGER = LogManager.getLogger(SensorController.class);
 
     /**
      * Rest get request for all Sensors
@@ -62,9 +50,7 @@ public class SensorController {
                     }),
     })
     public ResponseEntity<List<SensorDto>> getAllSensors(){
-        return ResponseEntity.ok(sensorRepo.findAll().stream().
-                map(DTOMapper.sensorToSensorDto).
-                collect(Collectors.<SensorDto> toList()));
+        return ResponseEntity.ok(connector.getSensors());
     }
 
     /**
@@ -87,10 +73,10 @@ public class SensorController {
             @ApiResponse(responseCode = "404", description = "No Project with the id was found", content = @Content)
     })
     public ResponseEntity<SensorDto> getSensor(@PathVariable int id){
-        Optional<Sensor> res = sensorRepo.findById(id);
-        if(res.isPresent())
-            return ResponseEntity.ok(DTOMapper.sensorToSensorDto.apply(res.get()));
-        return ResponseEntity.notFound().build();
+        SensorDto sensor = connector.getSensor(id);
+        if(sensor == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(sensor);
 
     }
 
@@ -106,17 +92,14 @@ public class SensorController {
             @ApiResponse(responseCode = "400", description = "Sensor already exists", content = @Content)
     })
     public ResponseEntity<SensorDto> createSensor(@RequestBody SensorDto sensor){
-        String debugmsg = "Trying to add: " + sensor.toString();
-        LOGGER.debug(debugmsg);
-        Sensor add = DTOMapper.sensorDtoToSensor.apply(sensor);
-        add.setRegisterDate(Date.valueOf(LocalDate.now()));
-        Optional<Sensor> temp = sensorRepo.findById(add.getSensorId());
-        if(temp.isPresent() && !temp.get().isDeleted()){
+        try {
+            connector.addSensor(sensor);
+        } catch (AlreadyInDataBaseException e) {
+            LOGGER.error(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
-        sensorRepo.save(add);
         try {
-            return ResponseEntity.created(new URI("http://localhost:8080/sensors/" + add.getSensorId())).build();
+            return ResponseEntity.created(new URI("http://localhost:8080/sensors/" + sensor.getSensorId())).build();
         } catch (URISyntaxException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -135,18 +118,15 @@ public class SensorController {
             @ApiResponse(responseCode = "400", description = "Sensor with the SensorId wasn't found", content = @Content)
     })
     public ResponseEntity<SensorDataDto> addSensorData(@PathVariable("id") int id, @RequestBody SensorDataDto sensorData){
-        String debugmsg = "Trying to add: " + sensorData.toString() + " to Sensor "+ id;
-        LOGGER.debug(debugmsg);
-        Optional<Sensor> sensor = sensorRepo.findById(id);
-        if(!sensor.isPresent())
-            return ResponseEntity.badRequest().build();
-        sensorData.setSensorBySensorID(DTOMapper.sensorToSensorDto.apply(sensor.get()));
-        SensorData data = DTOMapper.sensorDataDtoSensorToData.apply(sensorData);
-        if(data.getTimestamp() == null)
-            data.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-        sensorDataRepo.save(data);
+        int dataId = 0;
         try {
-            return ResponseEntity.created(new URI("http://localhost:8080/sensordata/" + data.getSensorDataId())).build();
+            dataId = connector.addSensorData(sensorData, id);
+        } catch (SensorNotFoundException e) {
+            LOGGER.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            return ResponseEntity.created(new URI("http://localhost:8080/sensordata/" + dataId)).build();
         } catch (URISyntaxException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -164,15 +144,9 @@ public class SensorController {
             @ApiResponse(responseCode = "404", description = "Sensor wasn't found", content = @Content)
     })
     public ResponseEntity<SensorDto> deleteSensor(@PathVariable int id) {
-        String debugmsg = "Trying to delete: " + id;
-        LOGGER.debug(debugmsg);
-        Optional<Sensor> toDelete = sensorRepo.findById(id);
-        if(!toDelete.isPresent()){
-            return ResponseEntity.notFound().build();
-        }
-        toDelete.get().setDeleted(true);
-        sensorRepo.save(toDelete.get());
-        return ResponseEntity.noContent().build();
+        if(connector.removeSensor(id))
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 
     /**
@@ -187,15 +161,9 @@ public class SensorController {
             @ApiResponse(responseCode = "404", description = "Sensor wasn't found", content = @Content)
     })
     public ResponseEntity<SensorDto> updateSensor(@PathVariable("id") int id, @RequestBody SensorDto toUpdate){
-        String debugmsg = "Trying to update Sensor: " + id+ " to " + toUpdate;
-        LOGGER.debug(debugmsg);
-        Optional<Sensor> sensor = sensorRepo.findById(id);
-        if(!sensor.isPresent())
-            return ResponseEntity.notFound().build();
-        sensor.get().setSensorName(toUpdate.getSensorName());
-        sensor.get().setLocation(toUpdate.getLocation());
-        sensorRepo.save(sensor.get());
-        return ResponseEntity.noContent().build();
+        if(connector.updateSensor(id,toUpdate))
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 
 }
