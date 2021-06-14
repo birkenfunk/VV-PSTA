@@ -13,10 +13,12 @@ build:
   tags:
     - sonar
   script:
-    - ./gradlew assemble
+    - ./gradlew server:builde
+    - ./gradlew sensor:build
   artifacts:
     paths:
-      - ./build/libs/*.jar
+      - ./build/libs/server-1.0-SNAPSHOT.jar
+      - ./build/libs/sensor-1.0-SNAPSHOT-all.jar
     expire_in: 1 week
 
 sonarqube:
@@ -37,7 +39,7 @@ javadoc:
   tags:
     - sonar
   script:
-    - ./gradlew javadoc
+    - ./gradlew server:javadoc
   artifacts:
     paths:
       - build/docs/javadoc/de
@@ -48,10 +50,18 @@ build-docker:
   tags:
     - sonar
   script:
-    - ./gradlew build
-    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander .
+    - ./gradlew server:build
+    - cd ./server
+    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server .
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander
+    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server
+    - cd ../
+    - ./gradlew sensor:build
+    - cd ./sensor
+    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/sensor .
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/sensor
   only:
     refs:
       - master
+      - developement

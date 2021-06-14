@@ -1,0 +1,48 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id 'application'
+    id 'java'
+    id 'jacoco'
+}
+
+group 'de.throsenheim'
+version '1.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+application {
+    mainClass = 'de.throsenheim.vvss21.MainSensor'
+}
+
+build{
+    startShadowScripts
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
+
+}
+
+jacoco{
+    toolVersion = "0.8.6"
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = true
+    }
+}
