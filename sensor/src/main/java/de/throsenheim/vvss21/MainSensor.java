@@ -10,6 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class MainSensor {
 
@@ -61,15 +62,26 @@ public class MainSensor {
         } catch (IOException | InterruptedException e) {
             LOGGER.error(e);
             Thread.currentThread().interrupt();
-            System.exit(-1);
+            retry();
+            return;
         }
         if(response.statusCode() == 201)
             LOGGER.info("Sensor registered");
         if(response.statusCode() == 400) {
-            LOGGER.info("Sensor already exists please use other ID");
+            LOGGER.info("Sensor already exists please use other ID\nWill retry in 10s");
             LOGGER.debug(serverPublishURL);
-            System.exit(0);
+            retry();
         }
+    }
+
+    private void retry(){
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        registerSensor();
     }
 
     private void sendData(String sensorData){

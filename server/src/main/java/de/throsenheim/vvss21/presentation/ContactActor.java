@@ -5,7 +5,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 @Service
 public class ContactActor implements IContactActor {
@@ -24,11 +28,10 @@ public class ContactActor implements IContactActor {
      */
     @Override
     public void contact(String url, String status) {
-        LOGGER.info("Posting Status {} to {}",status, url);
-        /*String post = publishURL+ "?status="+status;
+        String post = url+ "?status="+status;
         HttpRequest request = HttpRequest.newBuilder().
                 uri(URI.create(post)).
-                GET().
+                POST(HttpRequest.BodyPublishers.noBody()).
                 build();
         HttpResponse<String> response = null;
         try {
@@ -42,6 +45,6 @@ public class ContactActor implements IContactActor {
             LOGGER.debug("Successfully sent data");
             return;
         }
-        LOGGER.error("Something went wrong");*/
+        LOGGER.error("Something went wrong");
     }
 }

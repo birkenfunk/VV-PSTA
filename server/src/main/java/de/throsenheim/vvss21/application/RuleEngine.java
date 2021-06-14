@@ -3,7 +3,6 @@ package de.throsenheim.vvss21.application;
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.exception.ActorNotFoundException;
-import de.throsenheim.vvss21.presentation.ContactActor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class RuleEngine extends TimerTask {
             try {
                  data = sensorDataDtos.poll(10, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
                 Thread.currentThread().interrupt();
             }
             if(data==null)
@@ -55,21 +54,23 @@ public class RuleEngine extends TimerTask {
 
     private void scanForNewStatus(SensorDataDto data, List<RuleDto> rules) {
         for (RuleDto rule: rules) {
-            if(rule.getThreshold()> data.getCurrentValue()
-                    && !rule.getActorByActorID().getStatus().equals("CLOSE")){
-                contactActor.contact(rule.getActorByActorID().getServiceUrl(), "CLOSE");
+            String status = "CLOSE";
+            if(rule.getThreshold() < data.getCurrentValue()
+                    && !rule.getActorByActorID().getStatus().equals(status)){
+                contactActor.contact(rule.getActorByActorID().getServiceUrl(), status);
                 try {
-                    connector.setActorStatus(rule.getActorId(),"CLOSE");
+                    connector.setActorStatus(rule.getActorId(),status);
                 } catch (ActorNotFoundException e) {
                     LOGGER.error(e.getMessage());
                 }
                 continue;
             }
-            if(rule.getThreshold()< data.getCurrentValue()
-                    && !rule.getActorByActorID().getStatus().equals("OPEN")){
-                contactActor.contact(rule.getActorByActorID().getServiceUrl(), "OPEN");
+            status = "OPEN";
+            if(rule.getThreshold() > data.getCurrentValue()
+                    && !rule.getActorByActorID().getStatus().equals(status)){
+                contactActor.contact(rule.getActorByActorID().getServiceUrl(), status);
                 try {
-                    connector.setActorStatus(rule.getActorId(),"OPEN");
+                    connector.setActorStatus(rule.getActorId(),status);
                 } catch (ActorNotFoundException e) {
                     LOGGER.error(e.getMessage());
                 }
