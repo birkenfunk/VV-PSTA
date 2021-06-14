@@ -39,7 +39,7 @@ services:
     image: ss21vvexercise02/demosensor:latest
     restart: always
     depends_on:
-      - service
+      - SmartHomeService
     environment:
       - SensorId=1
       - SmartHomeServiceRegistrationURL=http://SmartHomeService:9000/v1/sensors
@@ -51,7 +51,7 @@ services:
     image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/sensor:latest
     restart: always
     depends_on:
-      - service
+      - SmartHomeService
     environment:
       - SensorId=2
       - ServerRegistrationURL=http://SmartHomeService:9000/v1/sensors
@@ -76,7 +76,7 @@ services:
     image: inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/actor:latest
     restart: always
     depends_on:
-      - service
+      - SmartHomeService
     environment:
       - ActorId=2
       - ServerRegistrationURL=http://service:9000/v1/actors
