@@ -78,4 +78,14 @@ public class SensorDataDto {
     public int hashCode() {
         return Objects.hash(sensorBySensorID);
     }
+
+    @Override
+    public String toString() {
+        return "SensorDataDto{" +
+                "temperatureUnit=" + temperatureUnit +
+                ", timestamp=" + timestamp +
+                ", currentValue=" + currentValue +
+                ", sensorBySensorID=" + sensorBySensorID +
+                '}';
+    }
 }

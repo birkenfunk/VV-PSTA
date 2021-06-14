@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 
 /**
  * DTO entity for the senor
@@ -63,5 +64,28 @@ public class SensorDto {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SensorDto sensorDto = (SensorDto) o;
+        return sensorId == sensorDto.sensorId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sensorId);
+    }
+
+    @Override
+    public String toString() {
+        return "SensorDto{" +
+                "sensorId=" + sensorId +
+                ", sensorName='" + sensorName + '\'' +
+                ", location='" + location + '\'' +
+                ", deleted=" + deleted +
+                '}';
     }
 }
