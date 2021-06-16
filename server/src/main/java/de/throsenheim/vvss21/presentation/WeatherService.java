@@ -29,19 +29,7 @@ public class WeatherService implements IWeatherService {
                 POST(HttpRequest.BodyPublishers.ofString(body)).
                 build();
         HttpResponse<String> response = null;
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            LOGGER.error(e);
-            Thread.currentThread().interrupt();
-            return null;
-        }
-        if(response.statusCode() == 200){
-            LOGGER.debug("Successfully sent data");
-            return response.body();
-        }
-        LOGGER.error("Something went wrong");
-        return null;
+        return getResponse(request);
     }
 
     @Override
@@ -52,6 +40,10 @@ public class WeatherService implements IWeatherService {
                 GET().
                 header("Authorization","Bearer "+ jWTToken).
                 build();
+        return getResponse(request);
+    }
+
+    private String getResponse(HttpRequest request){
         HttpResponse<String> response = null;
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
