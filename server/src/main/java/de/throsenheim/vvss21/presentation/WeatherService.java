@@ -28,7 +28,6 @@ public class WeatherService implements IWeatherService {
                 header("Content-Type", "application/json").
                 POST(HttpRequest.BodyPublishers.ofString(body)).
                 build();
-        HttpResponse<String> response = null;
         return getResponse(request);
     }
 

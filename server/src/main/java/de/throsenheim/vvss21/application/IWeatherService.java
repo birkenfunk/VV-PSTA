@@ -4,6 +4,6 @@ public interface IWeatherService {
 
     String getJWTToken();
 
-    String contactWeatherService(String JWTToken);
+    String contactWeatherService(String jWTToken);
 
 }
