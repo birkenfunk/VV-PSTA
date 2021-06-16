@@ -1,5 +1,9 @@
 package de.throsenheim.vvss21.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.throsenheim.vvss21.domain.dtoentity.ActorDto;
 import de.throsenheim.vvss21.domain.dtoentity.RuleDto;
 import de.throsenheim.vvss21.domain.dtoentity.SensorDataDto;
 import de.throsenheim.vvss21.domain.exception.ActorNotFoundException;
@@ -20,11 +24,16 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class RuleEngine extends TimerTask {
 
-    private static BlockingQueue<SensorDataDto> sensorDataDtos = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<SensorDataDto> sensorDataDtos = new LinkedBlockingQueue<>();
     @Autowired
     private IDBConnector connector;
     @Autowired
     private IContactActor contactActor;
+    @Autowired
+    private IWeatherService weatherService;
+
+    private String jWTToken;
+
     private static final Logger LOGGER = LogManager.getLogger(RuleEngine.class);
 
     private RuleEngine(){
@@ -50,6 +59,7 @@ public class RuleEngine extends TimerTask {
             List<RuleDto> rules = connector.getRulesForSensor(data.getSensorBySensorID().getSensorId());
             scanForNewStatus(data, rules);
         }
+        weatherService();
     }
 
     private void scanForNewStatus(SensorDataDto data, List<RuleDto> rules) {
@@ -75,6 +85,46 @@ public class RuleEngine extends TimerTask {
                     LOGGER.error(e.getMessage());
                 }
             }
+        }
+    }
+
+    private void weatherService(){
+        if(jWTToken==null)
+            jWTToken = weatherService.getJWTToken();
+        JsonNode node;
+        String weather = "";
+        try {
+            node = new ObjectMapper().readTree(weatherService.contactWeatherService(jWTToken));
+            weather = node.findValue("summary").asText();
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage());
+        }
+        if(weather.equalsIgnoreCase("Sunny")) {
+            LOGGER.info("It is sunny my friends");
+            changeActors();
+        }
+    }
+
+    private void changeActors(){
+        for (ActorDto actor:connector.getActors()) {
+            String newStatus = "CLOSE";
+            if(actor.getStatus().equals("OPEN")) {
+                contactActor.contact(actor.getServiceUrl(), newStatus);
+                try {
+                    connector.setActorStatus(actor.getAktorId(),newStatus);
+                } catch (ActorNotFoundException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }else {
+                newStatus = "OPEN";
+                contactActor.contact(actor.getServiceUrl(), newStatus);
+                try {
+                    connector.setActorStatus(actor.getAktorId(), newStatus);
+                } catch (ActorNotFoundException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+
         }
     }
 
