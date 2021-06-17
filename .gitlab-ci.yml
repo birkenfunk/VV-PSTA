@@ -23,6 +23,8 @@ build:
 
 sonarqube:
   stage: sonarqube&test
+  needs:
+    - job: build
   tags:
     - sonar
   script:
@@ -36,6 +38,8 @@ sonarqube:
 
 javadoc:
   stage: javadoc
+  needs:
+    - job: build
   tags:
     - sonar
   script:

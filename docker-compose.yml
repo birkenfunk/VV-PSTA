@@ -70,7 +70,7 @@ services:
       - 4502:443
     environment:
       - AktorId=1
-      - SmartHomeServiceRegistrationURL=http://SmartHomeService:9000/v1/aktors
+      - SmartHomeServiceRegistrationURL=http://SmartHomeService:9000/v1/actors
     networks:
       - mysqlconnector
 
