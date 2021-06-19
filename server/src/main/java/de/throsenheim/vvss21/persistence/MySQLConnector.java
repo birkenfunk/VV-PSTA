@@ -157,6 +157,8 @@ public class MySQLConnector implements IDBConnector {
             throw new AlreadyInDataBaseException("Actor already registered in DB");
         }
         Actor add = dtoMapper.actorDtoToActor.apply(toAdd);
+        if(add.getStatus() == null)
+            add.setStatus("OPEN");
         actorRepo.save(add);
     }
 
