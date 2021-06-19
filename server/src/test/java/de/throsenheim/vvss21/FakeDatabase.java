@@ -176,6 +176,8 @@ public class FakeDatabase implements IDBConnector {
      */
     @Override
     public int addRule(RuleDto toAdd) throws AlreadyInDataBaseException, ActorNotFoundException, SensorNotFoundException {
+        if(ruleDtos.contains(toAdd))
+            throw new AlreadyInDataBaseException("Rule already in DB");
         ruleDtos.add(toAdd);
         return 1;
     }
