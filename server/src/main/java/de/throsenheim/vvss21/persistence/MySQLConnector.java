@@ -222,7 +222,7 @@ public class MySQLConnector implements IDBConnector {
         if(ruleRepo.findAll().contains(add)){
             throw new AlreadyInDataBaseException("Rule Name is already registered in DB");
         }
-        ruleRepo.save(add);
+        add = ruleRepo.save(add);
         return add.getRuleId();
     }
 
