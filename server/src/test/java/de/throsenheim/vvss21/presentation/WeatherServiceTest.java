@@ -15,12 +15,7 @@ class WeatherServiceTest {
     }
 
     @Test
-    void testGetJWTToken() {
-        assertFalse(weatherService.getJWTToken().isEmpty());
-    }
-
-    @Test
     void TestContactWeatherService() {
-        assertFalse(weatherService.contactWeatherService(weatherService.getJWTToken()).isEmpty());
+        assertFalse(weatherService.contactWeatherService().isEmpty());
     }
 }

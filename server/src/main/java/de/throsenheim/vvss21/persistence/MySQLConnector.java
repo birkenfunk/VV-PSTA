@@ -26,6 +26,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Class for handling a MySql database connection
+ * @version 2.0
+ * @author Alexander
+ */
 @Service
 public class MySQLConnector implements IDBConnector {
 
@@ -272,6 +277,11 @@ public class MySQLConnector implements IDBConnector {
         return data.getSensorDataId();
     }
 
+    /**
+     * Searches for rules with a specific sensor
+     * @param id Id of the sensor
+     * @return All rules that contain the sensor
+     */
     @Override
     public List<RuleDto> getRulesForSensor(int id) {
         List <RuleDto> rules = getRules();
