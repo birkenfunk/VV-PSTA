@@ -34,8 +34,6 @@ public class RuleEngine extends TimerTask {
     @Autowired
     private IWeatherService weatherService;
 
-    private String jWTToken;
-
     private static final Logger LOGGER = LogManager.getLogger(RuleEngine.class);
 
     private RuleEngine(){
@@ -99,12 +97,11 @@ public class RuleEngine extends TimerTask {
      * Changes the status of the actors if the weather is sunny
      */
     private void weatherService(){
-        if(jWTToken==null)
-            jWTToken = weatherService.getJWTToken();
+
         JsonNode node;
         String weather = "";
         try {
-            node = new ObjectMapper().readTree(weatherService.contactWeatherService(jWTToken));
+            node = new ObjectMapper().readTree(weatherService.contactWeatherService());
             weather = node.findValue("summary").asText();
         } catch (JsonProcessingException e) {
             LOGGER.error(e.getMessage());
