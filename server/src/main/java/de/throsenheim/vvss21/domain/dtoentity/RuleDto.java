@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 /**
  * DTO entity for the rule
@@ -85,5 +86,30 @@ public class RuleDto {
 
     public void setSensorBySensorID(SensorDto sensorBySensorID) {
         this.sensorBySensorID = sensorBySensorID;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RuleDto ruleDto = (RuleDto) o;
+        return actorId == ruleDto.actorId || Objects.equals(ruleName, ruleDto.ruleName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ruleName, actorId);
+    }
+
+    @Override
+    public String toString() {
+        return "RuleDto{" +
+                "ruleName='" + ruleName + '\'' +
+                ", threshold=" + threshold +
+                ", actorId=" + actorId +
+                ", actorByActorID=" + actorByActorID +
+                ", sensorId=" + sensorId +
+                ", sensorBySensorID=" + sensorBySensorID +
+                '}';
     }
 }

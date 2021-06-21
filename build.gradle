@@ -2,10 +2,24 @@ plugins {
     id "org.sonarqube" version "3.0"
 }
 
+sonarqube {
+    properties {
+        property "sonar.host.url", "http://birkenfunk.de:9000"
+        property "sonar.login", "08cf5e193cd203639be96dfc2122621dfeb40493"
+        property "sonar.projectName", "VVSS21"
+        property "sonar.projectKey", "VVPSTA"
+        property "sonar.java.coveragePlugin", "jacoco"
+    }
+}
+
 subprojects {
     sonarqube {
         properties {
-            property "sonar.sources", "src"
+            property "sonar.sources", "src/main"
+            property "sonar.test", "src/test"
+            property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
         }
     }
 }
+
+

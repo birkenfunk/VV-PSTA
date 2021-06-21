@@ -95,7 +95,7 @@ public class MySQLConnector implements IDBConnector {
     @Override
     public boolean removeSensor(int id) {
         Optional<Sensor> toDelete = sensorRepo.findById(id);
-        if(!toDelete.isPresent())
+        if(toDelete.isEmpty())
             return false;
         toDelete.get().setDeleted(true);
         sensorRepo.save(toDelete.get());
@@ -110,7 +110,7 @@ public class MySQLConnector implements IDBConnector {
     @Override
     public boolean updateSensor(int id, SensorDto toUpdate) {
         Optional<Sensor> sensor = sensorRepo.findById(id);
-        if(!sensor.isPresent())
+        if(sensor.isEmpty())
             return false;
         sensor.get().setSensorName(toUpdate.getSensorName());
         sensor.get().setLocation(toUpdate.getLocation());
@@ -222,7 +222,7 @@ public class MySQLConnector implements IDBConnector {
         if(ruleRepo.findAll().contains(add)){
             throw new AlreadyInDataBaseException("Rule Name is already registered in DB");
         }
-        ruleRepo.save(add);
+        add = ruleRepo.save(add);
         return add.getRuleId();
     }
 
@@ -280,7 +280,7 @@ public class MySQLConnector implements IDBConnector {
             if(rule.getSensorId() == id)
                 result.add(rule);
         }
-        return rules;
+        return result;
     }
 
 }
