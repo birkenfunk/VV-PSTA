@@ -57,36 +57,36 @@ Get Requests:
 
 | ip | Description|
 | --- | --- |
-| http://*SensorIP*:*SensorPort*/v1/sensors | Returns a list all sensors in a json format |
-| http://*SensorIP*:*SensorPort*/v1/sensors/{*id*} | Returns the sensor with the given id|
-| http://*SensorIP*:*SensorPort*/v1/actors | Returns a list all actors in a json format |
-| http://*SensorIP*:*SensorPort*/v1/actors/{*id*} | Returns the actor with the given id|
-| http://*SensorIP*:*SensorPort*/v1/rules | Returns a list all rules in a json format |
-| http://*SensorIP*:*SensorPort*/v1/rules/{*id*} | Returns the rule with the given id|
-| http://*SensorIP*:*SensorPort*/v1/sensordata | Returns a list all sensordata in a json format |
-| http://*SensorIP*:*SensorPort*/v1/sensordata/{*id*} | Returns the sensordata with the given id|
+| http://*ServerID*:*ServerPort*/v1/sensors | Returns a list all sensors in a json format |
+| http://*ServerID*:*ServerPort*/v1/sensors/{*id*} | Returns the sensor with the given id|
+| http://*ServerID*:*ServerPort*/v1/actors | Returns a list all actors in a json format |
+| http://*ServerID*:*ServerPort*/v1/actors/{*id*} | Returns the actor with the given id|
+| http://*ServerID*:*ServerPort*/v1/rules | Returns a list all rules in a json format |
+| http://*ServerID*:*ServerPort*/v1/rules/{*id*} | Returns the rule with the given id|
+| http://*ServerID*:*ServerPort*/v1/sensordata | Returns a list all sensordata in a json format |
+| http://*ServerID*:*ServerPort*/v1/sensordata/{*id*} | Returns the sensordata with the given id|
 
 
 Post Requests:
 
 | ip | Description|
 | --- | --- |
-| http://*SensorIP*:*SensorPort*/v1/sensors | Adds a sensor to the database retuns the rest ip address of the sensor|
-| http://*SensorIP*:*SensorPort*/v1/sensors/{*id*} | Adds a sensordata to the database and connects it with the sensor retuns the rest ip address of the sensordata|
-| http://*SensorIP*:*SensorPort*/v1/actors | Adds an actor to the database retuns the rest ip address of the actor|
-| http://*SensorIP*:*SensorPort*/v1/rules | Adds a rule to the database retuns the rest ip address of the rule|
+| http://*ServerID*:*ServerPort*/v1/sensors | Adds a sensor to the database retuns the rest ip address of the sensor|
+| http://*ServerID*:*ServerPort*/v1/sensors/{*id*} | Adds a sensordata to the database and connects it with the sensor retuns the rest ip address of the sensordata|
+| http://*ServerID*:*ServerPort*/v1/actors | Adds an actor to the database retuns the rest ip address of the actor|
+| http://*ServerID*:*ServerPort*/v1/rules | Adds a rule to the database retuns the rest ip address of the rule|
 
 Delete Requests:
 
 | ip | Description|
 | --- | --- |
-| http://*SensorIP*:*SensorPort*/v1/sensors/{*id*} | Sets the deleted status of the Sensor to true|
+| http://*ServerID*:*ServerPort*/v1/sensors/{*id*} | Sets the deleted status of the Sensor to true|
 
 Put Requests:
 
 | ip | Description|
 | --- | --- |
-| http://*SensorIP*:*SensorPort*/v1/sensors/{*id*} | Updates the information of the sensor the id can't be changed |
+| http://*ServerID*:*ServerPort*/v1/sensors/{*id*} | Updates the information of the sensor the id can't be changed |
 
 # Technologies
 
