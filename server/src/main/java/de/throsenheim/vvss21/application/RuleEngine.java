@@ -19,7 +19,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
+ * Class for checking the set rules
+ * @version 2.0
+ * @author Alexander
  */
 @Service
 public class RuleEngine extends TimerTask {
@@ -62,6 +64,11 @@ public class RuleEngine extends TimerTask {
         weatherService();
     }
 
+    /**
+     * Compares if the new data violates any rule of the senor
+     * @param data new Data
+     * @param rules rules it should be compared to
+     */
     private void scanForNewStatus(SensorDataDto data, List<RuleDto> rules) {
         for (RuleDto rule: rules) {
             String status = "CLOSE";
@@ -88,6 +95,9 @@ public class RuleEngine extends TimerTask {
         }
     }
 
+    /**
+     * Changes the status of the actors if the weather is sunny
+     */
     private void weatherService(){
         if(jWTToken==null)
             jWTToken = weatherService.getJWTToken();
@@ -105,6 +115,9 @@ public class RuleEngine extends TimerTask {
         }
     }
 
+    /**
+     * Changes the status of all actors
+     */
     private void changeActors(){
         for (ActorDto actor:connector.getActors()) {
             String newStatus = "CLOSE";
@@ -128,6 +141,11 @@ public class RuleEngine extends TimerTask {
         }
     }
 
+    /**
+     * Adds sensordata that should be compared
+     * @param sensorDataDto new sensordata
+     * @return True if everything went right false if data couldn't be added
+     */
     public boolean addSensorData(SensorDataDto sensorDataDto){
         sensorDataDtos.remove(sensorDataDto);
         return sensorDataDtos.offer(sensorDataDto);

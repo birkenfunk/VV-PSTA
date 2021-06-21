@@ -14,7 +14,11 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Timer;
 
-
+/**
+ * Main class for starting the program
+ * @version 1.5
+ * @author Alexander
+ */
 @SpringBootApplication(scanBasePackages = {"de.throsenheim.vvss21"})
 public class Main {
 
@@ -28,6 +32,9 @@ public class Main {
         LOGGER.info("Hello World");
     }
 
+    /**
+     * Stats the ruleEngine Timer
+     */
     @Bean
     public void startTimer(){
         Timer ruleTimer = new Timer();

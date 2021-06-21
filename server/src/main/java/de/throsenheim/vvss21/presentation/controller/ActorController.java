@@ -22,6 +22,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+/**
+ * Class for handling Rest requests for /v1/actors
+ * @version 2.0
+ * @author Alexander
+ */
 @Controller
 @RequestMapping("/v1/actors")
 public class ActorController {
