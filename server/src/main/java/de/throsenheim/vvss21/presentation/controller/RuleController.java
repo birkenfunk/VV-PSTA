@@ -24,6 +24,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+/**
+ * Class for handling Rest requests for /v1/rules
+ * @version 2.0
+ * @author Alexander
+ */
 @Controller
 @RequestMapping("/v1/rules")
 public class RuleController {

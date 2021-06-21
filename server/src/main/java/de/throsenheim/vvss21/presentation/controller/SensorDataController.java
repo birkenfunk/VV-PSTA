@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
+/**
+ * Class for handling Rest requests for /v1/sensordata
+ * @version 2.0
+ * @author Alexander
+ */
 @Controller
 @RequestMapping("/v1/sensordata")
 public class SensorDataController {

@@ -119,5 +119,10 @@ public interface IDBConnector {
      */
     int addSensorData(SensorDataDto toAdd, int sensorID) throws SensorNotFoundException;
 
+    /**
+     * Searches for rules with a specific sensor
+     * @param id Id of the sensor
+     * @return All rules that contain the sensor
+     */
     List<RuleDto> getRulesForSensor(int id);
 }

@@ -11,6 +11,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+/**
+ * Class for getting data form the weather service
+ * @version 1.0
+ * @author Alexander
+ */
 @Service
 public class WeatherService implements IWeatherService {
 
@@ -18,9 +23,13 @@ public class WeatherService implements IWeatherService {
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .build();
+    private String jWTToken;
 
-    @Override
-    public String getJWTToken() {
+    /**
+     * For getting a JWTToken for contacting the weather service api
+     * @return JWTToken
+     */
+    private String getJWTToken() {
         String postURL = "https://ss21vv-externalweatherservice.azurewebsites.net/api/v1/authenticate";
         String body = "{\"username\":\"asbeckalexander\",\"password\":\"vvSS21\"}";
         HttpRequest request = HttpRequest.newBuilder().
@@ -31,8 +40,14 @@ public class WeatherService implements IWeatherService {
         return getResponse(request);
     }
 
+    /**
+     * Contacts the weather service
+     * @return A json String with the weather data
+     */
     @Override
-    public String contactWeatherService(String jWTToken) {
+    public String contactWeatherService() {
+        if(jWTToken==null)
+            jWTToken = getJWTToken();
         String postURL = "https://ss21vv-externalweatherservice.azurewebsites.net/api/WeatherForecast";
         HttpRequest request = HttpRequest.newBuilder().
                 uri(URI.create(postURL)).
@@ -42,6 +57,11 @@ public class WeatherService implements IWeatherService {
         return getResponse(request);
     }
 
+    /**
+     * Contacts a server with a given {@link HttpRequest}
+     * @param request the {@link HttpRequest} that should be executed
+     * @return The body of the response
+     */
     private String getResponse(HttpRequest request){
         HttpResponse<String> response = null;
         try {

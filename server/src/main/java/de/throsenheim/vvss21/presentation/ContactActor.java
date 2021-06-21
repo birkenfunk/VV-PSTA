@@ -11,6 +11,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+/**
+ * Class for contacting an actor.
+ * @version 1.0
+ * @author Alexander
+ */
 @Service
 public class ContactActor implements IContactActor {
 

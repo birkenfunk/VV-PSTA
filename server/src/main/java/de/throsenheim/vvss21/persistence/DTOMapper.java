@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 
+/**
+ * Class for transforming Dto objects into DB entries and the other way around
+ * @version 2.0
+ * @author Alexander
+ */
 @Service
 public class DTOMapper {
 
