@@ -294,3 +294,5 @@ gradle-app.setting
 *.conf
 logs/
 *json
+
+*.md.backup
