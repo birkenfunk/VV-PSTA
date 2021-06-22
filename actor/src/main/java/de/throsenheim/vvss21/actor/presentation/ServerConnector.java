@@ -37,10 +37,14 @@ public class ServerConnector {
         HttpResponse<String> response = null;
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             LOGGER.error(e);
-            Thread.currentThread().interrupt();
             retry();
+            return;
+        } catch (InterruptedException e){
+            LOGGER.error(e);
+            retry();
+            Thread.currentThread().interrupt();
             return;
         }
         if(response.statusCode() == 201){
