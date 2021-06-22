@@ -13,19 +13,25 @@ build:
   tags:
     - sonar
   script:
-    - ./gradlew assemble
+    - ./gradlew server:builde
+    - ./gradlew sensor:build
+    - ./gradlew actor:build
   artifacts:
     paths:
-      - ./build/libs/*.jar
+      - ./server/build/libs/*.jar
+      - ./actor/build/libs/*.jar
+      - ./sensor/build/libs/*.jar
     expire_in: 1 week
 
 sonarqube:
   stage: sonarqube&test
+  needs:
+    - job: build
   tags:
     - sonar
   script:
     - ./gradlew test
-    - ./gradlew sonarqube -Dsonar.projectKey=VVPSTA -Dsonar.host.url=http://localhost:9000 -Dsonar.login=08cf5e193cd203639be96dfc2122621dfeb40493
+    - ./gradlew sonarqube
   artifacts:
     when: on_failure
     paths:
@@ -34,13 +40,19 @@ sonarqube:
 
 javadoc:
   stage: javadoc
+  needs:
+    - job: build
   tags:
     - sonar
   script:
-    - ./gradlew javadoc
+    - ./gradlew server:javadoc
+    - ./gradlew sensor:javadoc
+    - ./gradlew actor:javadoc
   artifacts:
     paths:
-      - build/docs/javadoc/de
+      - ./server/build/docs/javadoc/de
+      - ./sensor/build/docs/javadoc/de
+      - ./actor/build/docs/javadoc/de
     expire_in: 1 week
 
 build-docker:
@@ -48,10 +60,24 @@ build-docker:
   tags:
     - sonar
   script:
-    - ./gradlew build
-    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander .
+    - ./gradlew server:build
+    - cd ./server
+    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server .
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander
+    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/server
+    - cd ../
+    - ./gradlew sensor:build
+    - cd ./sensor
+    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/sensor .
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/sensor
+    - cd ../
+    - ./gradlew actor:build
+    - cd ./actor
+    - docker build -t inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/actor .
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push inf-docker.fh-rosenheim.de/vv-inf-sose21/asbeckalexander/actor
   only:
     refs:
       - master
+      - developement

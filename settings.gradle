@@ -1,2 +1,5 @@
-rootProject.name = 'asbeckalexander'
+rootProject.name = 'alexanderasbeck'
+include 'server'
+include 'sensor'
+include 'actor'
 
