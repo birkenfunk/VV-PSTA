@@ -4,11 +4,9 @@ plugins {
 
 sonarqube {
     properties {
-        property "sonar.host.url", "http://birkenfunk.de:9000"
-        property "sonar.login", "08cf5e193cd203639be96dfc2122621dfeb40493"
-        property "sonar.projectName", "VVSS21"
-        property "sonar.projectKey", "VVPSTA"
-        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.projectKey", "birkenfunk_VV-PSTA"
+        property "sonar.organization", "birkenfunk"
+        property "sonar.host.url", "https://sonarcloud.io"
     }
 }
 
